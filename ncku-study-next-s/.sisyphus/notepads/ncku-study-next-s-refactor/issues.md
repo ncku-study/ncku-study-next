@@ -1,0 +1,1 @@
+  - pnpm run typecheck had to be executed from the nested app directory because the workspace root package.json does not define the script.

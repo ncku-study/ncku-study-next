@@ -1,0 +1,3 @@
+ - Kept existing globals.css rules intact and layered missing base/utilities on top.
+ - Added the camelCase color alias alongside the existing kebab-case variable for compatibility.
+  - Implemented /api/v2/user/* handlers as server route handlers with plain credential comparison and 401 JSON failures to match the legacy API contract.
