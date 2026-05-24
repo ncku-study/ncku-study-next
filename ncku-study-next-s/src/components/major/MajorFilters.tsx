@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api-client';
 import { CollegeDTO, DepartmentDTO } from '@/types/api';
+import Filter from '@/components/Filter';
 
 export interface FilterState {
   college: string;
@@ -18,7 +19,7 @@ interface MajorFiltersProps {
   onChange: (filters: FilterState) => void;
 }
 
-const selectClass = "rounded-[4px] border border-[rgba(0,0,0,0.23)] bg-transparent px-[14px] py-[6.5px] text-[1.5rem] focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] min-w-[120px]";
+const selectClass = "rounded-[4px] border border-[#c4c4c4] bg-transparent px-[14px] pt-[14.5px] pb-[6.5px] text-[1.5rem] focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] min-w-[120px]";
 const labelClass = "mr-[10px]";
 const wrapClass = "flex items-center w-fit mr-[7px] max-sm:scale-90";
 
@@ -58,49 +59,38 @@ export function MajorFilters({ filters, onChange }: MajorFiltersProps) {
 
   return (
     <section className="flex flex-wrap max-[576px]:justify-center w-full items-center h-full">
-      {/* Year */}
-      <div className={wrapClass}>
-        <span className={labelClass}>{t('filterByYear')} :</span>
-        <select name="year" value={filters.year} onChange={handleChange} className={selectClass}>
-          <option value="">{t('allYears')}</option>
-          {years.map((y) => (
-            <option key={y} value={y.toString()} className="text-[15px]">{y}</option>
-          ))}
-        </select>
-      </div>
+      <Filter
+        type={t('filterByYear')}
+        options={[{ name: t('allYears'), value: '' }, ...years.map((y) => ({ name: String(y), value: String(y) }))]}
+        value={filters.year}
+        onChange={(v) => onChange({ ...filters, year: v })}
+      />
 
-      {/* Category */}
-      <div className={wrapClass}>
-        <span className={labelClass}>{t('filterByCategory')} :</span>
-        <select name="category" value={filters.category} onChange={handleChange} className={selectClass}>
-          <option value="">{t('allCategories')}</option>
-          <option value="轉系" className="text-[15px]">{t('categoryTransfer')}</option>
-          <option value="輔系" className="text-[15px]">{t('categoryMinor')}</option>
-          <option value="雙主修" className="text-[15px]">{t('categoryDouble')}</option>
-        </select>
-      </div>
+      <Filter
+        type={t('filterByCategory')}
+        options={[
+          { name: t('allCategories'), value: '' },
+          { name: t('categoryTransfer'), value: '轉系' },
+          { name: t('categoryMinor'), value: '輔系' },
+          { name: t('categoryDouble'), value: '雙主修' },
+        ]}
+        value={filters.category}
+        onChange={(v) => onChange({ ...filters, category: v })}
+      />
 
-      {/* College */}
-      <div className={wrapClass}>
-        <span className={labelClass}>{t('filterByCollege')} :</span>
-        <select name="college" value={filters.college} onChange={handleChange} className={selectClass}>
-          <option value="">{t('allColleges')}</option>
-          {colleges.map((c) => (
-            <option key={c.id} value={c.name} className="text-[15px]">{c.name}</option>
-          ))}
-        </select>
-      </div>
+      <Filter
+        type={t('filterByCollege')}
+        options={[{ name: t('allColleges'), value: '' }, ...colleges.map((c) => ({ name: c.name, value: c.name }))]}
+        value={filters.college}
+        onChange={(v) => onChange({ ...filters, college: v, department: '' })}
+      />
 
-      {/* Department */}
-      <div className={wrapClass}>
-        <span className={labelClass}>{t('filterByDept')} :</span>
-        <select name="department" value={filters.department} onChange={handleChange} className={selectClass}>
-          <option value="">{t('allDepts')}</option>
-          {departments.map((d) => (
-            <option key={d.id} value={d.name} className="text-[15px]">{d.name}</option>
-          ))}
-        </select>
-      </div>
+      <Filter
+        type={t('filterByDept')}
+        options={[{ name: t('allDepts'), value: '' }, ...departments.map((d) => ({ name: d.name, value: d.name }))]}
+        value={filters.department}
+        onChange={(v) => onChange({ ...filters, department: v })}
+      />
     </section>
   );
 }

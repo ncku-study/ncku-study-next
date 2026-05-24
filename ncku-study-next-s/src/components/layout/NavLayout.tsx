@@ -22,7 +22,7 @@ function getTitle(pathname: string): string {
 function HamburgerButton() {
   const { toggle } = useSidebar();
   return (
-    <button className="lg:hidden p-2 mr-2" onClick={toggle} aria-label="選單">
+    <button className="lg:hidden p-2 mr-2 hidden" onClick={toggle} aria-label="選單">
       <Menu size={30} color="rgba(29, 30, 34, 1)" />
     </button>
   );
@@ -34,20 +34,15 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className="md:grid md:grid-cols-[110px_1fr] flex flex-col h-screen overflow-hidden bg-[var(--color-dark-white)]">
         <SidebarDrawer />
         <div
-          className="box-border grid w-full h-screen py-[20px] px-[30px] bg-white overflow-y-auto grid-rows-[50px_auto] max-lg:grid-rows-[50px_auto] max-sm:p-[10px] max-sm:pb-0 custom-scrollbar"
+          className="box-border grid grid-cols-auto grid-rows-[50px_auto] w-full h-screen py-[20px] px-[30px] bg-white overflow-y-auto max-lg:grid-rows-[50px_auto] max-sm:p-[10px] max-sm:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0"
         >
-          {/* Header row - h-[50px] */}
-          <header className="grid grid-cols-[auto_120px] h-[50px] items-center">
-            <div className="flex items-center">
-              <HamburgerButton />
-              <h1 className="m-0 text-[1.7rem] font-medium">{title}</h1>
-            </div>
+          <header className="flex items-center justify-between h-[50px]">
+            <h1 className="m-0 text-[1.7rem] font-medium w-full">{title}</h1>
           </header>
-          {/* Content */}
-          <div className="overflow-hidden">
+          <div className="overflow-hidden h-full">
             {children}
           </div>
         </div>

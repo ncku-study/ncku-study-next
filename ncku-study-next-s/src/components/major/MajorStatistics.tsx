@@ -9,37 +9,40 @@ interface ProgressCircleProps {
 }
 
 function ProgressCircle({ value, name }: ProgressCircleProps) {
-  const radius = 46;
-  const circumference = 2 * Math.PI * radius;
+  // Replicate rc-progress Circle: viewBox 0 0 100 100, r=48, strokeWidth=4 for progress, 1 for trail
+  // Path starts from top: M 50,50 m 0,-48 a 48,48 0 1 1 0,96 a 48,48 0 1 1 0,-96
+  // Circumference = 2 * PI * 48 ≈ 301.593
+  const circumference = 301.593;
   const percent = value === null ? 100 : Math.min(100, Math.round(value * 100) / 100);
   const dash = (percent / 100) * circumference;
-  const displayValue = value === null ? '無' : Number(value).toFixed(1);
+  const displayValue = value === null ? '無' : Number(percent).toFixed(1);
+  const arcPath = 'M 50,50 m 0,-48\n   a 48,48 0 1 1 0,96\n   a 48,48 0 1 1 0,-96';
 
   return (
     <div className="relative w-[115px] flex justify-items-center items-center flex-col">
       <div style={{ position: 'relative', width: '70px', margin: '0 11.25px' }}>
         <svg viewBox="0 0 100 100" width="70" height="70">
-          {/* Trail */}
-          <circle
-            cx="50"
-            cy="50"
-            r={radius}
-            fill="none"
+          {/* Trail - thin, same as rc-progress */}
+          <path
+            d={arcPath}
             stroke="rgba(163, 158, 158, 1)"
-            strokeWidth="4"
+            strokeLinecap="round"
+            strokeWidth="1"
+            fillOpacity="0"
+            style={{ strokeDasharray: `${circumference}px, ${circumference}px`, strokeDashoffset: '0px' }}
           />
           {/* Progress */}
-          <circle
-            cx="50"
-            cy="50"
-            r={radius}
-            fill="none"
+          <path
+            d={arcPath}
             stroke="#FEDA6A"
-            strokeWidth="4"
             strokeLinecap="round"
-            strokeDasharray={`${dash} ${circumference}`}
-            strokeDashoffset={circumference / 4}
-            style={{ transition: 'stroke-dasharray 0.3s ease' }}
+            strokeWidth="4"
+            fillOpacity="0"
+            style={{
+              strokeDasharray: `${dash}px, ${circumference}px`,
+              strokeDashoffset: '0px',
+              transition: 'stroke-dasharray 0.3s, stroke 0.3s',
+            }}
           />
         </svg>
         <span className="absolute text-[1.9rem] flex w-full justify-center text-dark-black" style={{ top: '21px', left: 0 }}>
@@ -57,19 +60,17 @@ interface MajorStatisticsProps {
 
 export function MajorStatistics({ comments }: MajorStatisticsProps) {
   const passedComments = comments.filter((c) => c.isPass !== 'false');
+  // Coerce scores to numbers to avoid string/number union issues
+  const numericScores = passedComments
+    .map((c) => {
+      const n = Number(c.score);
+      return Number.isFinite(n) ? n : 0;
+    })
+    .filter((n) => !Number.isNaN(n));
 
-  const average =
-    passedComments.length > 0
-      ? passedComments.reduce((sum, c) => sum + (c.score || 0), 0) / passedComments.length
-      : null;
+  const average = numericScores.length > 0 ? numericScores.reduce((s, v) => s + v, 0) / numericScores.length : null;
 
-  const min =
-    passedComments.length > 0
-      ? passedComments.reduce(
-          (m, c) => (c.score < m ? c.score : m),
-          passedComments[0].score
-        )
-      : null;
+  const min = numericScores.length > 0 ? Math.min(...numericScores) : null;
 
   return (
     <section className="grid grid-cols-[400px_auto] gap-x-[20px] py-[10px] max-[576px]:h-[160px] max-[576px]:grid-cols-[1fr_0] max-[576px]:gap-x-0">

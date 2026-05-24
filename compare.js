@@ -4,23 +4,30 @@ const fs = require('fs');
 async function comparePages() {
   const browser = await chromium.launch({ headless: true });
 
-  // Take screenshots at same viewport size
-  const nextPage = await browser.newPage();
-  await nextPage.setViewportSize({ width: 1366, height: 768 });
+  // Use identical contexts to ensure same DPR and viewport
+  const viewport = { width: 1366, height: 768 };
+  const contextOptions = { viewport, deviceScaleFactor: 1 };
+
+  const ctxNext = await browser.newContext(contextOptions);
+  const nextPage = await ctxNext.newPage();
   await nextPage.goto('http://localhost:3000/', { waitUntil: 'networkidle', timeout: 15000 });
-  await nextPage.waitForTimeout(1500);
+  try { await nextPage.evaluate(() => document.fonts.ready); } catch (e) {}
+  await nextPage.waitForTimeout(2500);
   const nextBuf = await nextPage.screenshot({ fullPage: false });
   fs.writeFileSync('snap_next.png', nextBuf);
   console.log('Next.js screenshot:', nextBuf.length, 'bytes');
 
-  const vitePage = await browser.newPage();
-  await vitePage.setViewportSize({ width: 1366, height: 768 });
+  const ctxVite = await browser.newContext(contextOptions);
+  const vitePage = await ctxVite.newPage();
   await vitePage.goto('http://localhost:3100/', { waitUntil: 'networkidle', timeout: 15000 });
-  await vitePage.waitForTimeout(1500);
+  try { await vitePage.evaluate(() => document.fonts.ready); } catch (e) {}
+  await vitePage.waitForTimeout(2500);
   const viteBuf = await vitePage.screenshot({ fullPage: false });
   fs.writeFileSync('snap_vite.png', viteBuf);
   console.log('Vite screenshot:', viteBuf.length, 'bytes');
 
+  await ctxNext.close();
+  await ctxVite.close();
   await browser.close();
 
   // Pixel comparison using raw PNG data
@@ -148,7 +155,91 @@ async function comparePages() {
   console.log(parseFloat(diffPct) < 2 ? '✅ PASS: Difference is below 2%!' : '❌ FAIL: Difference exceeds 2%, more fixes needed');
 }
 
-comparePages().catch(e => {
+async function visualDiff(nextBuf, viteBuf) {
+  const { chromium } = require('playwright');
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
+
+  const nextB64 = nextBuf.toString('base64');
+  const viteB64 = viteBuf.toString('base64');
+
+  const res = await page.evaluate(async ({ nB64, vB64 }) => {
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    const nImg = await loadImage('data:image/png;base64,' + nB64);
+    const vImg = await loadImage('data:image/png;base64,' + vB64);
+
+    const w = Math.min(nImg.width, vImg.width);
+    const h = Math.min(nImg.height, vImg.height);
+
+    const c1 = document.createElement('canvas');
+    c1.width = w; c1.height = h;
+    const ctx1 = c1.getContext('2d');
+    ctx1.drawImage(nImg, 0, 0, w, h);
+    const d1 = ctx1.getImageData(0, 0, w, h).data;
+
+    const c2 = document.createElement('canvas');
+    c2.width = w; c2.height = h;
+    const ctx2 = c2.getContext('2d');
+    ctx2.drawImage(vImg, 0, 0, w, h);
+    const d2 = ctx2.getImageData(0, 0, w, h).data;
+
+    const diffCanvas = document.createElement('canvas');
+    diffCanvas.width = w; diffCanvas.height = h;
+    const diffCtx = diffCanvas.getContext('2d');
+    const diffImg = diffCtx.createImageData(w, h);
+
+    let diffPixels = 0;
+    const threshold = 10;
+    for (let i = 0; i < d1.length; i += 4) {
+      const dr = Math.abs(d1[i] - d2[i]);
+      const dg = Math.abs(d1[i+1] - d2[i+1]);
+      const db = Math.abs(d1[i+2] - d2[i+2]);
+      const da = Math.abs(d1[i+3] - d2[i+3]);
+      const idx = i;
+      if (dr > threshold || dg > threshold || db > threshold || da > threshold) {
+        diffImg.data[idx] = 255; // red
+        diffImg.data[idx+1] = 0;
+        diffImg.data[idx+2] = 0;
+        diffImg.data[idx+3] = 255;
+        diffPixels++;
+      } else {
+        diffImg.data[idx] = 0;
+        diffImg.data[idx+1] = 0;
+        diffImg.data[idx+2] = 0;
+        diffImg.data[idx+3] = 0;
+      }
+    }
+
+    diffCtx.putImageData(diffImg, 0, 0);
+    const dataUrl = diffCanvas.toDataURL('image/png');
+    const base64 = dataUrl.split(',')[1];
+
+    return { base64, diffPixels, total: w*h };
+  }, { nB64: nextB64, vB64: viteB64 });
+
+  await browser.close();
+  return res;
+}
+
+comparePages().then(async () => {
+  const fs = require('fs');
+  const nextBuf = fs.readFileSync('snap_next.png');
+  const viteBuf = fs.readFileSync('snap_vite.png');
+  const diffRes = await visualDiff(nextBuf, viteBuf);
+  const diffPct = (diffRes.diffPixels / diffRes.total * 100).toFixed(2);
+  fs.writeFileSync('snap_diff.png', Buffer.from(diffRes.base64, 'base64'));
+  console.log('Visual diff saved: snap_diff.png');
+  console.log('Visual diff percent:', diffPct + '%');
+  process.exit(parseFloat(diffPct) < 2 ? 0 : 2);
+}).catch(e => {
   console.error('Error:', e.message);
   process.exit(1);
 });
