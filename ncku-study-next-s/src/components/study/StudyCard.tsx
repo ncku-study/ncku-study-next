@@ -1,6 +1,4 @@
 import { useTranslations } from 'next-intl';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import type { StudyDTO } from '@/types/api';
 import Link from 'next/link';
 
@@ -8,14 +6,19 @@ interface StudyCardProps {
   study: StudyDTO;
 }
 
+function contentMiddleware(content: string, maxNumber: number): string {
+  return content.length < maxNumber
+    ? content
+    : content.substring(0, maxNumber - 1) + '  (...)';
+}
+
 export function StudyCard({ study }: StudyCardProps) {
   const t = useTranslations('study');
-
-  // Same truncation logic (approximate line-clamp)
   const isConfirmed = study.confirm === 'true';
+  const contentPreview = contentMiddleware(study.content, 36);
 
   return (
-    <div className={`relative border-b border-black/12.5 border-l-0 box-border max-sm:w-full max-sm:m-0 max-sm:rounded-none max-sm:h-[145px] ${isConfirmed ? 'bg-white' : 'bg-[var(--color-light-yellow)]'} h-[160px] px-4`}>
+    <div className={`relative border-b border-black/12.5 border-l-0 box-border max-sm:w-full max-sm:m-0 max-sm:rounded-none max-sm:h-[145px] ${isConfirmed ? 'bg-white' : 'bg-[var(--color-light-yellow)]'} px-4`}>
       <Link href={`/study/${study.id}`} className="absolute top-0 left-0 w-full h-[75%] opacity-0 border-none outline-none z-10" aria-label={t('viewStudy', { title: study.title })}>
         <span className="sr-only">{study.title}</span>
       </Link>
@@ -23,23 +26,18 @@ export function StudyCard({ study }: StudyCardProps) {
       <div className="w-full h-[88px] mt-[20px] z-20 relative">
         <div className="inline-flex">
           {study.category.map((cat) => (
-            <Badge key={cat.id} variant="secondary" className="mr-[5px] rounded-[30px] font-normal text-xs px-2 py-0.5 border border-[#cccccc] bg-transparent text-[rgba(0,0,0,0.6)] hover:bg-transparent">
+            <span key={cat.id} className="mr-[5px] rounded-[30px] font-normal text-[12px] px-2 py-0.5 border border-[#cccccc] bg-transparent text-[rgba(0,0,0,0.6)]">
               {cat.name}
-            </Badge>
-          ))}
-          {study.statistic.map((stat, i) => (
-            <Badge key={`stat-${i}`} variant="outline" className="mr-[5px] rounded-[30px] font-normal text-xs px-2 py-0.5 border border-[#cccccc] bg-transparent text-[rgba(0,0,0,0.6)]">
-              {stat.name}: {stat.value}
-            </Badge>
+            </span>
           ))}
         </div>
 
-        <h4 className="text-[18px] mt-[12px] mb-[6px] truncate" title={study.title}>
+        <h4 className="text-[18px] mt-[12px] mb-[6px]">
           {study.title}
         </h4>
 
-        <p className="text-[14px] text-justify break-anywhere mt-0 mb-[1rem] max-sm:text-[1.5rem] line-clamp-2">
-          {study.content}
+        <p className="text-[14px] text-justify break-anywhere mt-0 mb-[1rem] max-sm:text-[1.5rem]" style={{ wordBreak: 'break-all', lineBreak: 'anywhere' }}>
+          {contentPreview}
         </p>
       </div>
 

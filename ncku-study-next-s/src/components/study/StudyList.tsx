@@ -8,6 +8,7 @@ import type { StudyDTO } from '@/types/api';
 import { StudyCard } from './StudyCard';
 import { CategoryFilter } from './CategoryFilter';
 
+const selectClass = "border border-[#c4c4c4] rounded-[4px] bg-transparent px-[14px] pt-[14.5px] pb-[6.5px] text-[1.5rem] focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] min-w-[100px]";
 
 export function StudyList() {
   const t = useTranslations('study');
@@ -31,44 +32,46 @@ export function StudyList() {
     },
   });
 
+  // Dynamic year range matching Vite (current ROC year down to 104)
+  const currentRocYear = new Date().getFullYear() - 1911;
+  const years = Array.from(
+    { length: currentRocYear - 104 + 1 },
+    (_, i) => currentRocYear - i
+  );
+
   return (
     <div className="w-full">
-      <CategoryFilter
-        selectedCategories={selectedCategories}
-        onChange={setSelectedCategories}
-      />
-      
-      <div className="mb-6 flex gap-2 items-center">
-        <label htmlFor="year-select" className="text-sm font-medium text-gray-700">
-          {t('filterByYear')}
-        </label>
-        <select
-          id="year-select"
-          className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-        >
-          <option value="">{t('allYears')}</option>
-          <option value="113">113</option>
-          <option value="112">112</option>
-          <option value="111">111</option>
-          <option value="110">110</option>
-          <option value="109">109</option>
-          <option value="108">108</option>
-        </select>
+      <div className="flex flex-wrap items-center gap-4 mb-6">
+        <CategoryFilter
+          selectedCategories={selectedCategories}
+          onChange={setSelectedCategories}
+        />
+        <div className="flex items-center gap-2">
+          <span className="mr-[10px] text-[1.5rem]">{t('filterByYear')} :</span>
+          <select
+            className={selectClass}
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+          >
+            <option value="">{t('allYears')}</option>
+            {years.map((y) => (
+              <option key={y} value={y.toString()} className="text-[15px]">{y}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-[160px] rounded-lg bg-[var(--color-dark-white)] animate-pulse"
+              className="h-[145px] rounded-lg bg-[var(--color-dark-white)] animate-pulse"
             />
           ))}
         </div>
       ) : isError ? (
-        <div className="text-center py-10 text-red-500">
+        <div className="text-center py-10 text-[var(--color-red)]">
           {t('error')}
         </div>
       ) : studies.length === 0 ? (
@@ -76,7 +79,7 @@ export function StudyList() {
           {t('noResults')}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {studies.map((study) => (
             <StudyCard key={study.id} study={study} />
           ))}

@@ -43,7 +43,7 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
           <header className="grid grid-cols-[auto_120px] h-[50px] items-center">
             <div className="flex items-center">
               <HamburgerButton />
-              <h1 className="m-0 text-[2.2rem] font-semibold">{title}</h1>
+              <h1 className="m-0 text-[1.7rem] font-medium">{title}</h1>
             </div>
           </header>
           {/* Content */}
