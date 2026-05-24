@@ -40,13 +40,11 @@ export default function MajorGrid({ initialData }: MajorGridProps) {
   const comments = data?.data || [];
 
   return (
-    <div className="w-full">
-      <h1 className="text-2xl font-bold mb-6 text-[var(--color-dark-black)]">{t('title')}</h1>
-      
+    <div className="flex flex-col w-full h-full">
       <MajorFilters filters={filters} onChange={setFilters} />
       
       {isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 justify-items-center">
+        <div className="flex flex-wrap justify-start items-start bg-white p-5 rounded-[20px] shadow-[0_0_10px_rgba(0,0,0,0.1)] gap-6 content-start min-h-[500px]">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
@@ -57,19 +55,19 @@ export default function MajorGrid({ initialData }: MajorGridProps) {
       )}
       
       {isError && (
-        <div className="flex justify-center items-center min-h-[200px]">
+        <div className="flex flex-wrap justify-start items-start bg-white p-5 rounded-[20px] shadow-[0_0_10px_rgba(0,0,0,0.1)] gap-6 content-start min-h-[500px]">
           <span className="text-[var(--color-red)]">{tCommon('error')}</span>
         </div>
       )}
 
       {!isLoading && !isError && comments.length === 0 && (
-        <div className="flex justify-center items-center min-h-[200px] text-[var(--color-light-black)] bg-[var(--color-dark-white)] rounded-lg">
+        <div className="flex flex-wrap justify-start items-start bg-white p-5 rounded-[20px] shadow-[0_0_10px_rgba(0,0,0,0.1)] gap-6 content-start min-h-[500px] text-[var(--color-light-black)]">
           {t('noResults')}
         </div>
       )}
 
       {!isLoading && !isError && comments.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 justify-items-center">
+        <div className="flex flex-wrap justify-start items-start bg-white p-5 rounded-[20px] shadow-[0_0_10px_rgba(0,0,0,0.1)] gap-6 content-start min-h-[500px]">
           {comments.map((comment) => (
             <TransCard key={comment.id} data={comment} />
           ))}

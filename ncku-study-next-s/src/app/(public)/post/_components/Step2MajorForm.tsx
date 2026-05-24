@@ -125,7 +125,7 @@ export function Step2MajorForm() {
             <FormItem>
               <FormLabel>{t("rank_1")}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. 1/50 or 2%" />
+                <Input {...field} placeholder="e.g. 1/50" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -138,7 +138,7 @@ export function Step2MajorForm() {
             <FormItem>
               <FormLabel>{t("rank_2")}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. 1/50 or 2%" />
+                <Input {...field} placeholder="e.g. 1/50" />
               </FormControl>
               <FormMessage />
             </FormItem>

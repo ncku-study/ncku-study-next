@@ -4,11 +4,11 @@
     "private": true,
     "scripts": {
         "dev": "cross-env USE_MOCK=true next dev",
-        "dev:db": "cross-env USE_MOCK=false next dev",
+        "dev:uat": "cross-env USE_MOCK=false next dev",
         "build": "next build",
         "start": "next start",
+        "prod": "next build && next start",
         "lint": "eslint src/",
-        "format": "prettier --write src/",
         "migrate": "tsx scripts/migrate.ts",
         "typecheck": "tsc --noEmit",
         "test:e2e": "playwright test"

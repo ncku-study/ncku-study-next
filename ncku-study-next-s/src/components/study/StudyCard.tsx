@@ -15,36 +15,40 @@ export function StudyCard({ study }: StudyCardProps) {
   const isConfirmed = study.confirm === 'true';
 
   return (
-    <Card className={`relative flex flex-col p-4 mb-4 transition-colors ${isConfirmed ? 'bg-white' : 'bg-yellow-50'} border-b border-gray-200 shadow-sm hover:shadow-md h-[160px] overflow-hidden`}>
-      <Link href={`/study/${study.id}`} className="absolute inset-0 z-10" aria-label={`View study ${study.title}`}>
+    <div className={`relative border-b border-black/12.5 border-l-0 box-border max-sm:w-full max-sm:m-0 max-sm:rounded-none max-sm:h-[145px] ${isConfirmed ? 'bg-white' : 'bg-[var(--color-light-yellow)]'} h-[160px] px-4`}>
+      <Link href={`/study/${study.id}`} className="absolute top-0 left-0 w-full h-[75%] opacity-0 border-none outline-none z-10" aria-label={t('viewStudy', { title: study.title })}>
         <span className="sr-only">{study.title}</span>
       </Link>
       
-      <div className="flex gap-2 mb-2 z-20">
-        {study.category.map((cat) => (
-          <Badge key={cat.id} variant="secondary" className="rounded-[30px] font-normal text-xs px-2 py-0.5">
-            {cat.name}
-          </Badge>
-        ))}
+      <div className="w-full h-[88px] mt-[20px] z-20 relative">
+        <div className="inline-flex">
+          {study.category.map((cat) => (
+            <Badge key={cat.id} variant="secondary" className="mr-[5px] rounded-[30px] font-normal text-xs px-2 py-0.5 border border-[#cccccc] bg-transparent text-[rgba(0,0,0,0.6)] hover:bg-transparent">
+              {cat.name}
+            </Badge>
+          ))}
+          {study.statistic.map((stat, i) => (
+            <Badge key={`stat-${i}`} variant="outline" className="mr-[5px] rounded-[30px] font-normal text-xs px-2 py-0.5 border border-[#cccccc] bg-transparent text-[rgba(0,0,0,0.6)]">
+              {stat.name}: {stat.value}
+            </Badge>
+          ))}
+        </div>
+
+        <h4 className="text-[18px] mt-[12px] mb-[6px] truncate" title={study.title}>
+          {study.title}
+        </h4>
+
+        <p className="text-[14px] text-justify break-anywhere mt-0 mb-[1rem] max-sm:text-[1.5rem] line-clamp-2">
+          {study.content}
+        </p>
+      </div>
+
+      <div className="mt-[10px] flex items-center absolute bottom-[15px] z-20 pointer-events-none">
+        <span className="text-[var(--color-yellow)] mr-[15px] text-[14px]">#{study.year}</span>
         {study.statistic.map((stat, i) => (
-          <Badge key={`stat-${i}`} variant="outline" className="rounded-[30px] font-normal text-xs px-2 py-0.5 border-[var(--color-primary)] text-[var(--color-primary)]">
-            {stat.name}: {stat.value}
-          </Badge>
+            <span key={i} className="text-[var(--color-yellow)] mr-[15px] text-[14px]">#{stat.name}</span>
         ))}
       </div>
-
-      <h4 className="text-[18px] font-medium mt-1 mb-2 truncate" title={study.title}>
-        {study.title}
-      </h4>
-
-      <p className="text-[14px] text-justify text-gray-600 line-clamp-2 leading-relaxed flex-grow">
-        {study.content}
-      </p>
-
-      <div className="flex items-center gap-3 mt-auto pt-2 text-sm text-[var(--color-primary)]">
-        <span className="font-medium">#{study.year}</span>
-        <span className="font-medium text-gray-500">{study.major}</span>
-      </div>
-    </Card>
+    </div>
   );
 }

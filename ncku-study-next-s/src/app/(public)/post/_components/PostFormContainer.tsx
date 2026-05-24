@@ -16,37 +16,38 @@ import { Step2MajorForm } from "./Step2MajorForm";
 import { Step2StudyForm } from "./Step2StudyForm";
 import { Step3Preview } from "./Step3Preview";
 
-// Schemas
-const step1Schema = z.object({
-  postType: z.enum(["major", "study"], {
-    message: "Please select a type",
-  }),
-});
-
-const majorSchema = z.object({
-  category: z.string().min(1, "Required"),
-  rank_1: z.string().min(1, "Required"),
-  rank_2: z.string().min(1, "Required"),
-  year: z.union([z.string(), z.number()]).transform(v => Number(v)),
-  score: z.union([z.string(), z.number()]).transform(v => Number(v)),
-  isPass: z.string().min(1, "Required"),
-  out_maj: z.string().min(1, "Required"),
-  in_maj: z.string().min(1, "Required"),
-  department: z.string().min(1, "Required"),
-  comment: z.string().min(10, "Minimum 10 characters"),
-});
-
-const studySchema = z.object({
-  title: z.string().min(1, "Required"),
-  content: z.string().min(10, "Minimum 10 characters"),
-  year: z.union([z.string(), z.number()]).transform(v => Number(v)),
-  major: z.string().min(1, "Required"),
-  category: z.array(z.string()).min(1, "Select at least one category"),
-  // statistic can be added here
-});
-
 export function PostFormContainer() {
   const t = useTranslations("post");
+  const tCommon = useTranslations("common");
+
+  // Schemas
+  const step1Schema = z.object({
+    postType: z.enum(["major", "study"], {
+      message: t("selectType"),
+    }),
+  });
+
+  const majorSchema = z.object({
+    category: z.string().min(1, t("required")),
+    rank_1: z.string().min(1, t("required")),
+    rank_2: z.string().min(1, t("required")),
+    year: z.union([z.string(), z.number()]).transform(v => Number(v)),
+    score: z.union([z.string(), z.number()]).transform(v => Number(v)),
+    isPass: z.string().min(1, t("required")),
+    out_maj: z.string().min(1, t("required")),
+    in_maj: z.string().min(1, t("required")),
+    department: z.string().min(1, t("required")),
+    comment: z.string().min(10, t("min10Chars")),
+  });
+
+  const studySchema = z.object({
+    title: z.string().min(1, t("required")),
+    content: z.string().min(10, t("min10Chars")),
+    year: z.union([z.string(), z.number()]).transform(v => Number(v)),
+    major: z.string().min(1, t("required")),
+    category: z.array(z.string()).min(1, t("selectAtLeastOne")),
+  });
+
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -96,13 +97,20 @@ export function PostFormContainer() {
   const onNext = async () => {
     let isValid = false;
     if (step === 1) {
-      isValid = await trigger("postType");
+      isValid = await trigger("postType", { shouldFocus: true });
     } else if (step === 2) {
-      // Validate based on postType
-      if (postType === "major") {
-        isValid = await trigger(["category", "rank_1", "rank_2", "year", "score", "isPass", "out_maj", "in_maj", "department", "comment"]);
+      const schema = postType === "major" ? majorSchema : studySchema;
+      const values = methods.getValues();
+      const result = schema.safeParse(values);
+      if (!result.success) {
+        // Trigger validation for all fields in the current step
+        if (postType === "major") {
+          isValid = await trigger(["category", "rank_1", "rank_2", "year", "score", "isPass", "out_maj", "in_maj", "department", "comment"]);
+        } else {
+          isValid = await trigger(["title", "content", "year", "major", "studyCategories"]);
+        }
       } else {
-        isValid = await trigger(["title", "content", "year", "major", "studyCategories"]);
+        isValid = true;
       }
     }
 
@@ -169,7 +177,7 @@ export function PostFormContainer() {
                 </Button>
               ) : (
                 <Button type="submit" disabled={mutation.isPending}>
-                  {mutation.isPending ? t("common.loading") : t("submit")}
+                  {mutation.isPending ? tCommon("loading") : t("submit")}
                   <Send className="ml-2 h-4 w-4" />
                 </Button>
               )}

@@ -1,49 +1,69 @@
 import React from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { CommentDTO } from '@/types/api';
-import { Badge } from './Badge';
 
 interface TransCardProps {
   data: CommentDTO;
 }
 
 export function TransCard({ data }: TransCardProps) {
-  const t = useTranslations('major');
-
-  // Preview comment logic (truncate if too long)
-  const commentPreview = data.comment.length > 30
-    ? data.comment.substring(0, 30) + '...'
+  const commentPreview = data.comment.length > 27 
+    ? data.comment.substring(0, 26) + '  (...)' 
     : data.comment;
 
+  const getCategoryStyles = (category: string) => {
+    switch (category) {
+      case '轉系':
+        return { bg: 'bg-background-yellow', text: 'text-dark-yellow' };
+      case '輔系':
+        return { bg: 'bg-dark-black/20', text: 'text-dark-black' };
+      case '雙主修':
+      default:
+        return { bg: 'bg-light-black', text: 'text-white' };
+    }
+  };
+
+  const { bg: iconBg, text: iconText } = getCategoryStyles(data.category);
+
   return (
-    <Link href={`/major/${data.id}`} className="block group">
-      <div className="w-[220px] h-[180px] rounded-lg shadow-md bg-[var(--color-white)] border border-[var(--color-light-gray)] overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col p-4 relative group-hover:border-[var(--color-yellow)]">
+    <div className={`relative border border-black/[0.125] p-[5px] text-black rounded-[15px] h-[180px] w-[220px] ${data.confirm === 'false' ? 'bg-lightYellow' : 'bg-white'}`}>
+      <div className="grid grid-cols-[57px_auto] grid-rows-[auto_30px] [grid-template-areas:'icon_main'_'year_tags'] w-[210px] h-[160px] px-[10px] pt-[5px] pb-0">
         
-        {/* Header: Department & Year */}
-        <div className="flex justify-between items-start mb-2">
-          <span className="font-bold text-[var(--color-light-black)] truncate max-w-[120px]" title={data.department}>
+        {/* TypeIcon */}
+        <div style={{ gridArea: 'icon' }} className={`w-[42px] h-[42px] rounded-[42px] my-[10px] mx-auto flex items-center justify-center text-[1.4rem] font-bold ${iconBg} ${iconText}`}>
+          {data.category.charAt(0)}
+        </div>
+
+        {/* ContentInfo */}
+        <div style={{ gridArea: 'main' }} className="grid grid-rows-[35px_25px_auto]">
+          <h4 className="text-[1.8rem] mt-[10px] mb-[10px] leading-[1.1] truncate overflow-hidden whitespace-nowrap m-0 font-medium">
+            {data.in_maj}
+          </h4>
+          <div className="text-dark-gray text-[1.2rem]">
+            原主修 {data.out_maj}
+          </div>
+          <p className="text-[1.3rem] text-justify mt-0 mb-[1rem] leading-normal break-all">
+            {commentPreview}
+          </p>
+        </div>
+
+        {/* YearSpan */}
+        <div style={{ gridArea: 'year' }} className={`flex items-center justify-center text-[1.2rem] ${iconText}`}>
+          {data.year}
+        </div>
+
+        {/* TagSpanList */}
+        <div style={{ gridArea: 'tags' }} className="flex items-center">
+          <span className={`mr-[10px] text-[1.2rem] truncate max-w-[130px] ${iconText}`}>
             {data.department}
           </span>
-          <span className="text-xs text-[var(--color-dark-gray)] bg-[var(--color-dark-white)] px-2 py-0.5 rounded-full">
-            {data.year}
-          </span>
         </div>
-
-        {/* Score and Pass/Fail Badge */}
-        <div className="flex items-center gap-2 mb-3">
-          <Badge isPass={data.isPass} />
-          <span className="text-sm font-semibold text-[var(--color-dark-black)]">
-            {t('score')}: {data.score}
-          </span>
-        </div>
-
-        {/* Comment Preview */}
-        <div className="text-sm text-[var(--color-light-black)] line-clamp-3 mt-1 flex-1">
-          {commentPreview}
-        </div>
-
       </div>
-    </Link>
+      
+      {/* ShowBtn */}
+      <Link href={`/major/${data.id}`} className="absolute top-0 left-0 w-full h-[75%] opacity-0">
+        詳細內容
+      </Link>
+    </div>
   );
 }

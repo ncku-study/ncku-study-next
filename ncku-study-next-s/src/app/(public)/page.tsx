@@ -11,8 +11,8 @@ export default async function MajorPage() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <>
       <MajorGrid initialData={initialData} />
-    </main>
+    </>
   );
 }

@@ -53,61 +53,55 @@ export function MajorFilters({ filters, onChange }: MajorFiltersProps) {
   const years = Array.from({ length: 11 }, (_, i) => 115 - i);
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-[var(--color-dark-white)] rounded-lg shadow-sm">
-      <div className="flex-1">
-        <label htmlFor="college" className="block text-sm font-medium text-[var(--color-light-black)] mb-1">
-          {t('filterByCollege')}
-        </label>
+    <section className="flex flex-wrap max-[576px]:justify-center w-full mb-6">
+      <div className="flex items-center w-fit mr-[7px] max-sm:scale-90">
+        <span className="mr-[10px]">{t('filterByCollege')} :</span>
         <select
           id="college"
           name="college"
           value={filters.college}
           onChange={handleChange}
-          className="w-full rounded-md border border-[var(--color-light-gray)] bg-white px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)]"
+          className="rounded-[4px] border border-[#c4c4c4] bg-transparent px-[14px] pt-[14.5px] pb-[6.5px] text-[1.5rem] focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] min-w-[120px]"
         >
           <option value="">{t('filterByCollege')}</option>
           {colleges.map((c) => (
-            <option key={c.id} value={c.name}>{c.name}</option>
+            <option key={c.id} value={c.name} className="text-[15px]">{c.name}</option>
           ))}
         </select>
       </div>
 
-      <div className="flex-1">
-        <label htmlFor="department" className="block text-sm font-medium text-[var(--color-light-black)] mb-1">
-          {t('filterByDept')}
-        </label>
+      <div className="flex items-center w-fit mr-[7px] max-sm:scale-90">
+        <span className="mr-[10px]">{t('filterByDept')} :</span>
         <select
           id="department"
           name="department"
           value={filters.department}
           onChange={handleChange}
           disabled={!filters.college && departments.length === 0}
-          className="w-full rounded-md border border-[var(--color-light-gray)] bg-white px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] disabled:opacity-50"
+          className="rounded-[4px] border border-[#c4c4c4] bg-transparent px-[14px] pt-[14.5px] pb-[6.5px] text-[1.5rem] focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] min-w-[120px] disabled:opacity-50"
         >
           <option value="">{t('filterByDept')}</option>
           {departments.map((d) => (
-            <option key={d.id} value={d.name}>{d.name}</option>
+            <option key={d.id} value={d.name} className="text-[15px]">{d.name}</option>
           ))}
         </select>
       </div>
 
-      <div className="flex-1">
-        <label htmlFor="year" className="block text-sm font-medium text-[var(--color-light-black)] mb-1">
-          {t('filterByYear')}
-        </label>
+      <div className="flex items-center w-fit mr-[7px] max-sm:scale-90">
+        <span className="mr-[10px]">{t('filterByYear')} :</span>
         <select
           id="year"
           name="year"
           value={filters.year}
           onChange={handleChange}
-          className="w-full rounded-md border border-[var(--color-light-gray)] bg-white px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)]"
+          className="rounded-[4px] border border-[#c4c4c4] bg-transparent px-[14px] pt-[14.5px] pb-[6.5px] text-[1.5rem] focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] min-w-[120px]"
         >
           <option value="">{t('filterByYear')}</option>
           {years.map((y) => (
-            <option key={y} value={y.toString()}>{y}</option>
+            <option key={y} value={y.toString()} className="text-[15px]">{y}</option>
           ))}
         </select>
       </div>
-    </div>
+    </section>
   );
 }

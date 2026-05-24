@@ -1,6 +1,6 @@
 ﻿@import "tailwindcss";
 
-:root {
+@theme {
   --color-yellow: #FEDA6A;
   --color-background-yellow: rgba(254, 218, 106, 0.4);
   --color-light-yellow: rgba(255, 238, 173, 1);
@@ -34,9 +34,14 @@ body {
 
 @layer base {
   body {
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
     color: var(--color-dark-black);
     font-size: 1.5rem;
+    line-height: 1.42857143;
     overflow-y: hidden;
+  }
+  #root, body > div:first-child {
+    background-color: var(--color-white);
   }
 }
 

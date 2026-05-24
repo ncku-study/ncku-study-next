@@ -31,7 +31,8 @@
     "major": "科系",
     "statistics": "統計資料",
     "allYears": "所有年份",
-    "error": "發生錯誤"
+    "error": "發生錯誤",
+    "viewStudy": "查看心得：{title}"
   },
   "post": {
     "title": "投稿",
@@ -73,7 +74,9 @@
     "selectAtLeastOne": "請至少選擇一個類別",
     "outMajPlaceholder": "e.g. 資訊系",
     "inMajPlaceholder": "e.g. 電機系",
-    "majorPlaceholder": "e.g. 資訊工程學系"
+    "majorPlaceholder": "e.g. 資訊工程學系",
+    "min10Chars": "請至少輸入 10 個字",
+    "selectType": "請選擇投稿類型"
   },
   "admin": {
     "login": {
@@ -182,7 +185,8 @@
     "yes": "是",
     "no": "否",
     "true": "是",
-    "false": "否"
+    "false": "否",
+    "toggleMenu": "切換選單"
   },
   "site": {
     "description": "NCKU 系所評價平台"
