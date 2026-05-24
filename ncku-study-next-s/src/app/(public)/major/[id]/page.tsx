@@ -23,7 +23,11 @@ function isPassDisplay(value: string): string {
 export default async function MajorDetailPage({ params }: Props) {
   const { id } = await params;
   const repo = await getCommentRepository();
-  const comment: CommentDTO | null = await repo.findById(parseInt(id, 10));
+  const [comment, allComments] = await Promise.all([
+    repo.findById(parseInt(id, 10)),
+    repo.findAll({}),
+  ]);
+  const backgroundInitialData = { data: allComments, total: allComments.length };
 
   if (!comment) {
     notFound();
@@ -42,14 +46,14 @@ export default async function MajorDetailPage({ params }: Props) {
     <>
       {/* Background: blurred MajorGrid */}
       <div className="fixed inset-0 overflow-auto blur-sm brightness-75 pointer-events-none select-none">
-        <MajorGrid />
+        <MajorGrid initialData={backgroundInitialData} />
       </div>
 
       {/* Backdrop — matches Vite Dialog.Backdrop */}
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
         {/* Popup — matches Vite Dialog.Popup / ReaderLayout */}
         <div
-          className="relative w-[600px] h-[700px] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] max-lg:w-[360px] max-lg:h-[65vh] max-lg:min-w-[95vw]"
+          className="relative w-[600px] h-[700px] max-h-[75vh] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] max-lg:w-[360px] max-lg:max-h-[65vh] max-lg:min-w-[95vw]"
           style={{ gridTemplateRows: '100%' }}
         >
           {/* Left ChangeBtn — invisible (no prev in SSR) */}
