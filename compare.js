@@ -10,7 +10,7 @@ async function comparePages() {
 
   const ctxNext = await browser.newContext(contextOptions);
   const nextPage = await ctxNext.newPage();
-  await nextPage.goto('http://localhost:3000/', { waitUntil: 'networkidle', timeout: 15000 });
+  await nextPage.goto('http://localhost:3000/major/119', { waitUntil: 'networkidle', timeout: 15000 });
   try { await nextPage.evaluate(() => document.fonts.ready); } catch (e) {}
   await nextPage.waitForTimeout(2500);
   const nextBuf = await nextPage.screenshot({ fullPage: false });
@@ -19,7 +19,7 @@ async function comparePages() {
 
   const ctxVite = await browser.newContext(contextOptions);
   const vitePage = await ctxVite.newPage();
-  await vitePage.goto('http://localhost:3100/', { waitUntil: 'networkidle', timeout: 15000 });
+  await vitePage.goto('http://localhost:3100/major?id=119', { waitUntil: 'networkidle', timeout: 15000 });
   try { await vitePage.evaluate(() => document.fonts.ready); } catch (e) {}
   await vitePage.waitForTimeout(2500);
   const viteBuf = await vitePage.screenshot({ fullPage: false });

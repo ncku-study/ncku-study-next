@@ -1,12 +1,23 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
 import { getCommentRepository } from '@/lib/repositories';
 import MajorGrid from '@/components/major/MajorGrid';
 import type { CommentDTO } from '@/types/api';
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+const colorMap: Record<string, { backgroundColor: string; color: string }> = {
+  轉系: { backgroundColor: 'rgba(254, 218, 106, 0.4)', color: 'rgba(225, 175, 19, 1)' },
+  輔系: { backgroundColor: 'rgba(29, 30, 34, 0.2)', color: 'rgba(29, 30, 34, 1)' },
+  雙主修: { backgroundColor: '#393F4D', color: '#FFFFFF' },
+};
+
+const defaultIconStyle = { backgroundColor: 'rgba(254, 218, 106, 0.4)', color: 'rgba(225, 175, 19, 1)' };
+
+function isPassDisplay(value: string): string {
+  if (value === 'false' || value === '未通過') return '未通過';
+  return '通過';
 }
 
 export default async function MajorDetailPage({ params }: Props) {
@@ -18,7 +29,14 @@ export default async function MajorDetailPage({ params }: Props) {
     notFound();
   }
 
-  const t = await getTranslations('major');
+  const iconStyle = colorMap[comment.category] ?? defaultIconStyle;
+
+  const tags = [
+    { type: '申請年度', value: String(comment.year) },
+    { type: '學年分數', value: String(comment.score) },
+    { type: '申請結果', value: comment.isPass },
+    { type: '排名(上/下)', value: `${comment.rank_1} / ${comment.rank_2}` },
+  ];
 
   return (
     <>
@@ -27,49 +45,69 @@ export default async function MajorDetailPage({ params }: Props) {
         <MajorGrid />
       </div>
 
-      {/* Backdrop overlay */}
-      <div className="fixed inset-0 bg-black/40 z-10" />
+      {/* Backdrop — matches Vite Dialog.Backdrop */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        {/* Popup — matches Vite Dialog.Popup / ReaderLayout */}
+        <div
+          className="relative w-[600px] h-[700px] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] max-lg:w-[360px] max-lg:h-[65vh] max-lg:min-w-[95vw]"
+          style={{ gridTemplateRows: '100%' }}
+        >
+          {/* Left ChangeBtn — invisible (no prev in SSR) */}
+          <div className="flex justify-center items-center invisible">
+            <div className="border-r-2 border-t-2 border-gray-500 h-[30px] w-[30px] border-l border-b border-l-transparent border-b-transparent inline-block rotate-[225deg]" />
+          </div>
 
-      {/* Modal */}
-      <div className="fixed inset-0 z-20 flex items-center justify-center p-4">
-        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
-          {/* Close button */}
-          <Link
-            href="/"
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl leading-none"
-            aria-label={t('close')}
-          >
-            ?
-          </Link>
+          {/* ReaderContent */}
+          <div className="w-full flex flex-col py-[20px] px-[5px]">
 
-          <h2 className="text-xl font-bold mb-4">{t('title')}</h2>
-
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <dt className="font-medium text-gray-600">{t('department')}</dt>
-            <dd>{comment.department}</dd>
-
-            <dt className="font-medium text-gray-600">{t('year')}</dt>
-            <dd>{comment.year}</dd>
-
-            <dt className="font-medium text-gray-600">{t('score')}</dt>
-            <dd>{comment.score}</dd>
-
-            <dt className="font-medium text-gray-600">{t('isPass')}</dt>
-            <dd>{comment.isPass === 'true' ? t('pass') : t('fail')}</dd>
-
-            <dt className="font-medium text-gray-600">{t('outMaj')}</dt>
-            <dd>{comment.out_maj}</dd>
-
-            <dt className="font-medium text-gray-600">{t('inMaj')}</dt>
-            <dd>{comment.in_maj}</dd>
-          </dl>
-
-          {comment.comment && (
-            <div className="mt-4">
-              <p className="font-medium text-gray-600 text-sm mb-1">{t('commentLabel')}</p>
-              <p className="text-sm whitespace-pre-wrap">{comment.comment}</p>
+            {/* TitleBar */}
+            <div className="flex items-center">
+              {/* TypeIconLarge: TypeIcon scaled 110% */}
+              <div
+                className="flex justify-center items-center font-semibold w-[42px] h-[42px] rounded-[42px] my-[10px] mx-auto scale-110"
+                style={iconStyle}
+              >
+                {comment.category?.[0] ?? '轉'}
+              </div>
+              {/* TitleLayout */}
+              <div className="ml-[10px] flex-1">
+                <h4 className="m-0 text-[1.9rem] mb-[5px]">{comment.in_maj}</h4>
+                <p className="text-[1.3rem] m-0" style={{ color: 'rgba(163,158,158,1)' }}>
+                  原主修: {comment.out_maj}
+                </p>
+              </div>
             </div>
-          )}
+
+            {/* DetailList */}
+            <div className="flex flex-wrap my-[20px] mx-0">
+              {tags.map(({ type, value }) => {
+                const isFailResult = type === '申請結果' && (value === 'false' || value === '未通過');
+                const displayValue = type === '申請結果' ? isPassDisplay(value) : value;
+                return (
+                  <div
+                    key={type}
+                    className="min-w-[75px] h-[50px] p-[5px] bg-white"
+                    style={{ color: isFailResult ? 'rgba(245,88,123,1)' : 'rgba(29,30,34,1)' }}
+                  >
+                    <div className="text-[1.4rem]">{type}</div>
+                    <div className="text-[1.7rem] font-bold">{displayValue}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* ReaderText */}
+            <div
+              className="leading-[2.8rem] tracking-[2.5px] overflow-y-auto break-anywhere text-justify whitespace-pre-line text-[17px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0"
+            >
+              {comment.comment}
+            </div>
+          </div>
+
+          {/* Right ChangeBtn — invisible (no next in SSR) */}
+          <div className="flex justify-center items-center invisible">
+            <div className="border-r-2 border-t-2 border-gray-500 h-[30px] w-[30px] border-l border-b border-l-transparent border-b-transparent inline-block rotate-45" />
+          </div>
         </div>
       </div>
     </>
