@@ -1,8 +1,4 @@
 import { auth } from './auth';
-import createMiddleware from 'next-intl/middleware';
-import { routing } from './i18n/routing';
-
-const intlMiddleware = createMiddleware(routing);
 
 export default auth(function proxy(request) {
   const { pathname } = request.nextUrl;
@@ -13,8 +9,6 @@ export default auth(function proxy(request) {
     const loginUrl = new URL('/admin/login', request.url);
     return Response.redirect(loginUrl);
   }
-
-  return intlMiddleware(request);
 }) as unknown as ReturnType<typeof auth>;
 
 export const config = {

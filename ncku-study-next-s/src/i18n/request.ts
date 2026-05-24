@@ -1,11 +1,7 @@
 import { getRequestConfig } from 'next-intl/server';
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  let locale = await requestLocale;
-
-  if (!locale || !['zh-TW'].includes(locale)) {
-    locale = 'zh-TW';
-  }
+export default getRequestConfig(async () => {
+  const locale = 'zh-TW';
 
   return {
     locale,
