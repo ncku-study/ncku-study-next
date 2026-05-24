@@ -53,7 +53,7 @@ export function Step2StudyForm() {
             <FormItem>
               <FormLabel>{t("major")}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. 資訊工程學系" />
+                <Input {...field} placeholder={t("majorPlaceholder")} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -68,7 +68,7 @@ export function Step2StudyForm() {
           <FormItem>
             <div className="mb-4">
               <FormLabel className="text-base">{t("category")}</FormLabel>
-              <FormDescription>Select at least one category</FormDescription>
+              <FormDescription>{t("selectAtLeastOne")}</FormDescription>
             </div>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {categories?.map((item) => (

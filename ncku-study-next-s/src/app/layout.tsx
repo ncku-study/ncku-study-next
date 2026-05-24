@@ -1,13 +1,16 @@
 ﻿import type { Metadata } from "next";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import QueryProvider from "@/providers/query-provider";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "NCKU Study",
-  description: "NCKU 系所評價平台",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('site');
+  return {
+    title: "NCKU Study",
+    description: t('description'),
+  };
+}
 
 export default async function RootLayout({
   children,

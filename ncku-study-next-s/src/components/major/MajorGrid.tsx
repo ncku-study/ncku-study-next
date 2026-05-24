@@ -46,8 +46,13 @@ export default function MajorGrid({ initialData }: MajorGridProps) {
       <MajorFilters filters={filters} onChange={setFilters} />
       
       {isLoading && (
-        <div className="flex justify-center items-center min-h-[200px]">
-          <span className="text-[var(--color-dark-gray)]">{tCommon('loading')}...</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 justify-items-center">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="w-[220px] h-[180px] rounded-lg bg-[var(--color-dark-white)] animate-pulse"
+            />
+          ))}
         </div>
       )}
       

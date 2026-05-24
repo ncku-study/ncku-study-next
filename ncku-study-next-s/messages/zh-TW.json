@@ -66,10 +66,23 @@
     "content": "內容",
     "year": "年度",
     "major": "科系",
-    "required": "此欄位必填"
+    "required": "此欄位必填",
+    "categoryTransfer": "轉系",
+    "categoryMinor": "輔系",
+    "categoryDouble": "雙主修",
+    "selectAtLeastOne": "請至少選擇一個類別",
+    "outMajPlaceholder": "e.g. 資訊系",
+    "inMajPlaceholder": "e.g. 電機系",
+    "majorPlaceholder": "e.g. 資訊工程學系"
   },
   "admin": {
-    "login": "登入",
+    "login": {
+      "title": "NCKU STUDY",
+      "email": "電子郵件",
+      "password": "密碼",
+      "submit": "登入",
+      "error": "登入失敗。請檢查輸入的帳號密碼是否正確。"
+    },
     "logout": "登出",
     "email": "電子郵件",
     "password": "密碼",
@@ -79,7 +92,80 @@
     "study": "讀書管理",
     "department": "科系管理",
     "announcement": "公告管理",
-    "post": "投稿審核"
+    "post": "投稿審核",
+    "studyPage": {
+      "title": "讀書心得管理",
+      "id": "編號",
+      "studyTitle": "標題",
+      "category": "類別",
+      "year": "年份",
+      "confirm": "審核狀態",
+      "confirmed": "已審核",
+      "unconfirmed": "未審核",
+      "actions": "操作",
+      "confirmAction": "審核",
+      "unconfirmAction": "取消審核",
+      "deleteAction": "刪除",
+      "deleteConfirm": "確定要刪除此筆資料嗎？",
+      "loadingError": "載入資料失敗"
+    },
+    "majorPage": {
+      "title": "系所評價管理",
+      "id": "編號",
+      "department": "科系",
+      "category": "類別",
+      "year": "年份",
+      "score": "成績",
+      "isPass": "是否錄取",
+      "confirm": "審核狀態",
+      "confirmed": "已審核",
+      "unconfirmed": "未審核",
+      "actions": "操作",
+      "confirmAction": "審核",
+      "unconfirmAction": "取消審核",
+      "deleteAction": "刪除",
+      "deleteConfirm": "確定要刪除此筆資料嗎？",
+      "loadingError": "載入資料失敗",
+      "pass": "錄取",
+      "fail": "未錄取"
+    },
+    "announcementPage": {
+      "title": "公告管理",
+      "id": "編號",
+      "msg": "訊息",
+      "isShow": "顯示狀態",
+      "createdAt": "建立時間",
+      "actions": "操作",
+      "deleteAction": "刪除",
+      "deleteConfirm": "確定要刪除此公告嗎？",
+      "loadingError": "載入資料失敗",
+      "addTitle": "新增公告",
+      "titleLabel": "標題",
+      "contentLabel": "內容",
+      "titlePlaceholder": "請輸入標題",
+      "contentPlaceholder": "請輸入公告內容",
+      "addSubmit": "新增",
+      "noData": "尚無公告"
+    },
+    "departmentPage": {
+      "title": "科系／學院／類別管理",
+      "departmentsTab": "科系",
+      "collegesTab": "學院",
+      "categoriesTab": "類別",
+      "id": "編號",
+      "name": "名稱",
+      "college": "所屬學院",
+      "actions": "操作",
+      "deleteAction": "刪除",
+      "deleteConfirm": "確定要刪除此筆資料嗎？",
+      "loadingError": "載入資料失敗",
+      "addDepartment": "新增科系",
+      "addCollege": "新增學院",
+      "addCategory": "新增類別",
+      "namePlaceholder": "請輸入名稱",
+      "addSubmit": "新增",
+      "noData": "尚無資料"
+    }
   },
   "common": {
     "submit": "送出",
@@ -97,5 +183,8 @@
     "no": "否",
     "true": "是",
     "false": "否"
+  },
+  "site": {
+    "description": "NCKU 系所評價平台"
   }
 }

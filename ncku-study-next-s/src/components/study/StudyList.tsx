@@ -7,7 +7,7 @@ import { apiFetch } from '@/lib/api-client';
 import type { StudyDTO } from '@/types/api';
 import { StudyCard } from './StudyCard';
 import { CategoryFilter } from './CategoryFilter';
-import { Loader2 } from 'lucide-react';
+
 
 export function StudyList() {
   const t = useTranslations('study');
@@ -59,12 +59,17 @@ export function StudyList() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-[160px] rounded-lg bg-[var(--color-dark-white)] animate-pulse"
+            />
+          ))}
         </div>
       ) : isError ? (
         <div className="text-center py-10 text-red-500">
-          {t('error') || '發生錯誤'}
+          {t('error')}
         </div>
       ) : studies.length === 0 ? (
         <div className="text-center py-20 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-200">

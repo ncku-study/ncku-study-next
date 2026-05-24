@@ -10,7 +10,8 @@
         "lint": "eslint src/",
         "format": "prettier --write src/",
         "migrate": "tsx scripts/migrate.ts",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "test:e2e": "playwright test"
     },
     "dependencies": {
         "@auth/core": "^0.34.3",
@@ -41,6 +42,7 @@
         "zod": "^4.4.3"
     },
     "devDependencies": {
+        "@playwright/test": "^1.60.0",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",

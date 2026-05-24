@@ -33,9 +33,9 @@ export function Step2MajorForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="轉系">轉系</SelectItem>
-                  <SelectItem value="輔系">輔系</SelectItem>
-                  <SelectItem value="雙主修">雙主修</SelectItem>
+                  <SelectItem value="轉系">{t("categoryTransfer")}</SelectItem>
+                  <SelectItem value="輔系">{t("categoryMinor")}</SelectItem>
+                  <SelectItem value="雙主修">{t("categoryDouble")}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -73,7 +73,7 @@ export function Step2MajorForm() {
             <FormItem>
               <FormLabel>{t("out_maj")}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. 資訊系" />
+                <Input {...field} placeholder={t("outMajPlaceholder")} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -86,7 +86,7 @@ export function Step2MajorForm() {
             <FormItem>
               <FormLabel>{t("in_maj")}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. 電機系" />
+                <Input {...field} placeholder={t("inMajPlaceholder")} />
               </FormControl>
               <FormMessage />
             </FormItem>
