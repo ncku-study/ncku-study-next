@@ -1,198 +1,137 @@
 import { useFormContext } from "react-hook-form";
-import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useEffect } from "react";
 
 export function Step2MajorForm() {
-  const t = useTranslations("post");
-  const { control } = useFormContext();
+  const { register, watch, setValue } = useFormContext();
+  const year = watch("year");
+  const category = watch("category");
+  const outMaj = watch("out_maj");
+  const inMaj = watch("in_maj");
+  const rank1 = watch("rank_1");
+  const rank2 = watch("rank_2");
+  const score = watch("score");
+  const isPass = watch("isPass");
+  const comment = watch("comment");
 
   const { data: departments } = useQuery({
     queryKey: ["departments"],
     queryFn: () => apiFetch<{ id: string; name: string }[]>("/departments"),
   });
 
+  useEffect(() => {
+    if (inMaj) {
+      setValue("department", inMaj, { shouldValidate: false });
+    }
+  }, [inMaj, setValue]);
+
+  const options = departments?.map((d) => d.name) ?? [];
+
+  const inputWrap = "relative w-full h-[60px]";
+  const label = "absolute left-0 pointer-events-none text-[1.2rem] font-normal text-[rgba(0,0,0,0.54)]";
+  const baseInput = "w-full h-[40px] border-b border-gray-400 bg-transparent outline-none text-[1.6rem]";
+  const remark = "text-[1.4rem] text-[var(--color-red)]";
+  const field = "mb-[20px]";
+
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField
-          control={control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("category")}</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("category")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="轉系">{t("categoryTransfer")}</SelectItem>
-                  <SelectItem value="輔系">{t("categoryMinor")}</SelectItem>
-                  <SelectItem value="雙主修">{t("categoryDouble")}</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="department"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("department")}</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("department")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {departments?.map((dept) => (
-                    <SelectItem key={dept.id} value={dept.id.toString()}>
-                      {dept.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="out_maj"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("out_maj")}</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder={t("outMajPlaceholder")} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="in_maj"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("in_maj")}</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder={t("inMajPlaceholder")} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="year"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("year")}</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="score"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("score")}</FormLabel>
-              <FormControl>
-                <Input type="number" step="0.1" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="rank_1"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("rank_1")}</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="e.g. 1/50" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="rank_2"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("rank_2")}</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="e.g. 1/50" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="isPass"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>{t("isPass")}</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-row space-x-4"
-                >
-                  <FormItem className="flex items-center space-x-2 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="true" />
-                    </FormControl>
-                    <FormLabel className="font-normal">{t("pass")}</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-2 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="false" />
-                    </FormControl>
-                    <FormLabel className="font-normal">{t("fail")}</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+    <div className="mx-auto w-[458px] max-[870px]:w-[80%] bg-white">
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: '-18px' }}>申請年度</label>
+          <select {...register("year")} value={year ?? ''} className={`${baseInput} appearance-none pr-6`}>
+            {Array.from({ length: 15 }).map((_, idx) => {
+              const y = 114 - idx;
+              return <option key={y} value={y}>{y}</option>;
+            })}
+          </select>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[0.65rem] text-gray-500">▾</span>
+        </div>
+        <div className={remark}>*例: 110年7月申請，就填寫110年。</div>
+      </div>
+
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: '-18px' }}>申請類別</label>
+          <select {...register("category")} value={category ?? ''} className={`${baseInput} appearance-none pr-6`}>
+            <option value="轉系">轉系</option>
+            <option value="輔系">輔系</option>
+            <option value="雙主修">雙主修</option>
+          </select>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[0.65rem] text-gray-500">▾</span>
+        </div>
+      </div>
+
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: '-18px' }}>原主修科系</label>
+          <select {...register("out_maj")} value={outMaj ?? ''} className={`${baseInput} appearance-none pr-6`}>
+            {options.map((name) => <option key={`out-${name}`} value={name}>{name}</option>)}
+          </select>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[0.65rem] text-gray-500">▾</span>
+        </div>
+        <div className={remark}>*如不想透漏，可以只填學院或其他。</div>
+      </div>
+
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: '-18px' }}>目標申請科系</label>
+          <select {...register("in_maj")} value={inMaj ?? ''} className={`${baseInput} appearance-none pr-6`}>
+            {options.map((name) => <option key={`in-${name}`} value={name}>{name}</option>)}
+          </select>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[0.65rem] text-gray-500">▾</span>
+        </div>
+      </div>
+
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: '-18px' }}>排名上</label>
+          <input {...register("rank_1")} value={rank1 ?? ''} className={baseInput} type="text" />
+        </div>
+      </div>
+
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: '-18px' }}>排名下</label>
+          <input {...register("rank_2")} value={rank2 ?? ''} className={baseInput} type="text" />
+        </div>
+        <div className={remark}>*如還不知道，可以留空白。</div>
+      </div>
+
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: '-18px' }}>學年分數</label>
+          <input {...register("score")} value={score ?? ''} className={baseInput} type="text" />
+        </div>
+      </div>
+
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: '-18px' }}>申請結果</label>
+          <select {...register("isPass")} value={isPass ?? ''} className={`${baseInput} appearance-none pr-6`}>
+            <option value="true">通過</option>
+            <option value="false">未通過</option>
+          </select>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[0.65rem] text-gray-500">▾</span>
+        </div>
+      </div>
+
+      <div className="mb-[30px] relative w-full">
+        <label
+          className="absolute left-0 pointer-events-none"
+          style={{ top: '-18px', fontSize: '1.2rem', fontWeight: 700, color: 'rgba(0,0,0,0.54)', backgroundColor: 'white' }}
+        >
+          心得
+        </label>
+        <textarea
+          {...register("comment")}
+          value={comment ?? ''}
+          className="w-full border border-gray-400 rounded bg-transparent outline-none text-[1.3rem] leading-[1.8rem] p-[10px] resize-none overflow-auto"
+          style={{ height: '250px' }}
         />
       </div>
 
-      <FormField
-        control={control}
-        name="comment"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("comment")}</FormLabel>
-            <FormControl>
-              <Textarea
-                {...field}
-                className="min-h-[150px]"
-                placeholder={t("typeMajorDesc")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <input type="hidden" {...register("department")} value={inMaj ?? ''} />
     </div>
   );
 }

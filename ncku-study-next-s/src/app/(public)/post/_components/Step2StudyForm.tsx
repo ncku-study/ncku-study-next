@@ -1,132 +1,85 @@
-import { useFormContext, Controller } from "react-hook-form";
-import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useMemo } from "react";
 
 export function Step2StudyForm() {
-  const t = useTranslations("post");
-  const { control } = useFormContext();
+  const { register, watch } = useFormContext();
+
+  const title = watch("title");
+  const major = watch("major");
+  const year = watch("year");
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: () => apiFetch<{ id: string; name: string }[]>("/categories"),
   });
 
-  return (
-    <div className="space-y-6">
-      <FormField
-        control={control}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("title")}</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+  const yearOptions = useMemo(
+    () =>
+      Array.from({ length: 15 }).map((_, idx) => {
+        const y = 114 - idx;
+        return { value: y, text: String(y) };
+      }),
+    []
+  );
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField
-          control={control}
-          name="year"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("year")}</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="major"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("major")}</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder={t("majorPlaceholder")} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+  const majorOptions = useMemo(
+    () => (categories ?? []).map((item) => ({ value: item.name, text: item.name })),
+    [categories]
+  );
+
+  const inputWrap = "relative w-full h-[60px]";
+  const label = "absolute left-0 pointer-events-none text-[1.375rem] font-normal text-[rgba(0,0,0,0.54)]";
+  const baseInput = "w-full h-[40px] border-b border-gray-400 bg-transparent outline-none text-[1.7rem]";
+  const field = "mb-[20px]";
+  const remark = "text-[var(--color-red)]";
+
+  return (
+    <div className="mx-auto w-[458px] max-[870px]:w-[80%] bg-white">
+      <p className="mb-[20px] text-[rgba(163,158,158,1)]">留下更多資訊給學弟妹吧!</p>
+
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: "-18px" }}>
+            心得標題
+          </label>
+          <input {...register("title")} value={title ?? ""} className={baseInput} />
+        </div>
       </div>
 
-      <FormField
-        control={control}
-        name="studyCategories"
-        render={() => (
-          <FormItem>
-            <div className="mb-4">
-              <FormLabel className="text-base">{t("category")}</FormLabel>
-              <FormDescription>{t("selectAtLeastOne")}</FormDescription>
-            </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {categories?.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={control}
-                  name="studyCategories"
-                  render={({ field }) => {
-                    return (
-                      <FormItem
-                        key={item.id}
-                        className="flex flex-row items-start space-x-3 space-y-0"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.id.toString())}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...(field.value || []), item.id.toString()])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value: string) => value !== item.id.toString()
-                                    )
-                                  )
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal cursor-pointer">
-                          {item.name}
-                        </FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: "-18px" }}>
+            原主修科系
+          </label>
+          <select {...register("major")} value={major ?? ""} className={`${baseInput} appearance-none pr-6`}>
+            {majorOptions.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.text}
+              </option>
+            ))}
+          </select>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[0.65rem] text-gray-500">▾</span>
+        </div>
+        <div className={remark}>*如不想透漏，可以只填學院或其他。</div>
+      </div>
 
-      <FormField
-        control={control}
-        name="content"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("content")}</FormLabel>
-            <FormControl>
-              <Textarea
-                {...field}
-                className="min-h-[200px]"
-                placeholder={t("typeStudyDesc")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className={field}>
+        <div className={inputWrap}>
+          <label className={label} style={{ top: "-18px" }}>
+            年份
+          </label>
+          <select {...register("year")} value={year ?? ""} className={`${baseInput} appearance-none pr-6`}>
+            {yearOptions.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.text}
+              </option>
+            ))}
+          </select>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[0.65rem] text-gray-500">▾</span>
+        </div>
+      </div>
     </div>
   );
 }

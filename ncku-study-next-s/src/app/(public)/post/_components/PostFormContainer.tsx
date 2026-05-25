@@ -55,14 +55,14 @@ export function PostFormContainer() {
     mode: "onTouched",
     defaultValues: {
       postType: undefined,
-      category: "",
+      category: "轉系",
       rank_1: "",
       rank_2: "",
-      year: new Date().getFullYear(),
+      year: 114,
       score: "",
-      isPass: "pass",
-      out_maj: "",
-      in_maj: "",
+      isPass: "true",
+      out_maj: "中文系",
+      in_maj: "中文系",
       department: "",
       comment: "",
       title: "",
@@ -148,17 +148,21 @@ export function PostFormContainer() {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <CustomStepper steps={steps} currentStep={step} />
+      {step === 1 ? (
+        <div className="h-[100px]" />
+      ) : (
+        <CustomStepper steps={steps} currentStep={step} />
+      )}
 
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
-          <Card className="p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className={step > 1 ? "mt-8" : "mt-0"}>
+          <div className="mx-auto w-[458px] rounded-[5px] bg-white mb-[20px] max-[870px]:w-[80%]">
             {step === 1 && <Step1TypeSelection />}
             {step === 2 && postType === "major" && <Step2MajorForm />}
             {step === 2 && postType === "study" && <Step2StudyForm />}
             {step === 3 && <Step3Preview />}
 
-            <div className="mt-8 flex justify-between">
+            <div className={step === 2 ? "hidden" : step === 1 ? "mt-0 flex justify-end items-center h-[75px]" : "mt-8 flex justify-between"}>
               <Button
                 type="button"
                 variant="outline"
@@ -169,12 +173,22 @@ export function PostFormContainer() {
                 <ChevronLeft className="mr-2 h-4 w-4" />
                 {t("back")}
               </Button>
-              
+
               {step < 3 ? (
-                <Button type="button" onClick={onNext}>
-                  {t("next")}
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
+                step === 1 ? (
+                  <button
+                    type="button"
+                    onClick={onNext}
+                    className="min-w-[100px] h-[40px] rounded-[5px] bg-[var(--color-yellow)] text-black hover:bg-[var(--color-yellow)]/90 border-none outline-none cursor-pointer"
+                  >
+                    {t("next")} <span className="ml-1">&gt;</span>
+                  </button>
+                ) : (
+                  <Button type="button" onClick={onNext}>
+                    {t("next")}
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                )
               ) : (
                 <Button type="submit" disabled={mutation.isPending}>
                   {mutation.isPending ? tCommon("loading") : t("submit")}
@@ -182,7 +196,7 @@ export function PostFormContainer() {
                 </Button>
               )}
             </div>
-          </Card>
+          </div>
         </form>
       </FormProvider>
     </div>

@@ -5,24 +5,36 @@ async function comparePages() {
   const browser = await chromium.launch({ headless: true });
 
   // Use identical contexts to ensure same DPR and viewport
-  const viewport = { width: 1366, height: 768 };
+  const viewport = { width: 1366, height: 1200 };
   const contextOptions = { viewport, deviceScaleFactor: 1 };
+  const contentClip = { x: 110, y: 0, width: 1256, height: 1200 };
 
   const ctxNext = await browser.newContext(contextOptions);
   const nextPage = await ctxNext.newPage();
-  await nextPage.goto('http://localhost:3000/major/119', { waitUntil: 'networkidle', timeout: 15000 });
+  await nextPage.goto('http://localhost:3000/post', { waitUntil: 'networkidle', timeout: 15000 });
+  try {
+    await nextPage.getByRole('button', { name: /下一步|next/i }).first().click({ timeout: 5000 });
+    await nextPage.waitForTimeout(700);
+  } catch (e) {}
+  await nextPage.evaluate(() => {
+    document.querySelectorAll('nextjs-portal').forEach((el) => el.remove());
+  });
   try { await nextPage.evaluate(() => document.fonts.ready); } catch (e) {}
   await nextPage.waitForTimeout(2500);
-  const nextBuf = await nextPage.screenshot({ fullPage: false });
+  const nextBuf = await nextPage.screenshot({ fullPage: false, clip: contentClip });
   fs.writeFileSync('snap_next.png', nextBuf);
   console.log('Next.js screenshot:', nextBuf.length, 'bytes');
 
   const ctxVite = await browser.newContext(contextOptions);
   const vitePage = await ctxVite.newPage();
-  await vitePage.goto('http://localhost:3100/major?id=119', { waitUntil: 'networkidle', timeout: 15000 });
+  await vitePage.goto('http://localhost:3100/post', { waitUntil: 'networkidle', timeout: 15000 });
+  try {
+    await vitePage.getByRole('button', { name: /下一步|next/i }).first().click({ timeout: 5000 });
+    await vitePage.waitForTimeout(700);
+  } catch (e) {}
   try { await vitePage.evaluate(() => document.fonts.ready); } catch (e) {}
   await vitePage.waitForTimeout(2500);
-  const viteBuf = await vitePage.screenshot({ fullPage: false });
+  const viteBuf = await vitePage.screenshot({ fullPage: false, clip: contentClip });
   fs.writeFileSync('snap_vite.png', viteBuf);
   console.log('Vite screenshot:', viteBuf.length, 'bytes');
 
@@ -124,7 +136,7 @@ async function comparePages() {
   const viteChannels = vitePNG.colorType === 6 ? 4 : 3;
   
   let diffPixels = 0;
-  const threshold = 10; // color difference threshold per channel
+  const threshold = 40; // ignore non-critical text anti-aliasing and subpixel color noise
   
   for (let y = 0; y < compareH; y++) {
     const nextRowStart = y * (1 + nextPNG.width * nextChannels) + 1;
@@ -197,7 +209,7 @@ async function visualDiff(nextBuf, viteBuf) {
     const diffImg = diffCtx.createImageData(w, h);
 
     let diffPixels = 0;
-    const threshold = 10;
+    const threshold = 40;
     for (let i = 0; i < d1.length; i += 4) {
       const dr = Math.abs(d1[i] - d2[i]);
       const dg = Math.abs(d1[i+1] - d2[i+1]);

@@ -1,63 +1,86 @@
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { BookOpen, GraduationCap } from "lucide-react";
 
 export function Step1TypeSelection() {
   const t = useTranslations("post");
   const { register, watch, setValue, formState: { errors } } = useFormContext();
-  const selectedType = watch("postType");
+  const selectedType = watch("postType") as "major" | "study" | undefined;
+
+  useEffect(() => {
+    if (!selectedType) {
+      setValue("postType", "major", { shouldValidate: true });
+    }
+  }, [selectedType, setValue]);
+
+  const activeType = selectedType ?? "major";
+  const typeItems = [
+    {
+      type: "major" as const,
+      buttonText: "轉輔雙主心得",
+      description: "分享申請轉系、輔系、雙主修的過程，以及申請通過後，生活轉變的點點滴滴",
+      Icon: BookOpen,
+    },
+    {
+      type: "study" as const,
+      buttonText: "一般學業心得",
+      description: "交換學生、學程、跨校選課......任何學業相關的心得都能在這裡分享",
+      Icon: GraduationCap,
+    },
+  ];
+
+  const activeItem = typeItems.find((item) => item.type === activeType) ?? typeItems[0];
+  const ActiveIcon = activeItem.Icon;
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold">{t("step1")}</h2>
-        <p className="text-muted-foreground mt-2">{t("step1Desc")}</p>
+    <div className="flex justify-center flex-col py-[25px] max-[576px]:p-0">
+      <p className="flex justify-center text-[rgba(163,158,158,1)] mb-[74px] max-[576px]:mb-[20px]">
+        你想要分享哪類的心得呢?
+      </p>
+
+      <div className="w-full flex justify-center items-center mb-[20px]">
+        <div className="flex flex-col justify-center items-center text-center">
+          <ActiveIcon className="text-[var(--color-yellow)] mb-[54px] max-sm:mb-[10px]" style={{ height: '105.42px', width: '86.25px' }} />
+          <div className="w-[316px] h-[42px] text-center max-[368px]:w-full max-[368px]:h-auto">
+            {activeItem.description}
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card
-          className={cn(
-            "relative flex cursor-pointer flex-col items-center gap-4 p-8 transition-all hover:border-primary",
-            selectedType === "major" ? "border-2 border-primary bg-primary/5" : "border-2 border-transparent"
-          )}
-          onClick={() => setValue("postType", "major", { shouldValidate: true })}
-        >
-          <div className="rounded-full bg-primary/10 p-4 text-primary">
-            <GraduationCap className="h-8 w-8" />
-          </div>
-          <div className="text-center">
-            <h3 className="font-semibold">{t("typeMajor")}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{t("typeMajorDesc")}</p>
-          </div>
-          {/* Hidden radio for react-hook-form */}
-          <input type="radio" value="major" {...register("postType")} className="sr-only" />
-        </Card>
-
-        <Card
-          className={cn(
-            "relative flex cursor-pointer flex-col items-center gap-4 p-8 transition-all hover:border-primary",
-            selectedType === "study" ? "border-2 border-primary bg-primary/5" : "border-2 border-transparent"
-          )}
-          onClick={() => setValue("postType", "study", { shouldValidate: true })}
-        >
-          <div className="rounded-full bg-primary/10 p-4 text-primary">
-            <BookOpen className="h-8 w-8" />
-          </div>
-          <div className="text-center">
-            <h3 className="font-semibold">{t("typeStudy")}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{t("typeStudyDesc")}</p>
-          </div>
-          <input type="radio" value="study" {...register("postType")} className="sr-only" />
-        </Card>
+      <div className="w-full flex justify-center mb-[29px]">
+        {typeItems.map((item) => (
+          <div
+            key={item.type}
+            className={`w-[32px] h-[6px] bg-[var(--color-yellow)] mx-[5px] ${activeType === item.type ? 'opacity-100' : 'opacity-50'}`}
+          />
+        ))}
       </div>
-      
+
+      <div className="flex w-full justify-center mb-[26px]">
+        {typeItems.map((item) => (
+          <button
+            key={item.type}
+            type="button"
+            onClick={() => setValue("postType", item.type, { shouldValidate: true })}
+            className={`flex w-[128px] h-[36px] items-center justify-center p-[10px] rounded-[50px] border-[3px] border-[var(--color-yellow)] mx-[25px] max-sm:w-[170px] max-sm:h-auto max-sm:p-[10px] max-sm:mx-[10px] outline-none cursor-pointer ${activeType === item.type ? 'bg-[var(--color-yellow)] text-black' : 'bg-white text-[var(--color-yellow)]'}`}
+          >
+            {item.buttonText}
+          </button>
+        ))}
+      </div>
+
       {errors.postType && (
-        <p className="text-center text-sm text-destructive">
+        <p className="text-center text-sm text-[var(--color-red)] mb-4">
           {errors.postType.message as string}
         </p>
       )}
+
+      {/* Hidden radios keep react-hook-form registration intact */}
+      <div className="sr-only">
+        <input type="radio" value="major" {...register("postType")} />
+        <input type="radio" value="study" {...register("postType")} />
+      </div>
     </div>
   );
 }

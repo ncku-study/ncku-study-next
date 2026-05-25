@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getCommentRepository } from '@/lib/repositories';
 import MajorGrid from '@/components/major/MajorGrid';
-import type { CommentDTO } from '@/types/api';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -44,10 +43,8 @@ export default async function MajorDetailPage({ params }: Props) {
 
   return (
     <>
-      {/* Background: blurred MajorGrid */}
-      <div className="fixed inset-0 overflow-auto blur-sm brightness-75 pointer-events-none select-none">
-        <MajorGrid initialData={backgroundInitialData} />
-      </div>
+      {/* Background content */}
+      <MajorGrid initialData={backgroundInitialData} />
 
       {/* Backdrop — matches Vite Dialog.Backdrop */}
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

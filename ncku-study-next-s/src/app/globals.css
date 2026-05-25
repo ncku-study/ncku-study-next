@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 @theme {
   --color-yellow: #FEDA6A;
@@ -30,16 +30,6 @@ html {
   }
 }
 
-body {
-  font-family: 'Noto Sans TC', sans-serif;
-}
-
-/* Improve font rendering parity across Chromium instances */
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 @layer base {
   body {
     font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
@@ -48,9 +38,11 @@ body {
     line-height: 1.42857143;
     overflow-y: hidden;
   }
+
   #root, body > div:first-child {
     background-color: var(--color-white);
   }
+
   h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0.5rem;
     font-family: inherit;
@@ -91,7 +83,7 @@ a {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -132,7 +124,7 @@ a {
     background-color: transparent;
     border: 0px solid;
   }
-  
+
   .overlay {
     position: fixed;
     top: 0;
