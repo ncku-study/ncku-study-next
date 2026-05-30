@@ -3,6 +3,13 @@ import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BookOpen, GraduationCap, FilePlus, MessageSquare } from "lucide-react";
+import {
+  Major as MajorLogo,
+  Study as StudyLogo,
+  Post as PostLogo,
+  Contact as ContactLogo,
+  Burger as BurgerLogo,
+} from "@/components/logos";
 import Link from "next/link";
 import { useSidebar, SidebarProvider } from "./SidebarContext";
 
@@ -19,10 +26,10 @@ export function SidebarDrawer() {
   }, [pathname, setIsOpen, setPendingHref]);
 
   const navLinks = [
-    { href: "/", activePaths: ["/", "/major"], label: t("major") || "轉系雙主修", Icon: BookOpen },
-    { href: "/study", activePaths: ["/study"], label: t("study") || "學業心得", Icon: GraduationCap },
-    { href: "/post", activePaths: ["/post"], label: t("post") || "我要分享", Icon: FilePlus },
-    { href: "https://forms.gle/qqrnLmhQoLyZ1BULA", activePaths: [], label: "聯絡我們", Icon: MessageSquare },
+    { href: "/", activePaths: ["/", "/major"], label: t("major") || "轉系雙主修", Icon: MajorLogo },
+    { href: "/study", activePaths: ["/study"], label: t("study") || "學業心得", Icon: StudyLogo },
+    { href: "/post", activePaths: ["/post"], label: t("post") || "我要分享", Icon: PostLogo },
+    { href: "https://forms.gle/qqrnLmhQoLyZ1BULA", activePaths: [], label: "聯絡我們", Icon: ContactLogo },
   ];
 
   return (

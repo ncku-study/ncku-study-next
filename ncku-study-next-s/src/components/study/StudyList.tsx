@@ -7,6 +7,7 @@ import { apiFetch } from '@/lib/api-client';
 import type { StudyDTO } from '@/types/api';
 import { StudyCard } from './StudyCard';
 import { StudyFilterPopup, type StudyFilterState } from './StudyFilterPopup';
+import { Search as SearchLogo } from '@/components/logos';
 
 export function StudyList() {
   const t = useTranslations('study');
@@ -29,14 +30,11 @@ export function StudyList() {
             readOnly
             value=""
           />
-          <svg
+          <SearchLogo
             className="pointer-events-none absolute right-[12px] top-1/2 -translate-y-1/2 w-[2.1875rem] h-[2.1875rem]"
-            viewBox="0 0 24 24"
             aria-hidden="true"
             style={{ fill: 'var(--color-yellow)' }}
-          >
-            <path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 14 15.5l.27.28v.79L20 21.5 21.5 20l-6-6zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z" />
-          </svg>
+          />
         </div>
       </section>
 
