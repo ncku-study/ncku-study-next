@@ -4,6 +4,12 @@ import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarDrawer, useSidebar } from "@/components/sidebar/SidebarDrawer";
 import { Menu } from "lucide-react";
 import NavigationSkeleton from "@/components/layout/NavigationSkeleton";
+import ModalSkeleton from "@/components/layout/ModalSkeleton";
+
+/** Returns true when the href is a detail modal route, e.g. /major/123 */
+function isModalRoute(href: string): boolean {
+  return /^\/major\/\d+/.test(href);
+}
 
 const pageTitles: Record<string, string> = {
   "/": "成大轉系/輔系/雙主修心得",
@@ -33,7 +39,9 @@ function NavContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { pendingHref } = useSidebar();
   const isNavigating = pendingHref !== null && pendingHref !== pathname;
-  const title = isNavigating ? getTitle(pendingHref) : getTitle(pathname);
+  const isModalNavigating = isNavigating && isModalRoute(pendingHref!);
+  const isPageNavigating = isNavigating && !isModalNavigating;
+  const title = isNavigating ? getTitle(pendingHref!) : getTitle(pathname);
 
   return (
     <div
@@ -42,8 +50,9 @@ function NavContent({ children }: { children: React.ReactNode }) {
       <header className="flex items-center justify-between h-[50px]">
         <h1 className="m-0 text-[1.7rem] font-medium w-full">{title}</h1>
       </header>
-      <div>
-        {isNavigating ? <NavigationSkeleton /> : children}
+      <div className="relative">
+        {isPageNavigating ? <NavigationSkeleton /> : children}
+        {isModalNavigating && <ModalSkeleton />}
       </div>
     </div>
   );

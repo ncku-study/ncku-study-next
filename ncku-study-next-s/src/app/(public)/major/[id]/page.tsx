@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import { getCommentRepository } from '@/lib/repositories';
 import MajorGrid from '@/components/major/MajorGrid';
+import ModalOverlay from '@/components/major/ModalOverlay';
+import { ModalPrevBtn, ModalNextBtn } from '@/components/major/ModalChangeBtns';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -22,11 +24,7 @@ function isPassDisplay(value: string): string {
 export default async function MajorDetailPage({ params }: Props) {
   const { id } = await params;
   const repo = await getCommentRepository();
-  const [comment, allComments] = await Promise.all([
-    repo.findById(parseInt(id, 10)),
-    repo.findAll({}),
-  ]);
-  const backgroundInitialData = { data: allComments, total: allComments.length };
+  const comment = await repo.findById(parseInt(id, 10));
 
   if (!comment) {
     notFound();
@@ -44,19 +42,17 @@ export default async function MajorDetailPage({ params }: Props) {
   return (
     <>
       {/* Background content */}
-      <MajorGrid initialData={backgroundInitialData} />
+      <MajorGrid />
 
-      {/* Backdrop — matches Vite Dialog.Backdrop */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      {/* Backdrop — closes modal on click */}
+      <ModalOverlay>
         {/* Popup — matches Vite Dialog.Popup / ReaderLayout */}
         <div
           className="relative w-[600px] h-[700px] max-h-[75vh] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] max-lg:w-[360px] max-lg:max-h-[65vh] max-lg:min-w-[95vw]"
           style={{ gridTemplateRows: '100%' }}
         >
-          {/* Left ChangeBtn — invisible (no prev in SSR) */}
-          <div className="flex justify-center items-center invisible">
-            <div className="border-r-2 border-t-2 border-gray-500 h-[30px] w-[30px] border-l border-b border-l-transparent border-b-transparent inline-block rotate-[225deg]" />
-          </div>
+          {/* Left ChangeBtn — invisible on SSR, shown after client hydration */}
+          <ModalPrevBtn currentId={parseInt(id, 10)} />
 
           {/* ReaderContent */}
           <div className="w-full flex flex-col py-[20px] px-[5px]">
@@ -105,12 +101,10 @@ export default async function MajorDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Right ChangeBtn — invisible (no next in SSR) */}
-          <div className="flex justify-center items-center invisible">
-            <div className="border-r-2 border-t-2 border-gray-500 h-[30px] w-[30px] border-l border-b border-l-transparent border-b-transparent inline-block rotate-45" />
-          </div>
+          {/* Right ChangeBtn — invisible on SSR, shown after client hydration */}
+          <ModalNextBtn currentId={parseInt(id, 10)} />
         </div>
-      </div>
+      </ModalOverlay>
     </>
   );
 }

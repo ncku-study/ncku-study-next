@@ -1,6 +1,8 @@
+"use client";
 import React, { useEffect, useReducer } from 'react';
 import Link from 'next/link';
 import { CommentDTO } from '@/types/api';
+import { useSidebar } from '@/components/sidebar/SidebarContext';
 
 const contentMiddleware = (content: string, maxNumber: number) =>
   content.length < maxNumber ? content : content.substr(0, maxNumber - 1) + '  (...)';
@@ -18,6 +20,7 @@ function reducer(state: number, action: { type: string }) {
 
 export function TransCard({ data }: { data: CommentDTO }) {
   const [wordsNumber, dispatch] = useReducer(reducer, 27);
+  const { setPendingHref } = useSidebar();
 
   useEffect(() => {
     function onResize() {
@@ -67,7 +70,7 @@ export function TransCard({ data }: { data: CommentDTO }) {
           <span className={`mr-[10px] text-[1.2rem] ${text}`}>{data.department}</span>
         </div>
       </div>
-      <Link href={`/major/${data.id}`} className="absolute top-0 left-0 w-full h-[75%] opacity-0">詳細內容</Link>
+      <Link href={`/major/${data.id}`} onClick={() => setPendingHref(`/major/${data.id}`)} className="absolute top-0 left-0 w-full h-[75%] opacity-0">詳細內容</Link>
     </div>
   );
 }
