@@ -3,18 +3,20 @@ import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BookOpen, GraduationCap, FilePlus, MessageSquare } from "lucide-react";
+import Link from "next/link";
 import { useSidebar, SidebarProvider } from "./SidebarContext";
 
 export { useSidebar, SidebarProvider };
 
 export function SidebarDrawer() {
-  const { isOpen, setIsOpen } = useSidebar();
+  const { isOpen, setIsOpen, pendingHref, setPendingHref } = useSidebar();
   const pathname = usePathname();
   const t = useTranslations("nav");
 
   useEffect(() => {
+    setPendingHref(null);
     setIsOpen(false);
-  }, [pathname, setIsOpen]);
+  }, [pathname, setIsOpen, setPendingHref]);
 
   const navLinks = [
     { href: "/", activePaths: ["/", "/major"], label: t("major") || "轉系雙主修", Icon: BookOpen },
@@ -39,16 +41,22 @@ export function SidebarDrawer() {
       >
         <nav className="flex w-full flex-col">
           {navLinks.map((link) => {
-            const isActive = link.activePaths.some(
-              (p) => pathname === p || (p !== "/" && pathname.startsWith(p + "/"))
-            );
+            const isActive = pendingHref
+              ? link.href === pendingHref
+              : link.activePaths.some(
+                  (p) => pathname === p || (p !== "/" && pathname.startsWith(p + "/"))
+                );
             const IconComponent = link.Icon;
+            const isExternal = link.href.startsWith("http");
+            const linkProps = isExternal
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {};
             return (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
-                target={link.href.startsWith("http") ? "_blank" : undefined}
-                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                {...linkProps}
+                onClick={() => { if (!isExternal) setPendingHref(link.href); }}
                 className="flex flex-col items-center justify-center h-[80px] w-full cursor-pointer"
               >
                 <div
@@ -62,7 +70,7 @@ export function SidebarDrawer() {
                   <IconComponent style={{ width: "1.9rem", height: "1.9rem" }} />
                 </div>
                 <span className="text-[1.4rem] font-medium text-[#333333]">{link.label}</span>
-              </a>
+              </Link>
             );
           })}
         </nav>

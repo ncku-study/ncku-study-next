@@ -3,6 +3,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarDrawer, useSidebar } from "@/components/sidebar/SidebarDrawer";
 import { Menu } from "lucide-react";
+import NavigationSkeleton from "@/components/layout/NavigationSkeleton";
 
 const pageTitles: Record<string, string> = {
   "/": "成大轉系/輔系/雙主修心得",
@@ -28,24 +29,32 @@ function HamburgerButton() {
   );
 }
 
-export default function NavLayout({ children }: { children: React.ReactNode }) {
+function NavContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const title = getTitle(pathname);
+  const { pendingHref } = useSidebar();
+  const isNavigating = pendingHref !== null && pendingHref !== pathname;
+  const title = isNavigating ? getTitle(pendingHref) : getTitle(pathname);
 
+  return (
+    <div
+      className="box-border grid grid-cols-auto grid-rows-[50px_auto] w-full h-screen py-[20px] px-[30px] bg-white overflow-y-auto max-lg:grid-rows-[50px_auto] max-sm:p-[10px] max-sm:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0"
+    >
+      <header className="flex items-center justify-between h-[50px]">
+        <h1 className="m-0 text-[1.7rem] font-medium w-full">{title}</h1>
+      </header>
+      <div>
+        {isNavigating ? <NavigationSkeleton /> : children}
+      </div>
+    </div>
+  );
+}
+
+export default function NavLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <div className="md:grid md:grid-cols-[110px_1fr] flex flex-col h-screen overflow-hidden bg-[var(--color-dark-white)]">
         <SidebarDrawer />
-        <div
-          className="box-border grid grid-cols-auto grid-rows-[50px_auto] w-full h-screen py-[20px] px-[30px] bg-white overflow-y-auto max-lg:grid-rows-[50px_auto] max-sm:p-[10px] max-sm:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0"
-        >
-          <header className="flex items-center justify-between h-[50px]">
-            <h1 className="m-0 text-[1.7rem] font-medium w-full">{title}</h1>
-          </header>
-          <div className="overflow-hidden h-full">
-            {children}
-          </div>
-        </div>
+        <NavContent>{children}</NavContent>
       </div>
     </SidebarProvider>
   );

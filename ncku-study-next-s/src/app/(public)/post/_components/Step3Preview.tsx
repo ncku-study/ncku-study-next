@@ -1,93 +1,110 @@
 import { useFormContext } from "react-hook-form";
-import { useTranslations } from "next-intl";
+
+const colorMap: Record<string, { color: string; backgroundColor: string }> = {
+  "轉系": { color: "rgba(225, 175, 19, 1)", backgroundColor: "rgba(254, 218, 106, 0.4)" },
+  "輔系": { color: "rgba(29, 30, 34, 1)", backgroundColor: "rgba(29, 30, 34, 0.2)" },
+  "雙主修": { color: "#FFFFFF", backgroundColor: "#393F4D" },
+};
 
 export function Step3Preview() {
-  const t = useTranslations("post");
   const { getValues } = useFormContext();
   const values = getValues();
   const isMajor = values.postType === "major";
 
-  return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold">{t("preview")}</h2>
-        <p className="mt-2 text-muted-foreground">{t("previewDesc")}</p>
-      </div>
+  if (isMajor) {
+    const category: string = values.category ?? "轉系";
+    const inMaj: string = values.in_maj ?? "";
+    const outMaj: string = values.out_maj ?? "";
+    const year: string | number = values.year ?? "";
+    const rank1: string = values.rank_1 ?? "";
+    const rank2: string = values.rank_2 ?? "";
+    const score: string | number = values.score ?? "";
+    const isPass: string = values.isPass;
+    const comment: string = values.comment ?? "";
 
-      <div className="rounded-lg border bg-muted/20 p-6">
-        {isMajor ? (
-          <dl className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("category")}</dt>
-              <dd className="mt-1">{values.category}</dd>
+    const typeColors = colorMap[category] ?? colorMap["轉系"];
+    const isPassText = isPass === "true" ? "通過" : "未通過";
+
+    const details = [
+      { type: "申請年度", value: String(year) },
+      { type: "排名上", value: String(rank1) },
+      { type: "排名下", value: String(rank2) },
+      { type: "學年分數", value: String(score) },
+      { type: "申請結果", value: isPassText },
+    ];
+
+    return (
+      // Match Vite's ReaderLayout: w-[600px] h-[700px] max-h-[75vh] p-[5px] bg-white grid grid-cols-[50px_auto_50px]
+      <div className="relative w-[600px] h-[700px] max-h-[75vh] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] grid-rows-[100%]">
+        <div className="invisible" />
+        {/* ReaderContent */}
+        <div className="w-full flex flex-col py-[20px] px-[5px] overflow-y-auto">
+          {/* TitleBar */}
+          <div className="flex items-center">
+            <div
+              className="flex justify-center items-center font-semibold w-[42px] h-[42px] rounded-[42px] m-0 scale-110"
+              style={{ backgroundColor: typeColors.backgroundColor, color: typeColors.color }}
+            >
+              {category[0]}
             </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("department")}</dt>
-              <dd className="mt-1">{values.department}</dd>
+            <div className="ml-[10px] flex-1">
+              <h4 className="m-0 text-[1.9rem] mb-[5px]">{inMaj}</h4>
+              <p className="text-[1.3rem] m-0 text-[rgba(163,158,158,1)]">{outMaj}</p>
             </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("out_maj")}</dt>
-              <dd className="mt-1">{values.out_maj}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("in_maj")}</dt>
-              <dd className="mt-1">{values.in_maj}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("year")}</dt>
-              <dd className="mt-1">{values.year}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("score")}</dt>
-              <dd className="mt-1">{values.score}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("rank_1")}</dt>
-              <dd className="mt-1">{values.rank_1}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("rank_2")}</dt>
-              <dd className="mt-1">{values.rank_2}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("isPass")}</dt>
-              <dd className="mt-1">{values.isPass === "true" ? t("pass") : t("fail")}</dd>
-            </div>
-            <div className="sm:col-span-2">
-              <dt className="text-sm font-medium text-muted-foreground">{t("comment")}</dt>
-              <dd className="mt-1 whitespace-pre-wrap rounded-md bg-background p-4">{values.comment}</dd>
-            </div>
-          </dl>
-        ) : (
-          <dl className="grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <dt className="text-sm font-medium text-muted-foreground">{t("title")}</dt>
-              <dd className="mt-1 text-lg font-semibold">{values.title}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("year")}</dt>
-              <dd className="mt-1">{values.year}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">{t("major")}</dt>
-              <dd className="mt-1">{values.major}</dd>
-            </div>
-            <div className="sm:col-span-2">
-              <dt className="text-sm font-medium text-muted-foreground">{t("category")}</dt>
-              <dd className="mt-1 flex flex-wrap gap-2">
-                {values.studyCategories?.map((cat: string) => (
-                  <span key={cat} className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
-                    {cat}
-                  </span>
-                ))}
-              </dd>
-            </div>
-            <div className="sm:col-span-2">
-              <dt className="text-sm font-medium text-muted-foreground">{t("content")}</dt>
-              <dd className="mt-1 whitespace-pre-wrap rounded-md bg-background p-4">{values.content}</dd>
-            </div>
-          </dl>
-        )}
+          </div>
+          {/* DetailList */}
+          <div className="flex flex-wrap my-[20px]">
+            {details.map(({ type, value }) => (
+              <div
+                key={type}
+                className="min-w-[75px] h-[50px] p-[5px] bg-white"
+                style={{ color: type === "申請結果" && value === "未通過" ? "rgba(245,88,123,1)" : "black" }}
+              >
+                <div className="text-[1.4rem]">{type}</div>
+                <div className="text-[1.7rem] font-bold">{value}</div>
+              </div>
+            ))}
+          </div>
+          {/* ReaderText */}
+          <div
+            className="leading-[2.8rem] tracking-[2.5px] overflow-y-auto text-justify whitespace-pre-line text-[17px]"
+            style={{ wordBreak: "break-all" }}
+          >
+            {comment}
+          </div>
+        </div>
+        <div className="invisible" />
+      </div>
+    );
+  }
+
+  // Study type — match Vite's Reader for study
+  const title: string = values.title ?? "";
+  const year: string | number = values.year ?? "";
+  const major: string = values.major ?? "";
+  const content: string = values.content ?? "";
+
+  return (
+    <div className="relative w-[600px] h-[700px] max-h-[75vh] p-[5px] bg-white text-black overflow-y-auto">
+      <div className="w-full flex flex-col py-[20px] px-[5px]">
+        <div className="flex items-center">
+          <div className="ml-[10px] flex-1">
+            <h4 className="m-0 text-[1.9rem] mb-[5px]">{title}</h4>
+            <p className="text-[1.3rem] m-0 text-[rgba(163,158,158,1)]">{major}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap my-[20px]">
+          <div className="min-w-[75px] h-[50px] p-[5px] bg-white">
+            <div className="text-[1.4rem]">申請年度</div>
+            <div className="text-[1.7rem] font-bold">{String(year)}</div>
+          </div>
+        </div>
+        <div
+          className="leading-[2.8rem] tracking-[2.5px] overflow-y-auto text-justify whitespace-pre-line text-[17px]"
+          style={{ wordBreak: "break-all" }}
+        >
+          {content}
+        </div>
       </div>
     </div>
   );

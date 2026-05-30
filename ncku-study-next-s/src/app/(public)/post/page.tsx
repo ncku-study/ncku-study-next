@@ -10,7 +10,7 @@ export async function generateMetadata() {
 
 export default function PostPage() {
   return (
-    <div className="container mx-auto py-12">
+    <div className="pb-[25px]">
       <PostFormContainer />
     </div>
   );
