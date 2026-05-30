@@ -38,11 +38,58 @@ export const Search: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
+export const BarChart: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z"></path>
+  </svg>
+);
+
+export const ProgressArc: React.FC<{
+  value: number | null;
+  size?: number;
+  strokeColor?: string;
+  trailColor?: string;
+  strokeWidth?: number;
+  trailWidth?: number;
+}> = ({ value, size = 70, strokeColor = '#FEDA6A', trailColor = 'rgba(163, 158, 158, 1)', strokeWidth = 4, trailWidth = 1 }) => {
+  const circumference = 301.593; // 2 * PI * 48
+  const percent = value === null ? 100 : Math.min(100, Math.round(value * 100) / 100);
+  const dash = (percent / 100) * circumference;
+  const arcPath = 'M 50,50 m 0,-48\n   a 48,48 0 1 1 0,96\n   a 48,48 0 1 1 0,-96';
+
+  return (
+    <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true">
+      <path
+        d={arcPath}
+        stroke={trailColor}
+        strokeLinecap="round"
+        strokeWidth={trailWidth}
+        fillOpacity="0"
+        style={{ strokeDasharray: `${circumference}px, ${circumference}px`, strokeDashoffset: '0px' }}
+      />
+      <path
+        d={arcPath}
+        stroke={strokeColor}
+        strokeLinecap="round"
+        strokeWidth={strokeWidth}
+        fillOpacity="0"
+        style={{
+          strokeDasharray: `${dash}px, ${circumference}px`,
+          strokeDashoffset: '0px',
+          transition: 'stroke-dasharray 0.3s, stroke 0.3s',
+        }}
+      />
+    </svg>
+  );
+};
+
 export default {
+  BarChart,
   Burger,
   Major,
   Study,
   Post,
   Contact,
   Search,
+  ProgressArc,
 };

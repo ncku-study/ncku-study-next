@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { ProgressArc } from '@/components/logos';
 import type { CommentDTO } from '@/types/api';
 
 interface ProgressCircleProps {
@@ -21,30 +22,7 @@ function ProgressCircle({ value, name }: ProgressCircleProps) {
   return (
     <div className="relative w-[115px] flex justify-items-center items-center flex-col">
       <div style={{ position: 'relative', width: '70px', margin: '0 11.25px' }}>
-        <svg viewBox="0 0 100 100" width="70" height="70">
-          {/* Trail - thin, same as rc-progress */}
-          <path
-            d={arcPath}
-            stroke="rgba(163, 158, 158, 1)"
-            strokeLinecap="round"
-            strokeWidth="1"
-            fillOpacity="0"
-            style={{ strokeDasharray: `${circumference}px, ${circumference}px`, strokeDashoffset: '0px' }}
-          />
-          {/* Progress */}
-          <path
-            d={arcPath}
-            stroke="#FEDA6A"
-            strokeLinecap="round"
-            strokeWidth="4"
-            fillOpacity="0"
-            style={{
-              strokeDasharray: `${dash}px, ${circumference}px`,
-              strokeDashoffset: '0px',
-              transition: 'stroke-dasharray 0.3s, stroke 0.3s',
-            }}
-          />
-        </svg>
+        <ProgressArc value={value} size={70} />
         <span className="absolute text-[1.9rem] flex w-full justify-center text-dark-black" style={{ top: '21px', left: 0 }}>
           {displayValue}
         </span>

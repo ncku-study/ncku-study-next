@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { BarChart2, X } from "lucide-react";
+import { X } from "lucide-react";
+import { BarChart as BarChartLogo } from "@/components/logos";
 
 interface StatisticControlProps {
   children: React.ReactNode;
@@ -18,13 +19,13 @@ export default function StatisticControl({ children }: StatisticControlProps) {
       </div>
 
       {/* Mobile float button — fixed bottom-right, hidden on desktop */}
-      <button
-        className="min-[577px]:hidden fixed bottom-[40px] right-[20px] z-40 w-[50px] h-[50px] rounded-full bg-white shadow-[0px_0px_4px_rgba(0,0,0,0.25)] flex items-center justify-center text-yellow cursor-pointer border-none"
-        onClick={() => setOpen(true)}
-        aria-label="統計數據"
-      >
-        <BarChart2 style={{ width: "3rem", height: "3rem" }} />
-      </button>
+        <button
+          className="min-[577px]:hidden fixed bottom-[40px] right-[20px] z-40 w-[50px] h-[50px] rounded-full bg-white shadow-[0px_0px_4px_rgba(0,0,0,0.25)] flex items-center justify-center text-yellow cursor-pointer border-none"
+          onClick={() => setOpen(true)}
+          aria-label="統計數據"
+        >
+          <BarChartLogo style={{ width: "3rem", height: "3rem" }} />
+        </button>
 
       {/* Mobile modal */}
       {open && (

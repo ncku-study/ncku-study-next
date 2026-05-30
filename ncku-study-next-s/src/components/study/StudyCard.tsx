@@ -18,7 +18,10 @@ export function StudyCard({ study }: StudyCardProps) {
   const contentPreview = contentMiddleware(study.content, 36);
 
   return (
-    <div className={`relative h-[160px] border-b border-black/12.5 border-l-0 box-border max-sm:w-full max-sm:m-0 max-sm:rounded-none max-sm:h-[145px] ${isConfirmed ? 'bg-white' : 'bg-[var(--color-light-yellow)]'}`}>
+    <div
+      data-testid="study-card"
+      className={`study-card relative h-[160px] border-b border-black/12.5 border-l-0 box-border max-sm:w-full max-sm:m-0 max-sm:rounded-none max-sm:h-[145px] ${isConfirmed ? 'bg-white' : 'bg-[var(--color-light-yellow)]'}`}
+    >
       <Link href={`/study/${study.id}`} className="absolute top-0 left-0 w-full h-[75%] opacity-0 border-none outline-none z-10" aria-label={t('viewStudy', { title: study.title })}>
         <span className="sr-only">{study.title}</span>
       </Link>

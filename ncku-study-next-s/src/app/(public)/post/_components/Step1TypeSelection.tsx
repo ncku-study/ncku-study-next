@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { BookOpen, GraduationCap } from "lucide-react";
+import { Major as MajorLogo, Study as StudyLogo } from "@/components/logos";
 
 export function Step1TypeSelection() {
   const t = useTranslations("post");
@@ -31,7 +32,7 @@ export function Step1TypeSelection() {
   ];
 
   const activeItem = typeItems.find((item) => item.type === activeType) ?? typeItems[0];
-  const ActiveIcon = activeItem.Icon;
+  const ActiveIcon = activeItem.Icon === BookOpen ? MajorLogo : StudyLogo;
 
   return (
     <div className="flex justify-center flex-col py-[25px] max-[576px]:p-0">
