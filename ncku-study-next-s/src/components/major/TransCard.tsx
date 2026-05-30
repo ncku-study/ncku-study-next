@@ -38,17 +38,17 @@ export function TransCard({ data }: { data: CommentDTO }) {
   const getCategoryStyles = (category: string | undefined) => {
     switch (category) {
       case '轉系':
-        return { bg: 'bg-background-yellow', text: 'text-dark-yellow' };
+        return { bg: 'bg-background-yellow', text: 'text-dark-yellow', metaText: 'text-dark-yellow' };
       case '輔系':
-        return { bg: 'bg-[rgba(29,30,34,0.2)]', text: 'text-dark-black' };
+        return { bg: 'bg-[rgba(29,30,34,0.2)]', text: 'text-dark-black', metaText: 'text-dark-black' };
       case '雙主修':
       default:
-        return { bg: 'bg-[var(--color-light-black)]', text: 'text-white' };
+        return { bg: 'bg-[var(--color-light-black)]', text: 'text-white', metaText: 'text-[var(--color-light-black)]' };
     }
   };
 
   const cls = (data.confirm === 'false' ? 'bg-lightYellow' : 'bg-white');
-  const { bg, text } = getCategoryStyles(data.category);
+  const { bg, text, metaText } = getCategoryStyles(data.category);
 
   return (
     <div className={`relative border border-black/12.5 p-[5px] text-black rounded-[15px] h-[180px] w-[220px] box-border max-sm:border-x-0 max-sm:border-t-0 max-sm:w-full max-sm:m-0 max-sm:rounded-none max-sm:h-[145px] ${cls}`}>
@@ -65,9 +65,9 @@ export function TransCard({ data }: { data: CommentDTO }) {
             {preview}
           </p>
         </div>
-        <div className={`flex items-center justify-center text-[1.2rem] [grid-area:year] ${text}`}>{data.year}</div>
+        <div className={`flex items-center justify-center text-[1.2rem] [grid-area:year] ${metaText}`}>{data.year}</div>
         <div className="flex items-center [grid-area:tags]">
-          <span className={`mr-[10px] text-[1.2rem] ${text}`}>{data.department}</span>
+          <span className={`mr-[10px] text-[1.2rem] ${metaText}`}>{data.department}</span>
         </div>
       </div>
       <Link href={`/major/${data.id}`} onClick={() => setPendingHref(`/major/${data.id}`)} className="absolute top-0 left-0 w-full h-[75%] opacity-0">詳細內容</Link>
