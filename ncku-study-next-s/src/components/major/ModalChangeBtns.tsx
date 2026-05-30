@@ -6,11 +6,11 @@ import { apiFetch } from "@/lib/api-client";
 import { CommentDTO, PaginatedResponse } from "@/types/api";
 import { useSidebar } from "@/components/sidebar/SidebarContext";
 
-const QUERY_KEY = ["comments", { college: "", department: "", year: "", category: "" }];
+import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
 
 function useModalNav(currentId: number) {
   const { data } = useQuery({
-    queryKey: QUERY_KEY,
+    queryKey: ALL_COMMENTS_QUERY_KEY,
     queryFn: () => apiFetch<PaginatedResponse<CommentDTO>>("/comments"),
     staleTime: 5 * 60 * 1000,
   });

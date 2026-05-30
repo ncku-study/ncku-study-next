@@ -1,18 +1,16 @@
-import { getCommentRepository } from '@/lib/repositories';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/query-client';
+import { prefetchAllComments } from '@/lib/prefetch-comments';
 import MajorGrid from '@/components/major/MajorGrid';
 
 export default async function MajorPage() {
-  const commentRepo = await getCommentRepository();
-  const comments = await commentRepo.findAll({});
-
-  const initialData = {
-    data: comments,
-    total: comments.length,
-  };
+  const queryClient = getQueryClient();
+  await prefetchAllComments(queryClient);
 
   return (
-    <>
-      <MajorGrid initialData={initialData} />
-    </>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <MajorGrid />
+    </HydrationBoundary>
   );
 }
+
