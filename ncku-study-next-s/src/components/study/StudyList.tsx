@@ -7,7 +7,6 @@ import { apiFetch } from '@/lib/api-client';
 import type { StudyDTO } from '@/types/api';
 import { StudyCard } from './StudyCard';
 import { StudyFilterPopup, type StudyFilterState } from './StudyFilterPopup';
-import { Search as SearchLogo } from '@/components/logos';
 
 export function StudyList() {
   const t = useTranslations('study');
@@ -22,27 +21,13 @@ export function StudyList() {
 
   return (
     <div className="grid grid-cols-[600px_auto] overflow-y-hidden grid-rows-[50px_auto] max-[576px]:grid-cols-[100vw] max-[576px]:-mx-[10px]">
-      <section className="row-start-1 col-start-1 col-end-2 flex items-center w-fit h-[50px] mb-[10px]">
-        <div className="relative w-[550px] mt-[18px] max-sm:w-[90vw]">
-          <input
-            className="w-full h-[45px] rounded-[55px] border border-black/5 bg-transparent py-[10px] px-[15px] text-[1.5rem] outline-none"
-            aria-label="search"
-            readOnly
-            value=""
-          />
-          <SearchLogo
-            className="pointer-events-none absolute right-[12px] top-1/2 -translate-y-1/2 w-[2.1875rem] h-[2.1875rem]"
-            aria-hidden="true"
-            style={{ fill: 'var(--color-yellow)' }}
-          />
+      <section className="flex items-center flex-wrap px-[5px] w-fit h-[50px] mb-[10px] row-start-1 col-start-1 col-end-2">
+        <div className="relative m-[8px] min-w-[120px]">
+          <StudyFilterPopup filter={filter} onFilterChange={setFilter} />
         </div>
       </section>
 
-      <section className="col-start-1 col-end-2 row-start-2 row-end-3 max-w-[600px]">
-        <div className="relative m-[8px] mt-[28px] mb-[8px] ml-[13px] w-[109px]">
-          <StudyFilterPopup filter={filter} onFilterChange={setFilter} />
-        </div>
-
+      <section className="col-start-1 col-end-2 row-start-2 row-end-3 max-[576px]:overflow-y-auto">
         {isLoading ? (
           <div className="grid grid-cols-1 gap-0">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -61,7 +46,7 @@ export function StudyList() {
             {t('noResults')}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-0 w-[590px] max-sm:w-full">
+          <div className="grid grid-cols-1 gap-0 w-[590px] max-sm:w-auto max-sm:mx-[10px]">
             {studies.map((study) => (
               <StudyCard key={study.id} study={study} />
             ))}

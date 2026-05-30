@@ -63,7 +63,7 @@ export function SidebarDrawer() {
                 key={link.href}
                 href={link.href}
                 {...linkProps}
-                onClick={() => { if (!isExternal) setPendingHref(link.href); }}
+                onClick={() => { if (!isExternal) { setPendingHref(link.href); setIsOpen(false); } }}
                 className="flex flex-col items-center justify-center h-[80px] w-full cursor-pointer"
               >
                 <div

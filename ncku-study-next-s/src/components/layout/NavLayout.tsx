@@ -2,7 +2,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarDrawer, useSidebar } from "@/components/sidebar/SidebarDrawer";
-import { Menu } from "lucide-react";
+import { Search as SearchIcon } from "@/components/logos";
 import NavigationSkeleton from "@/components/layout/NavigationSkeleton";
 import ModalSkeleton from "@/components/layout/ModalSkeleton";
 
@@ -29,8 +29,17 @@ function getTitle(pathname: string): string {
 function HamburgerButton() {
   const { toggle } = useSidebar();
   return (
-    <button className="md:hidden p-2 mr-2" onClick={toggle} aria-label="選單">
-      <Menu size={30} color="rgba(29, 30, 34, 1)" />
+    <button className="md:hidden cursor-pointer border-0 bg-transparent p-0 mr-0 leading-none" onClick={toggle} aria-label="選單">
+      <svg
+        focusable="false"
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        width={30}
+        height={30}
+        fill="rgba(29, 30, 34, 1)"
+      >
+        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+      </svg>
     </button>
   );
 }
@@ -42,16 +51,37 @@ function NavContent({ children }: { children: React.ReactNode }) {
   const isModalNavigating = isNavigating && isModalRoute(pendingHref!);
   const isPageNavigating = isNavigating && !isModalNavigating;
   const title = isNavigating ? getTitle(pendingHref!) : getTitle(pathname);
+  const isShowSearch = pathname === '/study';
 
   return (
     <div
-      className="box-border grid grid-cols-auto grid-rows-[50px_1fr] w-full h-screen py-[20px] px-[30px] bg-white overflow-hidden max-lg:grid-rows-[50px_1fr] max-sm:p-[10px] max-sm:pb-0"
+      className={`box-border grid grid-cols-auto w-full h-screen py-[20px] px-[30px] bg-white overflow-y-auto max-lg:grid-rows-[50px_auto] max-sm:p-[10px] max-sm:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0 ${isShowSearch ? 'grid-rows-[120px_auto]' : 'grid-rows-[50px_auto]'}`}
     >
-      <header className="flex items-center h-[50px]">
+      <header className="w-full flex flex-wrap items-center h-[50px]">
         <HamburgerButton />
-        <h1 className="m-0 text-[1.7rem] font-medium w-full">{title}</h1>
+        <h1 className="m-0 text-[1.7rem] font-medium w-full max-lg:w-auto max-lg:pl-[20px]">{title}</h1>
+        {isShowSearch && (
+          <form
+            className="relative flex items-center w-[550px] h-[45px] max-lg:grow max-lg:w-1/2 max-lg:h-[35px] max-lg:pl-[25px] max-sm:w-[30%] max-sm:h-[35px] max-sm:pl-[25px]"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <input
+              className="w-full h-full py-[10px] px-[15px] box-border border border-black/5 rounded-[55px] focus-visible:outline focus-visible:outline-1 focus-visible:outline-black/50 max-sm:h-[35px] text-[1.5rem] outline-none"
+              aria-label="search"
+            />
+            <button
+              type="submit"
+              className="inline-flex absolute right-[12px] cursor-pointer p-0 border-0 bg-white"
+            >
+              <SearchIcon
+                style={{ fill: 'var(--color-yellow)', width: '2.1875rem', height: '2.1875rem' }}
+                aria-hidden="true"
+              />
+            </button>
+          </form>
+        )}
       </header>
-      <div className="h-full overflow-y-auto relative [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-track]:bg-transparent">
+      <div className="relative">
         {isPageNavigating ? <NavigationSkeleton /> : children}
         {isModalNavigating && <ModalSkeleton />}
       </div>
