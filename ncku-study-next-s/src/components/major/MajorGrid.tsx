@@ -9,9 +9,10 @@ import { TransCard } from './TransCard';
 import { MajorFilters, FilterState } from './MajorFilters';
 import { MajorStatistics } from './MajorStatistics';
 import StatisticControl from './StatisticControl';
+import AdminReaderModal from './AdminReaderModal';
 import { ALL_COMMENTS_QUERY_KEY } from '@/lib/query-keys';
 
-export default function MajorGrid() {
+export default function MajorGrid({ isAdmin = false }: { isAdmin?: boolean }) {
   const t = useTranslations('major');
   const tCommon = useTranslations('common');
 
@@ -21,6 +22,7 @@ export default function MajorGrid() {
     year: '',
     category: '',
   });
+  const [selectedComment, setSelectedComment] = useState<CommentDTO | null>(null);
 
   const isDefaultFilter = filters.college === '' && filters.department === '' && filters.year === '' && filters.category === '';
 
@@ -35,7 +37,11 @@ export default function MajorGrid() {
       const queryString = params.toString();
       const path = queryString ? '/comments?' + queryString : '/comments';
 
-      return apiFetch<PaginatedResponse<CommentDTO>>(path);
+      const result = await apiFetch<CommentDTO[] | PaginatedResponse<CommentDTO>>(path);
+      // API may return a plain array or a paginated wrapper — normalise to wrapper
+      return Array.isArray(result)
+        ? ({ data: result, total: result.length } satisfies PaginatedResponse<CommentDTO>)
+        : result;
     },
   });
 
@@ -74,9 +80,18 @@ export default function MajorGrid() {
       {!isLoading && !isError && comments.length > 0 && (
         <div className="flex flex-wrap justify-start items-start bg-white w-full h-full rounded-[10px] overflow-x-hidden min-[576px]:overflow-y-auto max-[576px]:gap-0 gap-[10px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-track]:bg-transparent">
           {comments.map((comment) => (
-            <TransCard key={comment.id} data={comment} />
+            <TransCard key={comment.id} data={comment} isAdmin={isAdmin} onOpen={isAdmin ? setSelectedComment : undefined} />
           ))}
         </div>
+      )}
+
+      {isAdmin && selectedComment && (
+        <AdminReaderModal
+          comment={selectedComment}
+          allComments={comments}
+          onClose={() => setSelectedComment(null)}
+          onNavigate={setSelectedComment}
+        />
       )}
     </main>
   );

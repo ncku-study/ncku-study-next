@@ -56,16 +56,16 @@ function ChangeBtn({
   );
 }
 
-export function ModalPrevBtn({ currentId }: { currentId: number }) {
+export function ModalPrevBtn({ currentId, basePath = '/major' }: { currentId: number; basePath?: string }) {
   const { prevId } = useModalNav(currentId);
   const { setPendingHref } = useSidebar();
-  const href = prevId !== null ? `/major/${prevId}` : null;
+  const href = prevId !== null ? `${basePath}/${prevId}` : null;
   return <ChangeBtn direction="left" href={href} onNavigate={setPendingHref} />;
 }
 
-export function ModalNextBtn({ currentId }: { currentId: number }) {
+export function ModalNextBtn({ currentId, basePath = '/major' }: { currentId: number; basePath?: string }) {
   const { nextId } = useModalNav(currentId);
   const { setPendingHref } = useSidebar();
-  const href = nextId !== null ? `/major/${nextId}` : null;
+  const href = nextId !== null ? `${basePath}/${nextId}` : null;
   return <ChangeBtn direction="right" href={href} onNavigate={setPendingHref} />;
 }

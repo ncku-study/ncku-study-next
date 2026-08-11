@@ -18,7 +18,13 @@ function reducer(state: number, action: { type: string }) {
   }
 }
 
-export function TransCard({ data }: { data: CommentDTO }) {
+interface TransCardProps {
+  data: CommentDTO;
+  isAdmin?: boolean;
+  onOpen?: (comment: CommentDTO) => void;
+}
+
+export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
   const [wordsNumber, dispatch] = useReducer(reducer, 27);
   const { setPendingHref } = useSidebar();
 
@@ -37,18 +43,20 @@ export function TransCard({ data }: { data: CommentDTO }) {
 
   const getCategoryStyles = (category: string | undefined) => {
     switch (category) {
-      case '轉系':
+      case '\u8f49\u7cfb':
         return { bg: 'bg-background-yellow', text: 'text-dark-yellow', metaText: 'text-dark-yellow' };
-      case '輔系':
+      case '\u8f14\u7cfb':
         return { bg: 'bg-[rgba(29,30,34,0.2)]', text: 'text-dark-black', metaText: 'text-dark-black' };
-      case '雙主修':
+      case '\u96d9\u4e3b\u4fee':
       default:
         return { bg: 'bg-[var(--color-light-black)]', text: 'text-white', metaText: 'text-[var(--color-light-black)]' };
     }
   };
 
-  const cls = (data.confirm === 'false' ? 'bg-lightYellow' : 'bg-white');
+  const isConfirmed = data.confirm === 'true';
+  const cls = (!isConfirmed ? 'bg-lightYellow' : 'bg-white');
   const { bg, text, metaText } = getCategoryStyles(data.category);
+  const href = `/major/${data.id}`;
 
   return (
     <div className={`relative border border-black/12.5 p-[5px] text-black rounded-[15px] h-[180px] w-[220px] box-border max-sm:border-x-0 max-sm:border-t-0 max-sm:w-full max-sm:m-0 max-sm:rounded-none max-sm:h-[145px] ${cls}`}>
@@ -60,7 +68,7 @@ export function TransCard({ data }: { data: CommentDTO }) {
           <h4 className="text-[1.8rem] mt-[10px] mb-[10px] leading-[1.1]">
             {data.in_maj}
           </h4>
-          <div className="text-dark-gray text-[1.2rem]">原主修 {data.out_maj}</div>
+          <div className="text-dark-gray text-[1.2rem]">{'\u539f\u4e3b\u4fee'} {data.out_maj}</div>
           <p className="text-[1.3rem] text-justify mt-0 mb-[1rem] max-sm:text-[1.5rem]" style={{ lineBreak: 'anywhere' }}>
             {preview}
           </p>
@@ -70,7 +78,18 @@ export function TransCard({ data }: { data: CommentDTO }) {
           <span className={`mr-[10px] text-[1.2rem] ${metaText}`}>{data.department}</span>
         </div>
       </div>
-      <Link href={`/major/${data.id}`} onClick={() => setPendingHref(`/major/${data.id}`)} className="absolute top-0 left-0 w-full h-[75%] opacity-0">詳細內容</Link>
+
+      {!isAdmin && (
+        <Link href={href} onClick={() => setPendingHref(href)} className="absolute top-0 left-0 w-full h-[75%] opacity-0">{'\u8a73\u7d30\u5167\u5bb9'}</Link>
+      )}
+
+      {isAdmin && onOpen && (
+        <button
+          onClick={() => onOpen(data)}
+          className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+          aria-label="\u958b\u555f\u8a73\u7d30\u5167\u5bb9"
+        />
+      )}
     </div>
   );
 }

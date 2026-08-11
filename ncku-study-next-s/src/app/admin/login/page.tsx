@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
       if (result?.error) {
         setError(true);
       } else {
-        router.push("/admin");
+        router.push("/admin/major");
         router.refresh();
       }
     } catch {

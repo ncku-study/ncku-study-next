@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 interface StudyCardProps {
   study: StudyDTO;
+  isAdmin?: boolean;
 }
 
 function contentMiddleware(content: string, maxNumber: number): string {
@@ -21,7 +22,7 @@ function reducer(state: number, action: { type: string }): number {
   }
 }
 
-export function StudyCard({ study }: StudyCardProps) {
+export function StudyCard({ study, isAdmin = false }: StudyCardProps) {
   const t = useTranslations('study');
   const isConfirmed = study.confirm === 'true';
   const [wordsNumber, dispatch] = useReducer(reducer, 36);
@@ -47,7 +48,7 @@ export function StudyCard({ study }: StudyCardProps) {
       data-testid="study-card"
       className={`study-card relative h-[160px] border-b border-black/12.5 border-l-0 box-border max-sm:w-full max-sm:m-0 max-sm:rounded-none ${isConfirmed ? 'bg-white' : 'bg-[var(--color-light-yellow)]'}`}
     >
-      <Link href={`/study/${study.id}`} className="absolute top-0 left-0 w-full h-[75%] opacity-0 border-none outline-none z-10" aria-label={t('viewStudy', { title: study.title })}>
+      <Link href={isAdmin ? `/admin/study/${study.id}` : `/study/${study.id}`} className="absolute top-0 left-0 w-full h-[75%] opacity-0 border-none outline-none z-30" aria-label={t('viewStudy', { title: study.title })}>
         <span className="sr-only">{study.title}</span>
       </Link>
       

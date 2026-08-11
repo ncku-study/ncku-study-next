@@ -1,11 +1,28 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { getStudyRepository } from '@/lib/repositories';
 import { StudyList } from '@/components/study/StudyList';
+import StudyModalOverlay from '@/components/study/StudyModalOverlay';
 import type { StudyDTO } from '@/types/api';
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const [repo, t] = await Promise.all([
+    getStudyRepository(),
+    getTranslations('site'),
+  ]);
+  const study = await repo.findById(id);
+  if (!study) return {};
+  return {
+    title: t('studyDetailTitle', { title: study.title }),
+    description: study.content,
+  };
 }
 
 function formatTimestamp(timestamp: string): string {
@@ -72,11 +89,8 @@ export default async function StudyDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Backdrop — matches Vite Dialog.Backdrop: fixed inset-0 z-50 bg-black/50 */}
-      <div className="fixed inset-0 bg-black/50 z-50" />
-
-      {/* Modal — matches Vite Dialog.Popup: fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 */}
-      <div className="fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 outline-none">
+      {/* Backdrop closes the modal; clicks inside the modal are stopped by StudyModalOverlay. */}
+      <StudyModalOverlay>
         {/* StudyReaderLayout: grid grid-cols-[50px_auto_50px] w-[600px] h-[90vh] bg-white */}
         {/* grid-template-rows:100% constrains the single row to exactly h-[90vh], matching Vite's gridTemplateRows:'100%' */}
         <div className="grid grid-cols-[50px_auto_50px] w-[600px] h-[90vh] bg-white" style={{ gridTemplateRows: '100%' }}>
@@ -129,7 +143,7 @@ export default async function StudyDetailPage({ params }: Props) {
 
             {/* StudyReaderContext: article text */}
             <div className="h-full my-[5px] text-justify leading-[2.8rem] tracking-[2.5px] overflow-y-auto [overflow-wrap:anywhere] whitespace-pre-line custom-scrollbar">
-              {study.content}
+              {study.content.replace(/<br\s*\/?>/gi, '\n')}
             </div>
           </div>
 
@@ -149,7 +163,7 @@ export default async function StudyDetailPage({ params }: Props) {
           )}
 
         </div>
-      </div>
+      </StudyModalOverlay>
     </>
   );
 }

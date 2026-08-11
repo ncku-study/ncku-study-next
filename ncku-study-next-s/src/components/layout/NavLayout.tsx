@@ -8,7 +8,10 @@ import ModalSkeleton from "@/components/layout/ModalSkeleton";
 
 /** Returns true when the href is a detail modal route, e.g. /major/123 */
 function isModalRoute(href: string): boolean {
-  return /^\/major\/\d+/.test(href);
+  return /^\/major\/\d+/.test(href)
+    || /^\/admin\/major\/\d+/.test(href)
+    || /^\/admin\/study\/[^/]+$/.test(href)
+    || /^\/study\/[^/]+$/.test(href);
 }
 
 const pageTitles: Record<string, string> = {

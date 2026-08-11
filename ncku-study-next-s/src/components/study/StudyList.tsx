@@ -8,14 +8,19 @@ import type { StudyDTO } from '@/types/api';
 import { StudyCard } from './StudyCard';
 import { StudyFilterPopup, type StudyFilterState } from './StudyFilterPopup';
 
-export function StudyList() {
+export function StudyList({ isAdmin = false }: { isAdmin?: boolean }) {
   const t = useTranslations('study');
   const [filter, setFilter] = useState<StudyFilterState>({ categories: [], stats: [], years: [] });
 
   const { data: studies = [], isLoading, isError } = useQuery<StudyDTO[]>({
-    queryKey: ['studies'],
+    queryKey: ['studies', filter],
     queryFn: async () => {
-      return apiFetch('/studies');
+      const params = new URLSearchParams();
+      if (filter.categories.length > 0) params.set('category', filter.categories.join(','));
+      if (filter.stats.length > 0) params.set('stat_id', filter.stats.join(','));
+      if (filter.years.length > 0) params.set('year', filter.years.join(','));
+      const qs = params.toString();
+      return apiFetch(`/studies${qs ? `?${qs}` : ''}`);
     },
   });
 
@@ -48,7 +53,7 @@ export function StudyList() {
         ) : (
           <div className="grid grid-cols-1 gap-0 w-[590px] max-sm:w-auto max-sm:mx-[10px]">
             {studies.map((study) => (
-              <StudyCard key={study.id} study={study} />
+              <StudyCard key={study.id} study={study} isAdmin={isAdmin} />
             ))}
           </div>
         )}

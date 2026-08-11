@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 
 interface StepperProps {
   steps: { id: number; title: string }[];
@@ -7,28 +6,70 @@ interface StepperProps {
 }
 
 export function CustomStepper({ steps, currentStep }: StepperProps) {
-  const progress = ((currentStep - 1) / (steps.length - 1)) * 100;
-
   return (
-    <div className="relative mx-auto mb-7.5 w-[650px] max-w-full max-[870px]:w-[80%]">
-      <div className="absolute top-2.5 left-6 right-6 h-0.75 rounded bg-[#d9dbe0]" />
-      <div
-        className="absolute top-2.5 left-6 h-0.75 rounded bg-[var(--color-yellow)] transition-all duration-300"
-        style={{ width: `calc((100% - 48px) * ${progress / 100})` }}
-      />
-
-      <div className="relative flex items-start justify-between">
-        {steps.map((step) => {
+    <div className="mx-auto w-[650px] max-w-full max-sm:w-full">
+      <div className="flex items-start bg-white p-[24px]">
+        {steps.map((step, index) => {
           const isCompleted = currentStep > step.id;
           const isActive = currentStep === step.id;
+          const connectorIsCompleted = index > 0 && currentStep > steps[index - 1].id;
 
           return (
-            <div key={step.id} className="flex flex-1 flex-col items-center">
-              <div className={cn("flex h-5 w-5 items-center justify-center", isActive || isCompleted ? "text-[var(--color-yellow)]" : "text-[#d9dbe0]")}>
-                {isCompleted ? <Check className="h-4 w-4" strokeWidth={2.5} /> : <div className="h-2 w-2 rounded-full bg-current" />}
-              </div>
-              <div className={cn("mt-0.5 text-[9px] font-normal leading-none", isActive || isCompleted ? "text-[var(--color-light-black)]" : "text-[#a4a8b0]")}>
-                {step.title}
+            <div key={step.id} className="relative flex flex-1 px-[8px] max-sm:-translate-y-[0.5px]">
+              {index > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute z-0"
+                  style={{
+                    top: 10,
+                    left: "calc(-50% + 16px)",
+                    right: "calc(50% + 16px)",
+                    height: 3,
+                    borderTop: `3px solid ${connectorIsCompleted ? "var(--color-yellow)" : "#eaeaf0"}`,
+                    borderRadius: 1,
+                  }}
+                />
+              )}
+
+              <div className="relative z-10 flex w-full flex-col items-center">
+                <div
+                  className={cn(
+                    "flex h-[23px] w-[18px] items-center justify-center",
+                    isActive || isCompleted ? "text-[var(--color-yellow)]" : "text-[#eaeaf0]",
+                  )}
+                >
+                  {isCompleted ? (
+                    <svg
+                      className="h-[18px] w-[18px]"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                      />
+                    </svg>
+                  ) : (
+                    <div className="h-[8px] w-[8px] rounded-full bg-current" />
+                  )}
+                </div>
+
+                <div
+                  className={cn(
+                    "mt-[16px] block w-full text-center",
+                    isActive || isCompleted ? "font-medium" : "font-normal",
+                  )}
+                  style={{
+                    color: isActive || isCompleted ? "rgba(0, 0, 0, 0.87)" : "rgba(0, 0, 0, 0.54)",
+                    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+                    fontSize: 8.75,
+                    lineHeight: "12.5125px",
+                    letterSpacing: "0.0937125px",
+                  }}
+                >
+                  {step.title}
+                </div>
               </div>
             </div>
           );

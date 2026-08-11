@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getCommentRepository } from '@/lib/repositories';
 import { getQueryClient } from '@/lib/query-client';
@@ -10,6 +12,20 @@ import ModalContent from '@/components/major/ModalContent';
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const [repo, t] = await Promise.all([
+    getCommentRepository(),
+    getTranslations('site'),
+  ]);
+  const comment = await repo.findById(parseInt(id, 10));
+  if (!comment) return {};
+  return {
+    title: t('majorDetailTitle', { year: comment.year, inMaj: comment.in_maj, category: comment.category }),
+    description: comment.comment,
+  };
 }
 
 export default async function MajorDetailPage({ params }: Props) {

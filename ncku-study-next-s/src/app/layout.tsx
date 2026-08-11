@@ -7,7 +7,7 @@ import "./globals.css";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('site');
   return {
-    title: "NCKU Study",
+    title: t('title'),
     description: t('description'),
   };
 }
