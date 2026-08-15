@@ -76,11 +76,11 @@ export function SidebarDrawer() {
         />
       )}
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-[110px] border-r border-[rgba(0,0,0,0.12)] bg-white shadow-md transition-transform duration-300 ease-[ease] flex flex-col items-center ${
+        className={`fixed top-0 left-0 z-50 h-full w-[110px] box-content border-r border-[rgba(0,0,0,0.12)] bg-white shadow-md transition-transform duration-300 ease-[ease] flex flex-col items-center ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 md:flex md:shadow-none shrink-0`}
       >
-        <nav className="flex w-full flex-col">
+        <nav className="flex w-full flex-col pt-[8px]">
           {navLinks.map((link) => {
             const isActive = pendingHref
               ? link.href === pendingHref

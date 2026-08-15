@@ -13,17 +13,45 @@ function getLatestAcademicYear() {
   return now.getMonth() < 7 ? year - 1 : year;
 }
 
+const fieldLabelStyle = {
+  top: "-15px",
+  fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+  fontSize: "22px",
+  lineHeight: "22px",
+  fontWeight: 400,
+  letterSpacing: "0.20636px",
+  color: "rgba(0, 0, 0, 0.54)",
+  transform: "translateY(1.5px) scale(0.75)",
+  transformOrigin: "top left",
+};
+
+const inputStyle = {
+  fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+  fontSize: "17px",
+  lineHeight: "11.876px",
+  letterSpacing: "0.0938px",
+};
+
+const dropdownStyle = {
+  ...inputStyle,
+  fontSize: "18px",
+  color: "rgba(0, 0, 0, 0.87)",
+};
+
 function Dropdown({
+  name,
   label,
   value,
   options,
   onChange,
 }: {
+  name: string;
   label: string;
   value: string | number;
   options: Option[];
   onChange: (value: string | number) => void;
 }) {
+  const { register } = useFormContext();
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -42,12 +70,7 @@ function Dropdown({
     <div ref={rootRef} className="relative h-[60px] w-full">
       <label
         className="pointer-events-none absolute left-0"
-        style={{
-          top: "-18px",
-          fontSize: "1.375rem",
-          fontWeight: 400,
-          color: focused || open ? "#f5a623" : "rgba(0,0,0,0.54)",
-        }}
+        style={{ ...fieldLabelStyle, color: focused || open ? "#f5a623" : fieldLabelStyle.color }}
       >
         {label}
       </label>
@@ -68,15 +91,21 @@ function Dropdown({
             setOpen(true);
           }
         }}
-        className="flex h-[40px] w-full cursor-pointer select-none items-center justify-between border-b border-gray-400 bg-transparent text-[1.8rem] outline-none"
+        className="flex h-[40px] w-full cursor-pointer select-none items-center justify-between border-b border-gray-400 bg-transparent outline-none"
         style={{
-          borderBottomColor: focused || open ? "#f5a623" : undefined,
+          ...dropdownStyle,
+          position: "relative",
+          top: "1px",
+          borderBottomColor: focused || open ? "#f5a623" : "rgba(0, 0, 0, 0.42)",
           borderBottomWidth: focused || open ? "2px" : undefined,
         }}
       >
-        <span>{selected?.text ?? ""}</span>
-        <span className="ml-1 text-[0.75rem] text-gray-500">{open ? "▴" : "▾"}</span>
+        {selected?.text ?? ""}
+        <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+          <path d="M7 10l5 5 5-5z" />
+        </svg>
       </div>
+      <input type="hidden" {...register(name)} value={String(value ?? "")} readOnly />
       {open && (
         <ul
           role="listbox"
@@ -126,31 +155,48 @@ export function Step2StudyForm() {
     text: item.name,
   }));
 
-  return (
-    <div className="mx-auto w-[458px] bg-white max-[870px]:w-[80%]">
-      <p className="mb-[20px] text-[rgba(163,158,158,1)]">留下更多資訊給學弟妹吧!</p>
+  const field = "mb-[20px]";
+  const remark = "relative -top-[15px] text-[1.5rem] leading-[2.14286rem] text-[var(--color-red)]";
 
-      <div className="mb-[20px]">
+  return (
+    <div className="mx-auto w-[458px] bg-white max-[870px]:w-full">
+      <p className="relative -top-[15px] mb-[20px] flex justify-center text-[rgba(163,158,158,1)]">
+        留下更多資訊給學弟妹吧!
+      </p>
+
+      <div className={field}>
         <div className="relative h-[60px] w-full">
-          <label className="pointer-events-none absolute left-0 text-[1.375rem] font-normal text-[rgba(0,0,0,0.54)]" style={{ top: "-18px" }}>
+          <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>
             心得標題
           </label>
-          <input {...register("title")} value={title ?? ""} className="h-[40px] w-full border-b border-gray-400 bg-transparent text-[1.7rem] outline-none" />
+          <input
+            {...register("title")}
+            value={title ?? ""}
+            className="relative top-[4.40625px] h-[33.1875px] w-full border-0 bg-transparent p-0 outline-none"
+            style={{ ...inputStyle, boxSizing: "border-box", padding: "6px 0 7px" }}
+          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 w-full border-t border-gray-400"
+            style={{ top: "39.578125px", borderTopColor: "rgba(0, 0, 0, 0.42)" }}
+          />
         </div>
       </div>
 
-      <div className="mb-[20px]">
+      <div className={field}>
         <Dropdown
+          name="major"
           label="原主修科系"
           value={major ?? ""}
           options={majorOptions}
           onChange={(value) => setValue("major", String(value), { shouldDirty: true, shouldValidate: true })}
         />
-        <div className="text-[var(--color-red)]">*如不想透漏，可以只填學院或其他。</div>
+        <div className={remark}>*如不想透漏，可以只填學院或其他。</div>
       </div>
 
-      <div className="mb-[20px]">
+      <div className={field}>
         <Dropdown
+          name="year"
           label="年份"
           value={year ?? latestYear}
           options={yearOptions}

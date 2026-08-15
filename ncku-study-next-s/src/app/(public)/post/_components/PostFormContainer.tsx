@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { CustomStepper } from "./CustomStepper";
@@ -72,6 +72,24 @@ export function PostFormContainer(props?: PostFormEditProps) {
   const [step, setStep] = useState(isEditMode ? 2 : 1);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (step !== 2 || typeof window === "undefined" || window.innerWidth <= 870) return;
+
+    const scrollContainer = Array.from(document.querySelectorAll<HTMLElement>("*"))
+      .find((element) => {
+        const style = getComputedStyle(element);
+        return element.clientHeight === window.innerHeight
+          && element.scrollHeight > element.clientHeight
+          && style.overflowY !== "visible";
+      });
+
+    if (!scrollContainer) return;
+    const frame = window.requestAnimationFrame(() => {
+      scrollContainer.scrollTop = 111;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [step]);
 
   const baseDefaults = {
     postType: isEditMode ? props!.editType : undefined,
@@ -270,13 +288,13 @@ export function PostFormContainer(props?: PostFormEditProps) {
             {step === 2 && postType === "study" && <Step2StudyForm />}
             {step === 3 && postType === "study" && <Step3StudyForm />}
 
-            <div className="flex h-[75px] w-full items-center justify-end">
+            <div className={`flex h-[75px] w-full items-center justify-end ${step === 2 && postType === "study" ? "relative -top-[15px]" : ""}`}>
               <button
                 type="button"
                 onClick={onPrev}
                 disabled={step === 1}
                 className={`min-w-[100px] h-[40px] rounded-[5px] border-none bg-white text-black outline-none cursor-pointer ${step === 1 || (isEditMode && step === 2) ? "invisible" : ""}`}
-                style={{ marginRight: "20px" }}
+                style={{ marginRight: "20px", fontFamily: "Arial", fontSize: "13.3333px", lineHeight: "normal", padding: "1px 6px" }}
               >
                 返回
               </button>
@@ -286,6 +304,7 @@ export function PostFormContainer(props?: PostFormEditProps) {
                   type="button"
                   onClick={onNext}
                   className="min-w-[100px] h-[40px] rounded-[5px] bg-[var(--color-yellow)] text-black hover:bg-[var(--color-yellow)]/90 border-none outline-none cursor-pointer"
+                  style={{ fontFamily: "Arial", fontSize: "13.3333px", lineHeight: "normal", padding: "1px 6px" }}
                 >
                   {t("next")}
                 </button>
@@ -294,6 +313,7 @@ export function PostFormContainer(props?: PostFormEditProps) {
                   type="button"
                   onClick={onNext}
                   className="min-w-[100px] h-[40px] rounded-[5px] bg-[var(--color-yellow)] text-black hover:bg-[var(--color-yellow)]/90 border-none outline-none cursor-pointer"
+                  style={{ fontFamily: "Arial", fontSize: "13.3333px", lineHeight: "normal", padding: "1px 6px" }}
                 >
                   {t("next")}
                 </button>

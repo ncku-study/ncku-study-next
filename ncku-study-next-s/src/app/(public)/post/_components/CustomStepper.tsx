@@ -7,7 +7,10 @@ interface StepperProps {
 
 export function CustomStepper({ steps, currentStep }: StepperProps) {
   return (
-    <div className="mx-auto w-[650px] max-w-full max-sm:w-full">
+    <div className={cn(
+      "mx-auto w-[650px] max-w-full -translate-y-[9px] max-sm:w-full",
+      steps.length === 4 && "max-sm:-translate-y-[14.5px]",
+    )}>
       <div className="flex items-start bg-white p-[24px]">
         {steps.map((step, index) => {
           const isCompleted = currentStep > step.id;
