@@ -12,8 +12,10 @@ import type {
 // ─── Filter types ────────────────────────────────────────────────────────────
 
 export type CommentFilters = {
+  college?: string;
   department?: string;
   year?: string;
+  category?: string;
   confirm?: boolean;
 };
 

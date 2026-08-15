@@ -11,8 +11,10 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const college = searchParams.get('college') ?? undefined;
   const department = searchParams.get('department') ?? undefined;
   const year = searchParams.get('year') ?? undefined;
+  const category = searchParams.get('category') ?? undefined;
   const confirmParam = searchParams.get('confirm');
 
   // Requesting unconfirmed (pending) items requires admin auth
@@ -27,6 +29,6 @@ export async function GET(request: Request) {
     confirmParam === 'true' ? true : confirmParam === 'false' ? false : undefined;
 
   const repo = await getCommentRepository();
-  const data = await repo.findAll({ department, year, confirm });
+  const data = await repo.findAll({ college, department, year, category, confirm });
   return NextResponse.json(data);
 }

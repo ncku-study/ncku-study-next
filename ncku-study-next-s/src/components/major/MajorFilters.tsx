@@ -29,11 +29,13 @@ export function MajorFilters({ filters, onChange }: MajorFiltersProps) {
   const { data: colleges = [] } = useQuery({
     queryKey: ['colleges'],
     queryFn: () => apiFetch<CollegeDTO[]>('/colleges'),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: allDepartments = [] } = useQuery({
     queryKey: ['departments'],
     queryFn: () => apiFetch<DepartmentDTO[]>('/departments'),
+    staleTime: 5 * 60 * 1000,
   });
 
   const departments = useMemo(() => {
@@ -94,4 +96,3 @@ export function MajorFilters({ filters, onChange }: MajorFiltersProps) {
     </section>
   );
 }
-

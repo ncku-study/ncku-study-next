@@ -76,7 +76,7 @@ export function SidebarDrawer() {
         />
       )}
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-[110px] bg-white shadow-md transition-transform duration-300 ease-[ease] flex flex-col items-center ${
+        className={`fixed top-0 left-0 z-50 h-full w-[110px] border-r border-[rgba(0,0,0,0.12)] bg-white shadow-md transition-transform duration-300 ease-[ease] flex flex-col items-center ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 md:flex md:shadow-none shrink-0`}
       >

@@ -7,13 +7,19 @@ import { apiFetch } from '@/lib/api-client';
 import type { StudyDTO } from '@/types/api';
 import { StudyCard } from './StudyCard';
 import { StudyFilterPopup, type StudyFilterState } from './StudyFilterPopup';
+import StudyModal from './StudyModal';
+import { useOptionalStudyModalRoute } from '@/components/major/MajorModalRouteContext';
+import { ALL_STUDIES_QUERY_KEY } from '@/lib/query-keys';
 
-export function StudyList({ isAdmin = false }: { isAdmin?: boolean }) {
+export function StudyList({ isAdmin = false, renderClientModal = true }: { isAdmin?: boolean; renderClientModal?: boolean }) {
   const t = useTranslations('study');
   const [filter, setFilter] = useState<StudyFilterState>({ categories: [], stats: [], years: [] });
+  const studyRoute = useOptionalStudyModalRoute();
 
   const { data: studies = [], isLoading, isError } = useQuery<StudyDTO[]>({
-    queryKey: ['studies', filter],
+    queryKey: filter.categories.length === 0 && filter.stats.length === 0 && filter.years.length === 0
+      ? ALL_STUDIES_QUERY_KEY
+      : ['studies', filter],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filter.categories.length > 0) params.set('category', filter.categories.join(','));
@@ -22,6 +28,7 @@ export function StudyList({ isAdmin = false }: { isAdmin?: boolean }) {
       const qs = params.toString();
       return apiFetch(`/studies${qs ? `?${qs}` : ''}`);
     },
+    staleTime: 5 * 60 * 1000,
   });
 
   return (
@@ -58,6 +65,14 @@ export function StudyList({ isAdmin = false }: { isAdmin?: boolean }) {
           </div>
         )}
       </section>
+
+      {!isAdmin && renderClientModal && studyRoute?.studyId !== null && studyRoute?.studyId !== undefined && (
+        <StudyModal
+          id={studyRoute.studyId}
+          studies={studies}
+          onClose={() => studyRoute.close('/study')}
+        />
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api-client";
 import { CommentDTO, PaginatedResponse } from "@/types/api";
 import { useSidebar } from "@/components/sidebar/SidebarContext";
+import { useOptionalMajorModalRoute } from "@/components/major/MajorModalRouteContext";
 
 import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
 
@@ -28,10 +29,12 @@ function ChangeBtn({
   direction,
   href,
   onNavigate,
+  useClientNavigation = false,
 }: {
   direction: "left" | "right";
   href: string | null;
   onNavigate: (href: string) => void;
+  useClientNavigation?: boolean;
 }) {
   const arrow = (
     <div
@@ -45,27 +48,36 @@ function ChangeBtn({
     return <div className="flex justify-center items-center invisible">{arrow}</div>;
   }
 
-  return (
-    <Link
-      href={href}
-      onClick={() => onNavigate(href)}
-      className="flex justify-center items-center cursor-pointer"
-    >
-      {arrow}
-    </Link>
-  );
+  const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const isPlainLeftClick = event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+    if (useClientNavigation) {
+      if (!isPlainLeftClick) return;
+      event.preventDefault();
+    }
+    onNavigate(href);
+  };
+
+  if (useClientNavigation) {
+    return <a href={href} onClick={onClick} className="flex justify-center items-center cursor-pointer">{arrow}</a>;
+  }
+
+  return <Link href={href} onClick={() => onNavigate(href)} className="flex justify-center items-center cursor-pointer">{arrow}</Link>;
 }
 
 export function ModalPrevBtn({ currentId, basePath = '/major' }: { currentId: number; basePath?: string }) {
   const { prevId } = useModalNav(currentId);
   const { setPendingHref } = useSidebar();
+  const majorRoute = useOptionalMajorModalRoute();
   const href = prevId !== null ? `${basePath}/${prevId}` : null;
-  return <ChangeBtn direction="left" href={href} onNavigate={setPendingHref} />;
+  const useClientNavigation = basePath === '/major' && majorRoute !== null;
+  return <ChangeBtn direction="left" href={href} onNavigate={useClientNavigation ? majorRoute.navigate : setPendingHref} useClientNavigation={useClientNavigation} />;
 }
 
 export function ModalNextBtn({ currentId, basePath = '/major' }: { currentId: number; basePath?: string }) {
   const { nextId } = useModalNav(currentId);
   const { setPendingHref } = useSidebar();
+  const majorRoute = useOptionalMajorModalRoute();
   const href = nextId !== null ? `${basePath}/${nextId}` : null;
-  return <ChangeBtn direction="right" href={href} onNavigate={setPendingHref} />;
+  const useClientNavigation = basePath === '/major' && majorRoute !== null;
+  return <ChangeBtn direction="right" href={href} onNavigate={useClientNavigation ? majorRoute.navigate : setPendingHref} useClientNavigation={useClientNavigation} />;
 }

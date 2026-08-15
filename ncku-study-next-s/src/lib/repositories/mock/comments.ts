@@ -10,17 +10,23 @@ import seedArray from './comment-seed';
 // Cast the seed data — the source file uses plain JS objects matching CommentDTO shape
 const seedData: CommentDTO[] = seedArray as CommentDTO[];
 
-let store: CommentDTO[] = [...seedData];
+const store: CommentDTO[] = [...seedData];
 let nextId: number = Math.max(...seedData.map((c) => c.id)) + 1;
 
 export class MockCommentRepository implements CommentRepository {
   async findAll(filters?: CommentFilters): Promise<CommentDTO[]> {
     let result = [...store];
+    if (filters?.college) {
+      result = result.filter((c) => c.department === filters.college);
+    }
     if (filters?.department) {
-      result = result.filter((c) => c.department === filters.department);
+      result = result.filter((c) => c.in_maj === filters.department);
     }
     if (filters?.year) {
       result = result.filter((c) => String(c.year) === String(filters.year));
+    }
+    if (filters?.category) {
+      result = result.filter((c) => c.category === filters.category);
     }
     if (filters?.confirm !== undefined) {
       const confirmStr = String(filters.confirm);

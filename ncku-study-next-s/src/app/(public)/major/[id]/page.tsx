@@ -1,20 +1,24 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getCommentRepository } from '@/lib/repositories';
 import { getQueryClient } from '@/lib/query-client';
 import { prefetchAllComments } from '@/lib/prefetch-comments';
-import MajorGrid from '@/components/major/MajorGrid';
-import ModalOverlay from '@/components/major/ModalOverlay';
-import { ModalPrevBtn, ModalNextBtn } from '@/components/major/ModalChangeBtns';
-import ModalContent from '@/components/major/ModalContent';
+import MajorDetailClient from '@/components/major/MajorDetailClient';
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
+function isClientNavigation(requestHeaders: Headers) {
+  return requestHeaders.get('RSC') === '1';
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  if (isClientNavigation(await headers())) return {};
+
   const { id } = await params;
   const [repo, t] = await Promise.all([
     getCommentRepository(),
@@ -32,6 +36,15 @@ export default async function MajorDetailPage({ params }: Props) {
   const { id } = await params;
   const numId = parseInt(id, 10);
 
+  if (!Number.isInteger(numId)) notFound();
+
+  // Next uses an RSC request for client-side Link/router navigation. Do not
+  // execute the server repository path for that request: MajorDetailClient
+  // will read the already hydrated list from React Query on the browser.
+  if (isClientNavigation(await headers())) {
+    return <MajorDetailClient id={numId} />;
+  }
+
   const queryClient = getQueryClient();
   const repo = await getCommentRepository();
 
@@ -46,21 +59,7 @@ export default async function MajorDetailPage({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      {/* Background content */}
-      <MajorGrid />
-
-      {/* Backdrop — closes modal on click */}
-      <ModalOverlay>
-        {/* Popup */}
-        <div
-          className="relative w-[600px] h-[700px] max-h-[75vh] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] max-lg:w-[360px] max-lg:max-h-[65vh] max-lg:min-w-[95vw]"
-          style={{ gridTemplateRows: '100%' }}
-        >
-          <ModalPrevBtn currentId={numId} />
-          <ModalContent id={numId} serverComment={comment} />
-          <ModalNextBtn currentId={numId} />
-        </div>
-      </ModalOverlay>
+      <MajorDetailClient id={numId} serverComment={comment} />
     </HydrationBoundary>
   );
 }

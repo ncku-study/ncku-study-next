@@ -19,22 +19,27 @@ function isPassDisplay(value: string): string {
 
 interface Props {
   id: number;
-  serverComment: CommentDTO;
+  serverComment?: CommentDTO;
 }
 
 export default function ModalContent({ id, serverComment }: Props) {
   const queryClient = useQueryClient();
+  const cachedComment = queryClient
+    .getQueryData<PaginatedResponse<CommentDTO>>(ALL_COMMENTS_QUERY_KEY)
+    ?.data.find((c) => c.id === id);
+  const initialComment = cachedComment ?? serverComment;
 
   const { data: comment } = useQuery({
     queryKey: ["comment", id],
     queryFn: () => apiFetch<CommentDTO>(`/comments/${id}`),
-    // 1. Try to find in allComments cache first
-    initialData: () => {
-      const cached = queryClient.getQueryData<PaginatedResponse<CommentDTO>>(ALL_COMMENTS_QUERY_KEY);
-      return cached?.data.find((c) => c.id === id) ?? serverComment;
-    },
+    initialData: initialComment,
+    // A client-side major navigation must use the hydrated list. Direct URL
+    // requests provide serverComment; neither path needs another detail fetch.
+    enabled: Boolean(initialComment),
     staleTime: 5 * 60 * 1000,
   });
+
+  if (!comment) return null;
 
   const iconStyle = colorMap[comment.category] ?? defaultIconStyle;
 

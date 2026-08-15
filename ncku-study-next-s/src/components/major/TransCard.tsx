@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useReducer } from 'react';
-import Link from 'next/link';
 import { CommentDTO } from '@/types/api';
-import { useSidebar } from '@/components/sidebar/SidebarContext';
+import { useOptionalMajorModalRoute } from '@/components/major/MajorModalRouteContext';
 
 const contentMiddleware = (content: string, maxNumber: number) =>
   content.length < maxNumber ? content : content.substr(0, maxNumber - 1) + '  (...)';
@@ -26,7 +25,7 @@ interface TransCardProps {
 
 export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
   const [wordsNumber, dispatch] = useReducer(reducer, 27);
-  const { setPendingHref } = useSidebar();
+  const majorRoute = useOptionalMajorModalRoute();
 
   useEffect(() => {
     function onResize() {
@@ -58,6 +57,14 @@ export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
   const { bg, text, metaText } = getCategoryStyles(data.category);
   const href = `/major/${data.id}`;
 
+  const handleClientNavigation = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!majorRoute || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    event.preventDefault();
+    majorRoute.navigate(href);
+  };
+
   return (
     <div className={`relative border border-black/12.5 p-[5px] text-black rounded-[15px] h-[180px] w-[220px] box-border max-sm:border-x-0 max-sm:border-t-0 max-sm:w-full max-sm:m-0 max-sm:rounded-none max-sm:h-[145px] ${cls}`}>
       <div className={`grid box-border grid-cols-[57px_auto] grid-rows-[auto_30px] [grid-template-areas:'icon_main'_'year_tags'] w-[210px] h-[160px] px-[10px] pt-[5px] pb-0 max-sm:w-full max-sm:h-[125px]`}>
@@ -80,7 +87,7 @@ export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
       </div>
 
       {!isAdmin && (
-        <Link href={href} onClick={() => setPendingHref(href)} className="absolute top-0 left-0 w-full h-[75%] opacity-0">{'\u8a73\u7d30\u5167\u5bb9'}</Link>
+        <a href={href} onClick={handleClientNavigation} className="absolute top-0 left-0 w-full h-[75%] opacity-0">{'\u8a73\u7d30\u5167\u5bb9'}</a>
       )}
 
       {isAdmin && onOpen && (

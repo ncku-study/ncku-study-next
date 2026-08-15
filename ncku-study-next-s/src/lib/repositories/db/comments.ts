@@ -42,11 +42,17 @@ export class DbCommentRepository implements CommentRepository {
     const db = getDb();
     let query = db.selectFrom('major').selectAll();
 
+    if (filters?.college) {
+      query = query.where('department', '=', filters.college);
+    }
     if (filters?.department) {
-      query = query.where('department', '=', filters.department);
+      query = query.where('in_maj', '=', filters.department);
     }
     if (filters?.year) {
       query = query.where('year', '=', Number(filters.year));
+    }
+    if (filters?.category) {
+      query = query.where('category', '=', filters.category);
     }
     if (filters?.confirm !== undefined) {
       query = query.where('confirm', '=', String(filters.confirm));

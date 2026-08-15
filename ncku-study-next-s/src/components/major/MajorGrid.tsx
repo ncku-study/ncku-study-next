@@ -11,8 +11,10 @@ import { MajorStatistics } from './MajorStatistics';
 import StatisticControl from './StatisticControl';
 import AdminReaderModal from './AdminReaderModal';
 import { ALL_COMMENTS_QUERY_KEY } from '@/lib/query-keys';
+import MajorModal from './MajorModal';
+import { useOptionalMajorModalRoute } from './MajorModalRouteContext';
 
-export default function MajorGrid({ isAdmin = false }: { isAdmin?: boolean }) {
+export default function MajorGrid({ isAdmin = false, renderClientModal = true }: { isAdmin?: boolean; renderClientModal?: boolean }) {
   const t = useTranslations('major');
   const tCommon = useTranslations('common');
 
@@ -23,6 +25,7 @@ export default function MajorGrid({ isAdmin = false }: { isAdmin?: boolean }) {
     category: '',
   });
   const [selectedComment, setSelectedComment] = useState<CommentDTO | null>(null);
+  const majorRoute = useOptionalMajorModalRoute();
 
   const isDefaultFilter = filters.college === '' && filters.department === '' && filters.year === '' && filters.category === '';
 
@@ -30,6 +33,7 @@ export default function MajorGrid({ isAdmin = false }: { isAdmin?: boolean }) {
     queryKey: isDefaultFilter ? ALL_COMMENTS_QUERY_KEY : ['comments', filters],
     queryFn: async () => {
       const params = new URLSearchParams();
+      if (filters.college) params.append('college', filters.college);
       if (filters.department) params.append('department', filters.department);
       if (filters.year) params.append('year', filters.year);
       if (filters.category) params.append('category', filters.category);
@@ -43,6 +47,7 @@ export default function MajorGrid({ isAdmin = false }: { isAdmin?: boolean }) {
         ? ({ data: result, total: result.length } satisfies PaginatedResponse<CommentDTO>)
         : result;
     },
+    staleTime: 5 * 60 * 1000,
   });
 
   const comments = data?.data || [];
@@ -91,6 +96,13 @@ export default function MajorGrid({ isAdmin = false }: { isAdmin?: boolean }) {
           allComments={comments}
           onClose={() => setSelectedComment(null)}
           onNavigate={setSelectedComment}
+        />
+      )}
+
+      {!isAdmin && renderClientModal && majorRoute?.majorId !== null && majorRoute?.majorId !== undefined && (
+        <MajorModal
+          id={majorRoute.majorId}
+          onClose={() => majorRoute.close('/major')}
         />
       )}
     </main>
