@@ -55,10 +55,11 @@ function NavContent({ children }: { children: React.ReactNode }) {
   const isPageNavigating = isNavigating && !isModalNavigating;
   const title = isNavigating ? getTitle(pendingHref!) : getTitle(pathname);
   const isShowSearch = pathname === '/study';
+  const isMajorPage = pathname === '/' || pathname.startsWith('/major') || pathname.startsWith('/admin/major');
 
   return (
     <div
-      className={`box-border grid grid-cols-auto w-full h-screen py-[20px] px-[30px] bg-white overflow-y-auto max-lg:grid-rows-[50px_auto] max-sm:p-[10px] max-sm:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0 ${isShowSearch ? 'grid-rows-[120px_auto]' : 'grid-rows-[50px_auto]'}`}
+      className={`box-border grid grid-cols-auto w-full h-screen min-h-0 py-[20px] px-[30px] bg-white overflow-x-hidden ${isMajorPage ? 'overflow-y-hidden grid-rows-[50px_minmax(0,1fr)]' : 'overflow-y-auto max-lg:grid-rows-[50px_auto]'} max-sm:p-[10px] max-sm:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0 ${!isMajorPage && (isShowSearch ? 'grid-rows-[120px_auto]' : 'grid-rows-[50px_auto]')}`}
     >
       <header className="w-full flex flex-wrap items-center h-[50px]">
         <HamburgerButton />
@@ -84,7 +85,7 @@ function NavContent({ children }: { children: React.ReactNode }) {
           </form>
         )}
       </header>
-      <div className="relative">
+      <div className={`relative min-h-0 ${isMajorPage ? 'h-full overflow-hidden' : ''}`}>
         {isPageNavigating ? <NavigationSkeleton /> : children}
         {isModalNavigating && <ModalSkeleton />}
       </div>

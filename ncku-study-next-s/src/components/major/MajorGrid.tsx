@@ -53,7 +53,7 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
   const comments = data?.data || [];
 
   return (
-    <main className="grid grid-rows-[50px_160px_minmax(0,1fr)] overflow-hidden max-[990px]:grid-rows-[100px_160px_minmax(0,1fr)] max-[576px]:grid-rows-[90px_0px_minmax(0,1fr)] max-[576px]:-mx-[10px]">
+    <main className="grid h-full min-h-0 min-w-0 grid-rows-[50px_160px_minmax(0,1fr)] overflow-hidden max-[990px]:grid-rows-[100px_160px_minmax(0,1fr)] max-[576px]:grid-rows-[90px_0px_minmax(0,1fr)] max-[576px]:-mx-[10px]">
       <MajorFilters filters={filters} onChange={setFilters} />
       <StatisticControl>
         <MajorStatistics comments={comments} />
@@ -83,7 +83,7 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
       )}
 
       {!isLoading && !isError && comments.length > 0 && (
-        <div className="flex flex-wrap justify-start items-start bg-white w-full h-full rounded-[10px] overflow-x-hidden min-[576px]:overflow-y-auto max-[576px]:gap-0 gap-[10px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-track]:bg-transparent">
+        <div className="flex min-h-0 min-w-0 flex-wrap justify-start items-start bg-white w-full h-full rounded-[10px] overflow-x-hidden overflow-y-auto max-[576px]:gap-0 gap-[10px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-track]:bg-transparent">
           {comments.map((comment) => (
             <TransCard key={comment.id} data={comment} isAdmin={isAdmin} onOpen={isAdmin ? setSelectedComment : undefined} />
           ))}
