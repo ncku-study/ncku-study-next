@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
 import { CommentDTO, PaginatedResponse } from "@/types/api";
 import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
+import { useTranslations } from 'next-intl';
+import { useClientSeo } from '@/lib/seo/use-client-seo';
 
 const colorMap: Record<string, { backgroundColor: string; color: string }> = {
   轉系: { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" },
@@ -23,6 +25,7 @@ interface Props {
 }
 
 export default function ModalContent({ id, serverComment }: Props) {
+  const t = useTranslations('site');
   const queryClient = useQueryClient();
   const cachedComment = queryClient
     .getQueryData<PaginatedResponse<CommentDTO>>(ALL_COMMENTS_QUERY_KEY)
@@ -37,6 +40,27 @@ export default function ModalContent({ id, serverComment }: Props) {
     // requests provide serverComment; neither path needs another detail fetch.
     enabled: Boolean(initialComment),
     staleTime: 5 * 60 * 1000,
+  });
+
+  useClientSeo({
+    baseline: {
+      title: t('title'),
+      description: t('description'),
+      pathname: '/major',
+      openGraphType: 'website',
+    },
+    detail: comment
+      ? {
+          title: t('majorDetailTitle', {
+            year: comment.year,
+            inMaj: comment.in_maj,
+            category: comment.category,
+          }),
+          description: comment.comment,
+          pathname: `/major/${encodeURIComponent(String(id))}`,
+          openGraphType: 'article',
+        }
+      : undefined,
   });
 
   if (!comment) return null;

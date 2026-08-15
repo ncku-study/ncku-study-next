@@ -6,6 +6,7 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getCommentRepository } from '@/lib/repositories';
 import { getQueryClient } from '@/lib/query-client';
 import { prefetchAllComments } from '@/lib/prefetch-comments';
+import { buildSeoMetadata } from '@/lib/seo/metadata';
 import MajorDetailClient from '@/components/major/MajorDetailClient';
 
 interface Props {
@@ -17,19 +18,28 @@ function isClientNavigation(requestHeaders: Headers) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  if (isClientNavigation(await headers())) return {};
-
   const { id } = await params;
   const [repo, t] = await Promise.all([
     getCommentRepository(),
     getTranslations('site'),
   ]);
   const comment = await repo.findById(parseInt(id, 10));
-  if (!comment) return {};
-  return {
+  const pathname = `/major/${encodeURIComponent(id)}`;
+
+  if (!comment) {
+    return buildSeoMetadata({
+      title: t('title'),
+      description: t('description'),
+      pathname,
+    });
+  }
+
+  return buildSeoMetadata({
     title: t('majorDetailTitle', { year: comment.year, inMaj: comment.in_maj, category: comment.category }),
     description: comment.comment,
-  };
+    pathname,
+    openGraphType: 'article',
+  });
 }
 
 export default async function MajorDetailPage({ params }: Props) {

@@ -2,14 +2,16 @@
 import { getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import QueryProvider from "@/providers/query-provider";
+import { buildSeoMetadata } from "@/lib/seo/metadata";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('site');
-  return {
+  return buildSeoMetadata({
     title: t('title'),
     description: t('description'),
-  };
+    pathname: '/major',
+  });
 }
 
 export default async function RootLayout({

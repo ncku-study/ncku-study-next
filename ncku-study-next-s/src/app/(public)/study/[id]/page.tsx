@@ -6,6 +6,7 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getStudyRepository } from '@/lib/repositories';
 import { getQueryClient } from '@/lib/query-client';
 import { prefetchAllStudies } from '@/lib/prefetch-studies';
+import { buildSeoMetadata } from '@/lib/seo/metadata';
 import StudyDetailClient from '@/components/study/StudyDetailClient';
 
 interface Props {
@@ -17,20 +18,28 @@ function isClientNavigation(requestHeaders: Headers) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  if (isClientNavigation(await headers())) return {};
-
   const { id } = await params;
   const [repo, t] = await Promise.all([
     getStudyRepository(),
     getTranslations('site'),
   ]);
   const study = await repo.findById(id);
-  if (!study) return {};
+  const pathname = `/study/${encodeURIComponent(id)}`;
 
-  return {
+  if (!study) {
+    return buildSeoMetadata({
+      title: t('title'),
+      description: t('description'),
+      pathname,
+    });
+  }
+
+  return buildSeoMetadata({
     title: t('studyDetailTitle', { title: study.title }),
     description: study.content,
-  };
+    pathname,
+    openGraphType: 'article',
+  });
 }
 
 export default async function StudyDetailPage({ params }: Props) {

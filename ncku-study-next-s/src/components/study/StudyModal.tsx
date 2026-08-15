@@ -5,6 +5,8 @@ import { apiFetch } from '@/lib/api-client';
 import type { CategoryDTO, StudyDTO } from '@/types/api';
 import { ALL_STUDIES_QUERY_KEY } from '@/lib/query-keys';
 import { useOptionalStudyModalRoute } from '@/components/major/MajorModalRouteContext';
+import { useTranslations } from 'next-intl';
+import { useClientSeo } from '@/lib/seo/use-client-seo';
 import StudyModalOverlay from './StudyModalOverlay';
 
 interface StudyModalProps {
@@ -79,6 +81,7 @@ function StudyArrow({
 }
 
 export default function StudyModal({ id, studies, serverStudy, onClose }: StudyModalProps) {
+  const t = useTranslations('site');
   const queryClient = useQueryClient();
   const studyRoute = useOptionalStudyModalRoute();
   const cachedStudies = queryClient.getQueryData<StudyDTO[]>(ALL_STUDIES_QUERY_KEY);
@@ -118,6 +121,23 @@ export default function StudyModal({ id, studies, serverStudy, onClose }: StudyM
       .map((stat) => ({ name: stat.name!, value: String(stat.value), isOther: false })),
     ...otherStats.map((stat) => ({ name: stat.name, value: stat.value, isOther: true })),
   ];
+
+  useClientSeo({
+    baseline: {
+      title: t('title'),
+      description: t('description'),
+      pathname: '/study',
+      openGraphType: 'website',
+    },
+    detail: study
+      ? {
+          title: t('studyDetailTitle', { title: study.title }),
+          description: study.content,
+          pathname: `/study/${encodeURIComponent(id)}`,
+          openGraphType: 'article',
+        }
+      : undefined,
+  });
 
   return (
     <StudyModalOverlay onClose={onClose}>
