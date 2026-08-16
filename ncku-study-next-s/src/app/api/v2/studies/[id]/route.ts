@@ -11,6 +11,8 @@ export async function GET(
   const { id } = await params;
   const repo = await getStudyRepository();
   const item = await repo.findById(id);
-  if (!item) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  if (!item || item.confirm !== 'true') {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
   return NextResponse.json(item);
 }

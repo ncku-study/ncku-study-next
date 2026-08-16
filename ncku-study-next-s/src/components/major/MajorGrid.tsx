@@ -13,6 +13,7 @@ import AdminReaderModal from './AdminReaderModal';
 import { ALL_COMMENTS_QUERY_KEY } from '@/lib/query-keys';
 import MajorModal from './MajorModal';
 import { useOptionalMajorModalRoute } from './MajorModalRouteContext';
+import { MajorCardsSkeleton } from '@/components/layout/PageSkeletons';
 
 export default function MajorGrid({ isAdmin = false, renderClientModal = true }: { isAdmin?: boolean; renderClientModal?: boolean }) {
   const t = useTranslations('major');
@@ -67,14 +68,7 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
       </StatisticControl>
       
       {isLoading && (
-        <div className="flex flex-wrap justify-start items-start bg-white w-full h-full max-h-full rounded-[10px] overflow-x-hidden gap-[10px]">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="w-[220px] h-[180px] rounded-lg bg-[var(--color-dark-white)] animate-pulse"
-            />
-          ))}
-        </div>
+        <MajorCardsSkeleton />
       )}
       
       {isError && (

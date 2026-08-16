@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getCommentRepository } from '@/lib/repositories';
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const comment = await repo.findById(parseInt(id, 10));
   const pathname = `/major/${encodeURIComponent(id)}`;
 
-  if (!comment) {
+  if (!comment || comment.confirm !== 'true') {
     return buildSeoMetadata({
       title: t('title'),
       description: t('description'),
@@ -48,24 +48,21 @@ export default async function MajorDetailPage({ params }: Props) {
 
   if (!Number.isInteger(numId)) notFound();
 
+  const repo = await getCommentRepository();
+  const comment = await repo.findById(numId);
+
+  if (!comment) notFound();
+  if (comment.confirm !== 'true') redirect('/major');
+
   // Next uses an RSC request for client-side Link/router navigation. Do not
-  // execute the server repository path for that request: MajorDetailClient
-  // will read the already hydrated list from React Query on the browser.
+  // prefetch the list for that request: MajorDetailClient will read the
+  // already hydrated list from React Query on the browser.
   if (isClientNavigation(await headers())) {
     return <MajorDetailClient id={numId} />;
   }
 
   const queryClient = getQueryClient();
-  const repo = await getCommentRepository();
-
-  const [comment] = await Promise.all([
-    repo.findById(numId),
-    prefetchAllComments(queryClient),
-  ]);
-
-  if (!comment) {
-    notFound();
-  }
+  await prefetchAllComments(queryClient);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

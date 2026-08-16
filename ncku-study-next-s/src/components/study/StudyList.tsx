@@ -10,6 +10,7 @@ import { StudyFilterPopup, type StudyFilterState } from './StudyFilterPopup';
 import StudyModal from './StudyModal';
 import { useOptionalStudyModalRoute } from '@/components/major/MajorModalRouteContext';
 import { ALL_STUDIES_QUERY_KEY } from '@/lib/query-keys';
+import { StudyCardsSkeleton } from '@/components/layout/PageSkeletons';
 
 export function StudyList({ isAdmin = false, renderClientModal = true }: { isAdmin?: boolean; renderClientModal?: boolean }) {
   const t = useTranslations('study');
@@ -47,14 +48,7 @@ export function StudyList({ isAdmin = false, renderClientModal = true }: { isAdm
 
       <section className="col-start-1 col-end-2 row-start-2 row-end-3 max-[576px]:overflow-y-auto">
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-0">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-[145px] rounded-lg bg-[var(--color-dark-white)] animate-pulse"
-            />
-          ))}
-          </div>
+          <StudyCardsSkeleton />
         ) : isError ? (
           <div className="text-center py-10 text-[var(--color-red)]">
             {t('error')}

@@ -87,7 +87,7 @@ function NavContent({ children }: { children: React.ReactNode }) {
         )}
       </header>
       <div className={`relative min-h-0 ${isMajorPage ? 'h-full overflow-hidden' : ''}`}>
-        {isPageNavigating ? <NavigationSkeleton /> : children}
+        {isPageNavigating ? <NavigationSkeleton pathname={pendingHref!} /> : children}
         {isModalNavigating && <ModalSkeleton />}
       </div>
     </div>

@@ -10,7 +10,7 @@ export async function prefetchAllStudies(queryClient: QueryClient) {
     queryKey: ALL_STUDIES_QUERY_KEY,
     queryFn: async () => {
       const repo = await getStudyRepository();
-      return repo.findAll();
+      return repo.findAll({ confirm: true });
     },
     staleTime: STUDIES_STALE_TIME,
   });

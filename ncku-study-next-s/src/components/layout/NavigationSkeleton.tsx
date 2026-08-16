@@ -1,4 +1,6 @@
-export default function NavigationSkeleton() {
+import { MajorPageSkeleton, StudyPageSkeleton } from './PageSkeletons';
+
+function GenericPageSkeleton() {
   return (
     <div className="w-full">
       <div className="h-8 w-48 bg-[var(--color-dark-white)] rounded animate-pulse mb-6" />
@@ -14,4 +16,16 @@ export default function NavigationSkeleton() {
       </div>
     </div>
   );
+}
+
+export default function NavigationSkeleton({ pathname }: { pathname: string }) {
+  if (pathname === '/' || /^\/(?:admin\/)?major(?:\/|$)/.test(pathname)) {
+    return <MajorPageSkeleton />;
+  }
+
+  if (/^\/(?:admin\/)?study(?:\/|$)/.test(pathname)) {
+    return <StudyPageSkeleton />;
+  }
+
+  return <GenericPageSkeleton />;
 }

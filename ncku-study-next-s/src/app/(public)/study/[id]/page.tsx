@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getStudyRepository } from '@/lib/repositories';
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const study = await repo.findById(id);
   const pathname = `/study/${encodeURIComponent(id)}`;
 
-  if (!study) {
+  if (!study || study.confirm !== 'true') {
     return buildSeoMetadata({
       title: t('title'),
       description: t('description'),
@@ -45,22 +45,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function StudyDetailPage({ params }: Props) {
   const { id } = await params;
 
+  const repo = await getStudyRepository();
+  const study = await repo.findById(id);
+
+  if (!study) notFound();
+  if (study.confirm !== 'true') redirect('/study');
+
   // A client-side modal navigation is handled by the public modal route
-  // context. Keep this branch as a safe fallback for Next RSC navigations.
+  // context. Keep this branch as a safe fallback for Next RSC navigations
+  // after checking that the requested study is publicly visible.
   if (isClientNavigation(await headers())) {
     return <StudyDetailClient id={id} />;
   }
 
   const queryClient = getQueryClient();
-  const repo = await getStudyRepository();
-  const [study] = await Promise.all([
-    repo.findById(id),
-    prefetchAllStudies(queryClient),
-  ]);
-
-  if (!study) {
-    notFound();
-  }
+  await prefetchAllStudies(queryClient);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
