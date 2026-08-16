@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { CollegeDTO, DepartmentDTO } from "@/types/api";
 import { adminApiFetch } from "@/lib/api-client";
 
@@ -24,6 +25,7 @@ function EditListItem({
   onSubmit: () => void;
   onDelete?: () => void;
 }) {
+  const t = useTranslations("admin");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -56,17 +58,17 @@ function EditListItem({
           <div className="flex justify-end gap-[8px] mt-[4px]">
             {onDelete && (
               <button
-                onClick={() => { if (window.confirm(`確定刪除「${displayName}」嗎？`)) onDelete(); }}
+                onClick={() => { if (window.confirm(t("confirmDeleteNamed", { name: displayName }))) onDelete(); }}
                 className="px-[12px] py-[4px] bg-red-500 text-white rounded text-[0.9rem] hover:opacity-80"
               >
-                刪除
+                {t("delete")}
               </button>
             )}
             <button
               onClick={onSubmit}
               className="px-[12px] py-[4px] bg-[var(--color-yellow)] text-[var(--color-light-black)] rounded text-[0.9rem] hover:opacity-80"
             >
-              送出修改
+              {t("submitUpdate")}
             </button>
           </div>
         </div>
@@ -78,6 +80,7 @@ function EditListItem({
 // ---------- Main Page ----------
 
 export default function AdminDepartmentPage() {
+  const t = useTranslations("admin");
   const [colleges, setColleges] = useState<College[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -199,7 +202,7 @@ export default function AdminDepartmentPage() {
             onClick={() => setColSelected({ id: -1, name: "", nameNext: "" })}
             className="py-[8px] px-[16px] cursor-pointer flex items-center hover:bg-black/4 data-[selected=true]:bg-[var(--color-yellow)]/20 data-[selected=true]:font-semibold"
           >
-            <span className="text-[1rem]">+ 新增</span>
+            <span className="text-[1rem]">{t("add")}</span>
           </li>
         </ul>
       </div>
@@ -207,15 +210,15 @@ export default function AdminDepartmentPage() {
       {/* Right: Edit Panel */}
       <div className="flex-1 min-w-0">
         {!colSelected && (
-          <p className="text-gray-400 text-[1rem] mt-[16px]">請選擇左側學院</p>
+          <p className="text-gray-400 text-[1rem] mt-[16px]">{t("selectCollege")}</p>
         )}
 
         {/* Add new college */}
         {colSelected && colSelected.id === -1 && (
           <div className="flex flex-col gap-[10px] max-w-[400px]">
-            <h4 className="text-[1rem] font-semibold mb-[4px]">新增學院</h4>
+            <h4 className="text-[1rem] font-semibold mb-[4px]">{t("addCollege")}</h4>
             <div className="flex flex-col gap-[4px]">
-              <label className="text-[0.85rem] text-gray-500">新的學院名稱</label>
+              <label className="text-[0.85rem] text-gray-500">{t("newCollegeName")}</label>
               <input
                 value={newCollegeName}
                 onChange={(e) => setNewCollegeName(e.target.value)}
@@ -228,7 +231,7 @@ export default function AdminDepartmentPage() {
                 disabled={!newCollegeName.trim()}
                 className="px-[15px] py-[6px] bg-[var(--color-yellow)] text-[var(--color-light-black)] rounded text-[0.95rem] hover:opacity-80 disabled:opacity-50"
               >
-                確定新增
+                {t("confirmAdd")}
               </button>
             </div>
           </div>
@@ -238,14 +241,14 @@ export default function AdminDepartmentPage() {
         {colSelected && colSelected.id !== -1 && (
           <>
             <div className="mb-[20px]">
-              <h4 className="text-[1rem] font-semibold mb-[8px]">目前選擇學院</h4>
+              <h4 className="text-[1rem] font-semibold mb-[8px]">{t("currentCollege")}</h4>
               <EditListItem
                 displayName={colSelected.name}
                 highlighted={!!(colSelected.nameNext && colSelected.nameNext !== colSelected.name)}
                 inputArr={[{
                   id: "0",
                   value: colSelected.nameNext ?? colSelected.name,
-                  wording: "名稱",
+                  wording: t("name"),
                   onChange: (e) => setColSelected((prev) => prev ? { ...prev, nameNext: e.target.value } : prev),
                 }]}
                 onSubmit={() => handleUpdateCollege(colSelected)}
@@ -254,7 +257,7 @@ export default function AdminDepartmentPage() {
             </div>
 
             <div>
-              <h4 className="text-[1rem] font-semibold mb-[8px]">學系列表</h4>
+              <h4 className="text-[1rem] font-semibold mb-[8px]">{t("departmentList")}</h4>
               {filteredDeps.map((dep) => (
                 <EditListItem
                   key={dep.id}
@@ -263,7 +266,7 @@ export default function AdminDepartmentPage() {
                   inputArr={[{
                     id: "0",
                     value: dep.nameNext ?? dep.name,
-                    wording: "名稱",
+                    wording: t("name"),
                     onChange: (e) =>
                       setDepartments((prev) =>
                         prev.map((d) => d.id === dep.id ? { ...d, nameNext: e.target.value } : d)
@@ -276,12 +279,12 @@ export default function AdminDepartmentPage() {
 
               {/* Add department */}
               <EditListItem
-                displayName="+ 新增學系"
+                displayName={t("addDepartment")}
                 highlighted={newDepartmentName !== ""}
                 inputArr={[{
                   id: "0",
                   value: newDepartmentName,
-                  wording: "新的學系名稱",
+                  wording: t("newDepartmentName"),
                   onChange: (e) => setNewDepartmentName(e.target.value),
                 }]}
                 onSubmit={handleCreateDepartment}

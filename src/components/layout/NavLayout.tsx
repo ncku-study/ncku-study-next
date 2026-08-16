@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { SidebarProvider, SidebarDrawer, useSidebar } from "@/components/sidebar/SidebarDrawer";
 import { Search as SearchIcon } from "@/components/logos";
 import NavigationSkeleton from "@/components/layout/NavigationSkeleton";
@@ -15,25 +16,27 @@ function isModalRoute(href: string): boolean {
     || /^\/study\/[^/]+$/.test(href);
 }
 
-const pageTitles: Record<string, string> = {
-  "/": "成大轉系/輔系/雙主修心得",
-  "/major": "成大轉系/輔系/雙主修心得",
-  "/study": "成大學業心得",
-  "/post": "分享心得",
+const pageTitleKeys: Record<string, string> = {
+  "/": "majorTitle",
+  "/major": "majorTitle",
+  "/study": "studyTitle",
+  "/post": "postTitle",
 };
 
-function getTitle(pathname: string): string {
-  if (pathname.startsWith("/admin/study")) return "綜合學業心得";
-  if (pathname.startsWith("/admin/major")) return "審查 轉系/輔系/雙主修心得";
-  if (pathname.startsWith("/admin/department")) return "學院學系設定";
-  if (pathname.startsWith("/admin/announcement")) return "公告設定";
-  return pageTitles[pathname] || pageTitles[pathname.split("/").slice(0, 2).join("/")] || "成大轉系/輔系/雙主修心得";
+function getTitle(pathname: string, t: (key: string) => string): string {
+  if (pathname.startsWith("/admin/study")) return t("adminStudyTitle");
+  if (pathname.startsWith("/admin/major")) return t("adminMajorTitle");
+  if (pathname.startsWith("/admin/department")) return t("adminDepartmentTitle");
+  if (pathname.startsWith("/admin/announcement")) return t("adminAnnouncementTitle");
+  const key = pageTitleKeys[pathname] || pageTitleKeys[pathname.split("/").slice(0, 2).join("/")] || "majorTitle";
+  return t(key);
 }
 
 function HamburgerButton() {
   const { toggle } = useSidebar();
+  const t = useTranslations("nav");
   return (
-    <button className="md:hidden cursor-pointer border-0 bg-transparent p-0 mr-0 leading-none" onClick={toggle} aria-label="選單">
+    <button className="md:hidden cursor-pointer border-0 bg-transparent p-0 mr-0 leading-none" onClick={toggle} aria-label={t("menu")}>
       <svg
         focusable="false"
         aria-hidden="true"
@@ -50,11 +53,12 @@ function HamburgerButton() {
 
 function NavContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
   const { pendingHref } = useSidebar();
   const isNavigating = pendingHref !== null && pendingHref !== pathname;
   const isModalNavigating = isNavigating && isModalRoute(pendingHref!);
   const isPageNavigating = isNavigating && !isModalNavigating;
-  const title = isNavigating ? getTitle(pendingHref!) : getTitle(pathname);
+  const title = isNavigating ? getTitle(pendingHref!, t) : getTitle(pathname, t);
   const isShowSearch = pathname === '/study';
   const isMajorPage = pathname === '/' || pathname.startsWith('/major') || pathname.startsWith('/admin/major');
 

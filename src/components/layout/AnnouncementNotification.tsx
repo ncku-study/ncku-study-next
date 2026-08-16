@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { AnnouncementDTO } from "@/types/api";
 import { adminApiFetch, apiFetch } from "@/lib/api-client";
 
@@ -55,6 +56,7 @@ function rememberReadAnnouncement(announcement: AnnouncementDTO): void {
 
 export default function AnnouncementNotification() {
   const pathname = usePathname();
+  const t = useTranslations("common");
   const [announcement, setAnnouncement] = useState<AnnouncementDTO | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -129,7 +131,7 @@ export default function AnnouncementNotification() {
         onClick={handleClose}
         className="shrink-0 rounded-full border-0 bg-white/80 px-3 py-2 text-[14px] text-[var(--color-dark-black)] hover:bg-white"
       >
-        我知道了
+        {t("acknowledge")}
       </button>
     </div>
   );

@@ -50,18 +50,18 @@ export function SidebarDrawer() {
   const isAdmin = pathname.startsWith("/admin/") || pathname === "/admin";
 
   const regularLinks: NavLink[] = [
-    { href: "/", activePaths: ["/", "/major"], label: t("major") || "轉系雙主修", Icon: MajorLogo },
-    { href: "/study", activePaths: ["/study"], label: t("study") || "學業心得", Icon: StudyLogo },
-    { href: "/post", activePaths: ["/post"], label: t("post") || "我要分享", Icon: PostLogo },
-    { href: "https://forms.gle/qqrnLmhQoLyZ1BULA", activePaths: [], label: "聯絡我們", Icon: ContactLogo, isExternal: true },
+    { href: "/", activePaths: ["/", "/major"], label: t("major"), Icon: MajorLogo },
+    { href: "/study", activePaths: ["/study"], label: t("study"), Icon: StudyLogo },
+    { href: "/post", activePaths: ["/post"], label: t("post"), Icon: PostLogo },
+    { href: "https://forms.gle/qqrnLmhQoLyZ1BULA", activePaths: [], label: t("contact"), Icon: ContactLogo, isExternal: true },
   ];
 
   const adminLinks: NavLink[] = [
-    { href: "/admin/study", activePaths: ["/admin/study"], label: "審查學業", Icon: SchoolIcon },
-    { href: "/admin/major", activePaths: ["/admin/major"], label: "審查轉輔轉", Icon: MajorLogo },
-    { href: "/admin/department", activePaths: ["/admin/department"], label: "學院系設定", Icon: SettingsIcon },
-    { href: "/admin/announcement", activePaths: ["/admin/announcement"], label: "公告設定", Icon: AlertCircleIcon },
-    { href: "/", activePaths: [], label: "回到首頁", Icon: HomeIcon },
+    { href: "/admin/study", activePaths: ["/admin/study"], label: t("adminStudy"), Icon: SchoolIcon },
+    { href: "/admin/major", activePaths: ["/admin/major"], label: t("adminMajor"), Icon: MajorLogo },
+    { href: "/admin/department", activePaths: ["/admin/department"], label: t("adminDepartment"), Icon: SettingsIcon },
+    { href: "/admin/announcement", activePaths: ["/admin/announcement"], label: t("adminAnnouncement"), Icon: AlertCircleIcon },
+    { href: "/", activePaths: [], label: t("home"), Icon: HomeIcon },
   ];
 
   const navLinks = isAdmin ? adminLinks : regularLinks;

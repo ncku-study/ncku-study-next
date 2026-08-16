@@ -1,22 +1,23 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { adminApiFetch } from "@/lib/api-client";
 import type { CommentDTO, StudyDTO } from "@/types/api";
 import { PostFormContainer, type PostFormEditProps } from "@/app/(public)/post/_components/PostFormContainer";
 
 /** Map CommentDTO fields to PostFormContainer defaultValues shape */
-function mapCommentToDefaults(c: CommentDTO): Record<string, unknown> {
+function mapCommentToDefaults(c: CommentDTO, defaultCategory: string, defaultMajor: string): Record<string, unknown> {
   return {
-    category: c.category ?? "\u8f49\u7cfb",
+    category: c.category ?? defaultCategory,
     rank_1: c.rank_1 ?? "",
     rank_2: c.rank_2 ?? "",
     year: c.year ?? 114,
     score: c.score ?? "",
     isPass: c.isPass ?? "true",
-    out_maj: c.out_maj ?? "\u4e2d\u6587\u7cfb",
-    in_maj: c.in_maj ?? "\u4e2d\u6587\u7cfb",
+    out_maj: c.out_maj ?? defaultMajor,
+    in_maj: c.in_maj ?? defaultMajor,
     department: c.department ?? "",
     comment: c.comment ?? "",
   };
@@ -38,6 +39,8 @@ function mapStudyToDefaults(s: StudyDTO): Record<string, unknown> {
 
 export default function AdminPostPage() {
   const searchParams = useSearchParams();
+  const tPost = useTranslations("post");
+  const tAdmin = useTranslations("admin");
   const type = searchParams.get("type") as "major" | "study" | null;
   const id = searchParams.get("id");
 
@@ -62,7 +65,7 @@ export default function AdminPostPage() {
   if (!isValidParams) {
     return (
       <div className="p-8 text-center text-[var(--color-red)]">
-        {"\u7121\u6548\u7684\u7de8\u8f2f\u53c3\u6578\uff0c\u8acb\u5f9e\u5be9\u67e5\u9801\u9762\u9032\u5165\u7de8\u8f2f\u3002"}
+        {tAdmin("invalidEditParams")}
       </div>
     );
   }
@@ -89,8 +92,10 @@ export default function AdminPostPage() {
     editType: type!,
     editId: id!,
     isAdmin: true,
-    editDefaultValues:
-      type === "major" ? mapCommentToDefaults(comment!) : mapStudyToDefaults(study!),
+      editDefaultValues:
+      type === "major"
+        ? mapCommentToDefaults(comment!, tPost("categoryTransfer"), tPost("defaultMajor"))
+        : mapStudyToDefaults(study!),
   };
 
   return (

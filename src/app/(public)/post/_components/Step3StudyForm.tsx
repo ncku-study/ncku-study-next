@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "@/components/logos";
 import { adminApiFetch, apiFetch } from "@/lib/api-client";
@@ -26,6 +27,7 @@ const inputClass =
   "w-full h-[40px] border-b border-gray-400 bg-transparent outline-none text-[1.7rem] focus:border-[var(--color-yellow)]";
 
 export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
+  const t = useTranslations("post");
   const { register, watch, setValue, formState: { errors } } = useFormContext<StudyFormValues>();
   const [search, setSearch] = useState("");
   const title = watch("title") as string;
@@ -55,16 +57,16 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
     <div className="mx-auto w-[458px] max-[870px]:w-[80%] bg-white">
       <p className="mb-[20px] text-center text-[1.7rem] text-[rgba(163,158,158,1)]">
-        {title || "你未填寫心得標題"}
+        {title || t("missingStudyTitle")}
       </p>
 
       <p className="mb-[20px] text-center text-[1.7rem] text-[rgba(163,158,158,1)]">
-        選擇你要分享的統計資料
+        {t("selectStatistics")}
       </p>
 
       <div className="relative mb-[20px] h-[45px] w-full">
         <input
-          aria-label="搜尋統計資料"
+          aria-label={t("searchStatistics")}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           className="h-full w-full rounded-[55px] border border-black/5 bg-white px-[15px] pr-[55px] text-[1.5rem] outline-none focus:border-black/20"
@@ -103,13 +105,13 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
           type="button"
           className="flex min-h-[36px] items-center justify-center rounded-[50px] border-[2px] border-[var(--color-yellow)] bg-white px-[12px] text-[1.4rem] text-[var(--color-yellow)] outline-none"
         >
-          + 其他類別
+          {t("otherCategory")}
         </button>
       </div>
 
       {selected.length === 0 && (
         <p className="mb-[20px] text-left text-[1.5rem] text-black">
-          *目前沒有選擇任何統計資料項目
+          {t("noStatisticsSelected")}
         </p>
       )}
       {errors.studyCategories?.message && (
@@ -139,7 +141,7 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
 
       <div className="relative mb-[20px]">
         <label className="absolute left-0 top-[-18px] text-[1.7rem] text-[rgba(0,0,0,0.54)]">
-          心得
+          {t("studyComment")}
         </label>
         <textarea
           {...register("content")}

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useReducer } from 'react';
+import { useTranslations } from 'next-intl';
 import { CommentDTO } from '@/types/api';
 import { useOptionalMajorModalRoute } from '@/components/major/MajorModalRouteContext';
 
@@ -24,6 +25,7 @@ interface TransCardProps {
 }
 
 export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
+  const t = useTranslations('major');
   const [wordsNumber, dispatch] = useReducer(reducer, 27);
   const majorRoute = useOptionalMajorModalRoute();
 
@@ -42,11 +44,11 @@ export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
 
   const getCategoryStyles = (category: string | undefined) => {
     switch (category) {
-      case '\u8f49\u7cfb':
+      case t('categoryTransfer'):
         return { bg: 'bg-background-yellow', text: 'text-dark-yellow', metaText: 'text-dark-yellow' };
-      case '\u8f14\u7cfb':
+      case t('categoryMinor'):
         return { bg: 'bg-[rgba(29,30,34,0.2)]', text: 'text-dark-black', metaText: 'text-dark-black' };
-      case '\u96d9\u4e3b\u4fee':
+      case t('categoryDouble'):
       default:
         return { bg: 'bg-[var(--color-light-black)]', text: 'text-white', metaText: 'text-[var(--color-light-black)]' };
     }
@@ -75,7 +77,7 @@ export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
           <h4 className="text-[1.8rem] mt-[10px] mb-[10px] leading-[1.1]">
             {data.in_maj}
           </h4>
-          <div className="text-dark-gray text-[1.2rem]">{'\u539f\u4e3b\u4fee'} {data.out_maj}</div>
+          <div className="text-dark-gray text-[1.2rem]">{t('originalMajor')}: {data.out_maj}</div>
           <p className="text-[1.3rem] text-justify mt-0 mb-[1rem] max-sm:text-[1.5rem]" style={{ lineBreak: 'anywhere' }}>
             {preview}
           </p>
@@ -87,14 +89,14 @@ export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
       </div>
 
       {!isAdmin && (
-        <a href={href} onClick={handleClientNavigation} className="absolute top-0 left-0 w-full h-[75%] opacity-0">{'\u8a73\u7d30\u5167\u5bb9'}</a>
+        <a href={href} onClick={handleClientNavigation} className="absolute top-0 left-0 w-full h-[75%] opacity-0">{t('viewDetails')}</a>
       )}
 
       {isAdmin && onOpen && (
         <button
           onClick={() => onOpen(data)}
           className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-          aria-label="\u958b\u555f\u8a73\u7d30\u5167\u5bb9"
+          aria-label={t('openDetails')}
         />
       )}
     </div>

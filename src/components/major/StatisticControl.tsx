@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BarChart as BarChartLogo } from "@/components/logos";
 
 interface StatisticControlProps {
@@ -10,6 +11,7 @@ interface StatisticControlProps {
 
 export default function StatisticControl({ children }: StatisticControlProps) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("major");
 
   return (
     <>
@@ -22,7 +24,7 @@ export default function StatisticControl({ children }: StatisticControlProps) {
         <button
           className="min-[577px]:hidden fixed bottom-[40px] right-[20px] z-40 w-[50px] h-[50px] rounded-full bg-white shadow-[0px_0px_4px_rgba(0,0,0,0.25)] flex items-center justify-center text-yellow cursor-pointer border-none"
           onClick={() => setOpen(true)}
-          aria-label="統計數據"
+          aria-label={t("statistics")}
         >
           <BarChartLogo style={{ width: "3rem", height: "3rem" }} />
         </button>
@@ -39,11 +41,11 @@ export default function StatisticControl({ children }: StatisticControlProps) {
           >
             {/* Header */}
             <div className="relative px-[15px] min-h-[50px] flex items-center">
-              <h4 className="m-0 text-[1.6rem]">統計數據</h4>
+              <h4 className="m-0 text-[1.6rem]">{t("statistics")}</h4>
               <button
                 className="absolute top-[5px] right-[5px] w-[35px] h-[35px] bg-transparent border-none outline-none flex items-center justify-center text-black/50 cursor-pointer"
                 onClick={() => setOpen(false)}
-                aria-label="關閉"
+                aria-label={t("close")}
               >
                 <X size={20} />
               </button>

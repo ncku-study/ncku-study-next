@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { adminApiFetch } from '@/lib/api-client';
 import type { CommentDTO } from '@/types/api';
 import MajorGrid from '@/components/major/MajorGrid';
@@ -14,6 +15,8 @@ export default function AdminMajorDetailPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const tMajor = useTranslations('major');
+  const tCommon = useTranslations('common');
   const numId = parseInt(params.id as string, 10);
   const [waitDelete, setWaitDelete] = useState(false);
 
@@ -66,7 +69,7 @@ export default function AdminMajorDetailPage() {
               <>
                 {/* Confirm toggle — vite Confirm style: justify-end */}
                 <div className="h-[50px] shrink-0 flex items-center justify-end gap-[10px]">
-                  <p className="mr-[10px] m-0">{"\u662f\u5426\u5df2\u5be9\u67e5"}</p>
+                  <p className="mr-[10px] m-0">{tMajor('reviewed')}</p>
                   <button
                     onClick={() => confirmMutation.mutate()}
                     disabled={confirmMutation.isPending}
@@ -96,13 +99,13 @@ export default function AdminMajorDetailPage() {
                         onClick={() => setWaitDelete(true)}
                         className="h-[40px] w-[120px] bg-white border-2 border-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                       >
-                        {"\u522a\u9664\u6b64\u5fc3\u5f97"}
+                        {tCommon('deleteStudy')}
                       </button>
                       <button
                         onClick={() => router.push(`/admin/post?type=major&id=${numId}`)}
                         className="h-[40px] w-[110px] bg-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75"
                       >
-                        {"\u7de8\u8f2f"}
+                        {tCommon('edit')}
                       </button>
                     </>
                   ) : (
@@ -112,15 +115,15 @@ export default function AdminMajorDetailPage() {
                         onClick={() => deleteMutation.mutate()}
                         className="h-[40px] w-[120px] bg-white border-2 border-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                       >
-                        {"\u78ba\u8a8d\u522a\u9664"}
+                        {tCommon('confirmDelete')}
                       </button>
-                      <p className="font-bold m-[10px] text-sm">{"\u771f\u7684\u8981\u522a\u9664\u9019\u500b\u5fc3\u5f97\u55ce?"}</p>
+                      <p className="font-bold m-[10px] text-sm">{tCommon('confirmDeleteStudy')}</p>
                       <button
                         disabled={deleteMutation.isPending}
                         onClick={() => setWaitDelete(false)}
                         className="h-[40px] w-[110px] bg-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                       >
-                        {"\u53d6\u6d88"}
+                        {tCommon('cancel')}
                       </button>
                     </>
                   )}

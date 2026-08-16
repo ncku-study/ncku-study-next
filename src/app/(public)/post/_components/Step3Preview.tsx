@@ -1,28 +1,36 @@
 "use client";
 
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 
-const majorColors: Record<string, { color: string; backgroundColor: string }> = {
-  獎學金: { color: "rgba(225, 175, 19, 1)", backgroundColor: "rgba(254, 218, 106, 0.4)" },
-  實習: { color: "rgba(29, 30, 34, 1)", backgroundColor: "rgba(29, 30, 34, 0.2)" },
-  轉輔雙主: { color: "#FFFFFF", backgroundColor: "#393F4D" },
+const categoryColors: Record<string, { color: string; backgroundColor: string }> = {
+  transfer: { color: "rgba(225, 175, 19, 1)", backgroundColor: "rgba(254, 218, 106, 0.4)" },
+  minor: { color: "rgba(29, 30, 34, 1)", backgroundColor: "rgba(29, 30, 34, 0.2)" },
+  double: { color: "#FFFFFF", backgroundColor: "#393F4D" },
 };
 
 export function Step3Preview() {
   const { getValues } = useFormContext();
+  const t = useTranslations("post");
   const values = getValues();
   const isMajor = values.postType === "major";
 
   if (isMajor) {
-    const category = String(values.category ?? "獎學金");
-    const typeColors = majorColors[category] ?? majorColors.獎學金;
+    const categoryLabels = {
+      transfer: t("categoryTransfer"),
+      minor: t("categoryMinor"),
+      double: t("categoryDouble"),
+    };
+    const category = String(values.category ?? categoryLabels.transfer);
+    const categoryKey = Object.entries(categoryLabels).find(([, label]) => label === category)?.[0] ?? "transfer";
+    const typeColors = categoryColors[categoryKey];
     const isPass = values.isPass === "true";
     const details = [
-      { type: "年份", value: String(values.year ?? "") },
-      { type: "校內排名", value: String(values.rank_1 ?? "") },
-      { type: "校外排名", value: String(values.rank_2 ?? "") },
-      { type: "總平均分數", value: String(values.score ?? "") },
-      { type: "是否通過", value: isPass ? "是" : "否" },
+      { type: t("year"), value: String(values.year ?? "") },
+      { type: t("rankUpper"), value: String(values.rank_1 ?? "") },
+      { type: t("rankLower"), value: String(values.rank_2 ?? "") },
+      { type: t("academicScore"), value: String(values.score ?? "") },
+      { type: t("applicationResult"), value: isPass ? t("yes") : t("no") },
     ];
 
     return (
@@ -68,8 +76,8 @@ export function Step3Preview() {
   // Match Vite's DataMapping.dateSpawner, which uses zero-based getMonth().
   const postDate = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
   const details = [
-    { name: "原主修科系", value: major },
-    { name: "年份", value: year },
+    { name: t("originalMajor"), value: major },
+    { name: t("year"), value: year },
     ...selectedStatistics.map((name) => ({ name, value: String(statistics[name] ?? "") })),
   ];
 

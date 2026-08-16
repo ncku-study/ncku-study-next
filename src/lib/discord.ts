@@ -93,10 +93,11 @@ async function postDiscordWebhook(url: string | undefined, payload: DiscordPaylo
 }
 
 export async function notifyNewComment(data: CommentNotificationData): Promise<void> {
+  const t = await getTranslations('discord');
   const isPass = data.isPass === true || asString(data.isPass) === 'true';
   const payload: DiscordPayload = {
-    content: '<@&857153250213756928> 有一則新的[轉雙輔系心得]需要你審查喔!',
-    username: '心得審查通知',
+    content: t('majorContent', { mention: '<@&857153250213756928>' }),
+    username: t('reviewUsername'),
     tts: false,
     embeds: [{
       title: `${asString(data.category)} - ${asString(data.in_maj)}`,
@@ -106,11 +107,11 @@ export async function notifyNewComment(data: CommentNotificationData): Promise<v
       timestamp: new Date().toISOString(),
       color: isPass ? 0x3366ff : 0xd25565,
       fields: [
-        { name: '申請年', value: asString(data.year), inline: false },
-        { name: '平均分數', value: asString(data.score), inline: false },
-        { name: '排名上/下', value: `${asString(data.rank_1)}/${asString(data.rank_2)}`, inline: false },
-        { name: '原主修', value: asString(data.out_maj), inline: false },
-        { name: '申請結果', value: isPass ? '通過' : '未通過', inline: false },
+        { name: t('applicationYear'), value: asString(data.year), inline: false },
+        { name: t('averageScore'), value: asString(data.score), inline: false },
+        { name: t('ranking'), value: `${asString(data.rank_1)}/${asString(data.rank_2)}`, inline: false },
+        { name: t('originalMajor'), value: asString(data.out_maj), inline: false },
+        { name: t('applicationResult'), value: isPass ? t('pass') : t('fail'), inline: false },
       ],
     }],
   };
@@ -119,18 +120,19 @@ export async function notifyNewComment(data: CommentNotificationData): Promise<v
 }
 
 export async function notifyNewStudy(data: StudyNotificationData): Promise<void> {
+  const t = await getTranslations('discord');
   const statistic = data.statistic ?? data.statistics;
   const otherStatistic = data.otherStatistic ?? data.otherStat;
   const fields: DiscordEmbedField[] = [
-    { name: '申請年', value: asString(data.year), inline: false },
-    { name: '主修', value: asString(data.major), inline: false },
+    { name: t('applicationYear'), value: asString(data.year), inline: false },
+    { name: t('major'), value: asString(data.major), inline: false },
     ...toNamedValueFields(statistic),
-    ...toNamedValueFields(otherStatistic, '[其他數據] '),
+    ...toNamedValueFields(otherStatistic, t('otherStatsPrefix')),
   ];
 
   const payload: DiscordPayload = {
-    content: '<@&857153250213756928> 有一則新的[通用學業心得]需要你審查喔!',
-    username: '心得審查通知',
+    content: t('studyContent', { mention: '<@&857153250213756928>' }),
+    username: t('reviewUsername'),
     tts: false,
     embeds: [{
       title: asString(data.title),
@@ -145,3 +147,4 @@ export async function notifyNewStudy(data: StudyNotificationData): Promise<void>
 
   await postDiscordWebhook(process.env.DISCORD_WEBHOOK_STUDY, payload);
 }
+import { getTranslations } from 'next-intl/server';

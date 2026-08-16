@@ -95,19 +95,19 @@ export function PostFormContainer(props?: PostFormEditProps) {
 
   const baseDefaults = {
     postType: isEditMode ? props!.editType : undefined,
-    category: "轉系",
+    category: t("categoryTransfer"),
     rank_1: "",
     rank_2: "",
     year: getLatestAcademicYear(),
     score: "",
     isPass: "true",
-    out_maj: "中文系",
-    in_maj: "中文系",
+    out_maj: t("defaultMajor"),
+    in_maj: t("defaultMajor"),
     department: "",
     comment: "",
     title: "",
     content: "",
-    major: "中文系",
+    major: t("defaultMajor"),
     studyCategories: [] as string[],
     statistics: {} as Record<string, string | number>,
   };
@@ -131,7 +131,7 @@ export function PostFormContainer(props?: PostFormEditProps) {
       ]
     : [
         { id: 1, title: t("step1") },
-        { id: 2, title: `${t("step2")}和心得內文` },
+        { id: 2, title: t("step2Content", { step2: t("step2") }) },
         { id: 3, title: t("step4") },
       ];
 
@@ -213,7 +213,7 @@ export function PostFormContainer(props?: PostFormEditProps) {
       {isPreviewOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="relative bg-white p-[5px]">
-            <h4 className="text-center text-[1.5rem]">請確認填寫的內容，送出之後就無法修改歐!</h4>
+            <h4 className="text-center text-[1.5rem]">{t("previewConfirm")}</h4>
             <hr className="border-[rgba(0,0,0,0.12)]" />
             <Step3Preview />
             <div className="w-full h-[75px] flex justify-end items-center">
@@ -223,7 +223,7 @@ export function PostFormContainer(props?: PostFormEditProps) {
                 className="min-w-[100px] h-[40px] rounded-[5px] bg-white text-black border-none outline-none cursor-pointer"
                 style={{ marginRight: "20px" }}
               >
-                返回修改
+                {t("backToEdit")}
               </button>
               <button
                 type="button"
@@ -231,7 +231,7 @@ export function PostFormContainer(props?: PostFormEditProps) {
                 disabled={mutation.isPending}
                 className="min-w-[100px] h-[40px] rounded-[5px] bg-[var(--color-yellow)] text-black border-none outline-none cursor-pointer disabled:opacity-50"
               >
-                {mutation.isPending ? tCommon("loading") : "確認送出"}
+                {mutation.isPending ? tCommon("loading") : t("confirmSubmit")}
               </button>
             </div>
           </div>
@@ -261,24 +261,24 @@ export function PostFormContainer(props?: PostFormEditProps) {
             </svg>
             {isEditMode ? (
               <>
-                <h4 className="text-center text-[2.5rem] mt-[20px]">{"\u66f4\u65b0\u6210\u529f!"}</h4>
+                <h4 className="text-center text-[2.5rem] mt-[20px]">{t("updateSuccess")}</h4>
                 <button
                   onClick={() => router.push(props!.editType === "major" ? "/admin/major" : "/admin/study")}
                   className="h-[40px] w-[180px] mt-[35px] rounded-[5px] bg-[var(--color-yellow)] text-black border-none outline-none cursor-pointer"
                 >
-                  {"\u56de\u5230\u5be9\u67e5\u9801\u9762"}
+                  {t("returnToReview")}
                 </button>
               </>
             ) : (
               <>
-                <h4 className="text-center text-[2.5rem] mt-[20px]">{"\u611f\u8b1d\u4f60\u7684\u586b\u5beb!"}</h4>
-                <div className="text-center text-[rgba(163,158,158,1)] text-[1.4rem]">{"\u7b49\u5f85\u5be9\u67e5\u901a\u904e\u5f8c\u5c31\u80fd\u770b\u5230\u4f60\u7684\u5fc3\u5f97\u56c9"}</div>
-                <div className="text-center text-[rgba(163,158,158,1)] text-[1.4rem]">{"\u82e5\u4e00\u76f4\u6c92\u770b\u5230\u4f60\u7684\u5fc3\u5f97\uff0c\u8acb\u806f\u7d61\u6211\u5011"}</div>
+                <h4 className="text-center text-[2.5rem] mt-[20px]">{t("thankYou")}</h4>
+                <div className="text-center text-[rgba(163,158,158,1)] text-[1.4rem]">{t("pendingReview")}</div>
+                <div className="text-center text-[rgba(163,158,158,1)] text-[1.4rem]">{t("contactUs")}</div>
                 <button
                   onClick={() => router.push("/")}
                   className="h-[40px] w-[150px] mt-[35px] rounded-[5px] bg-[var(--color-yellow)] text-black border-none outline-none cursor-pointer"
                 >
-                  {"\u56de\u5230\u5fc3\u5f97\u7e3d\u89bd\u9801\u9762"}
+                  {t("backToOverview")}
                 </button>
               </>
             )}
@@ -299,7 +299,7 @@ export function PostFormContainer(props?: PostFormEditProps) {
                 className={`min-w-[100px] h-[40px] rounded-[5px] border-none bg-white text-black outline-none cursor-pointer ${step === 1 || (isEditMode && step === 2) ? "invisible" : ""}`}
                 style={{ marginRight: "20px", fontFamily: "Arial", fontSize: "13.3333px", lineHeight: "normal", padding: "1px 6px" }}
               >
-                返回
+                {t("back")}
               </button>
 
               {step === 1 || step === 2 ? (

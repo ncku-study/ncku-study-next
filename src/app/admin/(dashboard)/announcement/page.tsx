@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { AnnouncementDTO } from "@/types/api";
 import { adminApiFetch } from "@/lib/api-client";
 
 export default function AdminAnnouncementPage() {
+  const t = useTranslations("admin");
   const [announcement, setAnnouncement] = useState<AnnouncementDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,7 +83,7 @@ export default function AdminAnnouncementPage() {
     <div className="min-w-[350px] w-[85%] max-w-[1050px]">
       {/* Toggle row */}
       <div className="h-[50px] flex items-center gap-[10px]">
-        <span className="text-[1.5rem]">彈出式公告</span>
+        <span className="text-[1.5rem]">{t("announcementToggle")}</span>
         <button
           onClick={handleToggle}
           disabled={isSubmitting}
@@ -96,7 +98,7 @@ export default function AdminAnnouncementPage() {
             }`}
           />
           <span className={`absolute text-white text-[0.75rem] font-medium transition-all duration-200 ${isShow ? "left-[8px]" : "right-[6px]"}`}>
-            {isShow ? "開啟" : "關閉"}
+            {isShow ? t("enabled") : t("disabled")}
           </span>
         </button>
       </div>
@@ -116,14 +118,14 @@ export default function AdminAnnouncementPage() {
           disabled={isSubmitting}
           className="h-[35px] px-[15px] bg-[var(--color-yellow)] text-[var(--color-light-black)] rounded text-[1.4rem] font-medium hover:opacity-80 transition-opacity disabled:opacity-50"
         >
-          修改
+          {t("editAnnouncement")}
         </button>
         <button
           onClick={handlePreview}
           disabled={isSubmitting || !announcement}
           className="h-[35px] px-[15px] bg-[var(--color-yellow)] text-[var(--color-light-black)] rounded text-[1.4rem] font-medium hover:opacity-80 transition-opacity disabled:opacity-50"
         >
-          預覽畫面
+          {t("previewAnnouncement")}
         </button>
       </div>
     </div>

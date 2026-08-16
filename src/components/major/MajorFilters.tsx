@@ -79,9 +79,9 @@ export function MajorFilters({ filters, onChange, isAdmin = false }: MajorFilter
         type={t('filterByCategory')}
         options={[
           { name: t('allCategories'), value: '' },
-          { name: t('categoryTransfer'), value: '轉系' },
-          { name: t('categoryMinor'), value: '輔系' },
-          { name: t('categoryDouble'), value: '雙主修' },
+          { name: t('categoryTransfer'), value: t('categoryTransfer') },
+          { name: t('categoryMinor'), value: t('categoryMinor') },
+          { name: t('categoryDouble'), value: t('categoryDouble') },
         ]}
         value={filters.category}
         onChange={(v) => onChange({ ...filters, category: v })}

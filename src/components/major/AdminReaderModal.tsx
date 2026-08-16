@@ -2,20 +2,28 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { CommentDTO } from "@/types/api";
 import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
 import { adminApiFetch } from "@/lib/api-client";
 
-const colorMap: Record<string, { backgroundColor: string; color: string }> = {
-  轉系: { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" },
-  輔系: { backgroundColor: "rgba(29, 30, 34, 0.2)", color: "rgba(29, 30, 34, 1)" },
-  雙主修: { backgroundColor: "#393F4D", color: "#FFFFFF" },
+const categoryColors: Record<string, { backgroundColor: string; color: string }> = {
+  transfer: { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" },
+  minor: { backgroundColor: "rgba(29, 30, 34, 0.2)", color: "rgba(29, 30, 34, 1)" },
+  double: { backgroundColor: "#393F4D", color: "#FFFFFF" },
 };
 const defaultIconStyle = { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" };
 
-function isPassDisplay(value: string): string {
-  if (value === "false" || value === "未通過") return "未通過";
-  return "通過";
+function getCategoryStyle(category: string, labels: { transfer: string; minor: string; double: string }) {
+  if (category === labels.transfer) return categoryColors.transfer;
+  if (category === labels.minor) return categoryColors.minor;
+  if (category === labels.double) return categoryColors.double;
+  return defaultIconStyle;
+}
+
+function isPassDisplay(value: string, passLabel: string, failLabel: string): string {
+  if (value === "false" || value === failLabel) return failLabel;
+  return passLabel;
 }
 
 function ChangeArrow({ direction, visible, onClick }: { direction: "left" | "right"; visible: boolean; onClick: () => void }) {
@@ -41,6 +49,8 @@ interface Props {
 }
 
 export default function AdminReaderModal({ comment, allComments, onClose, onNavigate }: Props) {
+  const tMajor = useTranslations("major");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isPending, setIsPending] = useState(false);
@@ -104,13 +114,20 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, prevComment, nextComment, onNavigate]);
 
-  const iconStyle = colorMap[comment.category] ?? defaultIconStyle;
+  const categoryLabels = {
+    transfer: tMajor("categoryTransfer"),
+    minor: tMajor("categoryMinor"),
+    double: tMajor("categoryDouble"),
+    pass: tMajor("pass"),
+    fail: tMajor("fail"),
+  };
+  const iconStyle = getCategoryStyle(comment.category, categoryLabels);
 
   const tags = [
-    { type: "申請年度", value: String(comment.year) },
-    { type: "學年分數", value: String(comment.score) },
-    { type: "申請結果", value: comment.isPass },
-    { type: "排名(上/下)", value: `${comment.rank_1} / ${comment.rank_2}` },
+    { type: tMajor("applicationYear"), value: String(comment.year) },
+    { type: tMajor("academicScore"), value: String(comment.score) },
+    { type: tMajor("applicationResult"), value: comment.isPass },
+    { type: tMajor("ranking"), value: `${comment.rank_1} / ${comment.rank_2}` },
   ];
 
   return (
@@ -134,19 +151,19 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
               className="flex justify-center items-center font-semibold w-[42px] h-[42px] rounded-[42px] my-[10px] mx-auto scale-110"
               style={iconStyle}
             >
-              {comment.category?.[0] ?? "轉"}
+              {comment.category?.[0] ?? categoryLabels.transfer[0]}
             </div>
             <div className="ml-[10px] flex-1">
               <h4 className="m-0 text-[1.9rem] mb-[5px]">{comment.in_maj}</h4>
               <p className="text-[1.3rem] m-0" style={{ color: "rgba(163,158,158,1)" }}>
-                原主修: {comment.out_maj}
+                {tMajor("originalMajor")}: {comment.out_maj}
               </p>
             </div>
           </div>
 
           {/* Confirm toggle (admin only) */}
           <div className="flex items-center gap-[10px] shrink-0 mt-[8px]">
-            <span className="text-[1.4rem]">是否已審查</span>
+            <span className="text-[1.4rem]">{tMajor("reviewed")}</span>
             <button
               onClick={handleToggle}
               disabled={isPending}
@@ -166,8 +183,8 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
           {/* DetailList */}
           <div className="flex flex-wrap my-[20px] mx-0 shrink-0">
             {tags.map(({ type, value }) => {
-              const isFailResult = type === "申請結果" && (value === "false" || value === "未通過");
-              const displayValue = type === "申請結果" ? isPassDisplay(value) : value;
+              const isFailResult = type === tMajor("applicationResult") && (value === "false" || value === categoryLabels.fail);
+              const displayValue = type === tMajor("applicationResult") ? isPassDisplay(value, categoryLabels.pass, categoryLabels.fail) : value;
               return (
                 <div
                   key={type}
@@ -195,14 +212,14 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
                   onClick={() => setWaitDelete(true)}
                   className="h-[40px] w-[120px] bg-white border-2 border-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                 >
-                  {"\u522a\u9664\u6b64\u5fc3\u5f97"}
+                  {tCommon("deleteStudy")}
                 </button>
                 <button
                   disabled={isPending}
                   onClick={handleEdit}
                   className="h-[40px] w-[110px] bg-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                 >
-                  {"\u7de8\u8f2f"}
+                  {tCommon("edit")}
                 </button>
               </>
             ) : (
@@ -212,15 +229,15 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
                   onClick={handleDelete}
                   className="h-[40px] w-[120px] bg-white border-2 border-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                 >
-                  {"\u78ba\u8a8d\u522a\u9664"}
+                  {tCommon("confirmDelete")}
                 </button>
-                <p className="font-bold m-[10px] text-sm">{"\u771f\u7684\u8981\u522a\u9664\u9019\u500b\u5fc3\u5f97\u55ce?"}</p>
+                <p className="font-bold m-[10px] text-sm">{tCommon("confirmDeleteStudy")}</p>
                 <button
                   disabled={isPending}
                   onClick={() => setWaitDelete(false)}
                   className="h-[40px] w-[110px] bg-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                 >
-                  {"\u53d6\u6d88"}
+                  {tCommon("cancel")}
                 </button>
               </>
             )}

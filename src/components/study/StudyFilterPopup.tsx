@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { adminApiFetch, apiFetch } from '@/lib/api-client';
 import type { CategoryDTO, StatisticManageDTO } from '@/types/api';
 
@@ -14,12 +15,12 @@ const TIMELINE_PATH =
 const ACCESS_ALARM_PATH =
   'M22 5.72l-4.6-3.86-1.29 1.53 4.6 3.86L22 5.72zM7.88 3.39L6.6 1.86 2 5.71l1.29 1.53 4.59-3.85zM12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm.5-13H11v6l4.75 2.85.75-1.23-4-2.37V7z';
 
-function getYearOptions(): { id: string; name: string }[] {
+function getYearOptions(yearSuffix: string): { id: string; name: string }[] {
   const currentYear = new Date().getFullYear();
   const arr: { id: string; name: string }[] = [];
   for (let i = currentYear; i > currentYear - 5; i--) {
     const year = (i - 1911).toString();
-    arr.push({ id: year, name: year + '年' });
+    arr.push({ id: year, name: year + yearSuffix });
   }
   return arr;
 }
@@ -78,6 +79,7 @@ interface StudyFilterPopupProps {
 }
 
 export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: StudyFilterPopupProps) {
+  const t = useTranslations('study');
   const [isOpen, setIsOpen] = useState(false);
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
   const [mounted, setMounted] = useState(false);
@@ -106,7 +108,7 @@ export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: St
     gcTime: isAdmin ? 0 : 60_000,
   });
 
-  const years = useMemo(() => getYearOptions(), []);
+  const years = useMemo(() => getYearOptions(t('yearSuffix')), [t]);
 
   const handleOpen = useCallback(() => {
     if (buttonRef.current) {
@@ -138,9 +140,9 @@ export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: St
   }, [isOpen]);
 
   const sections: FilterSection[] = [
-    { type: 'category', name: '心得類別', iconPath: CATEGORY_PATH, options: categories },
-    { type: 'statInfo', name: '數據資訊', iconPath: TIMELINE_PATH, options: statistics },
-    { type: 'year', name: '涵蓋學年', iconPath: ACCESS_ALARM_PATH, options: years },
+    { type: 'category', name: t('categorySection'), iconPath: CATEGORY_PATH, options: categories },
+    { type: 'statInfo', name: t('statisticsSection'), iconPath: TIMELINE_PATH, options: statistics },
+    { type: 'year', name: t('academicYearSection'), iconPath: ACCESS_ALARM_PATH, options: years },
   ];
 
   const isSelected = (type: string, id: string) => {
@@ -227,7 +229,7 @@ export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: St
         onClick={handleOpen}
         className="w-full h-[38px] px-[14px] text-[1.5rem] bg-white border border-black/23 rounded-[4px] cursor-pointer text-left flex justify-between items-center text-black/87 hover:border-black/87 focus:outline-none"
       >
-        <span>篩選條件</span>
+        <span>{t('filterButton')}</span>
         <svg
           className="w-[1em] h-[1em] ml-[4px] shrink-0"
           focusable="false"

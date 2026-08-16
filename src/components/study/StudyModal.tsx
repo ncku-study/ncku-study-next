@@ -82,6 +82,7 @@ function StudyArrow({
 
 export default function StudyModal({ id, studies, serverStudy, onClose }: StudyModalProps) {
   const t = useTranslations('site');
+  const tStudy = useTranslations('study');
   const queryClient = useQueryClient();
   const studyRoute = useOptionalStudyModalRoute();
   const cachedStudies = queryClient.getQueryData<StudyDTO[]>(ALL_STUDIES_QUERY_KEY);
@@ -174,13 +175,13 @@ export default function StudyModal({ id, studies, serverStudy, onClose }: StudyM
 
               <h4 className="text-[18px] mt-[15px] shrink-0">{study.title}</h4>
               <span className="text-[16px] text-[#8c8c8c] shrink-0">
-                {study.year}（發文時間：{formatTimestamp(study.timestamp)}）
+                {tStudy('postedAt', { year: study.year, date: formatTimestamp(study.timestamp) })}
               </span>
 
               <div className="inline-flex my-[10px] h-[50px] shrink-0">
                 {allStats.map((stat, index) => (
                   <div key={index} className="grid grid-rows-[12px_auto] h-[50px] min-w-[75px] mr-[10px]">
-                    <div className="text-[12px]">{stat.isOther ? `其他: ${stat.name}` : stat.name}</div>
+                    <div className="text-[12px]">{stat.isOther ? `${tStudy('otherPrefix')}: ${stat.name}` : stat.name}</div>
                     <div className="text-[24px]">{stat.value}</div>
                   </div>
                 ))}

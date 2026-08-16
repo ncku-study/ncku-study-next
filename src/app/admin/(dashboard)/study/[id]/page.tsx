@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { adminApiFetch } from '@/lib/api-client';
 import type { StudyDTO } from '@/types/api';
@@ -25,6 +26,9 @@ export default function AdminStudyDetailPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const tMajor = useTranslations('major');
+  const tStudy = useTranslations('study');
+  const tCommon = useTranslations('common');
   const id = params.id as string;
   const [waitDelete, setWaitDelete] = useState(false);
 
@@ -79,7 +83,7 @@ export default function AdminStudyDetailPage() {
   ];
 
   const isConfirmed = study?.confirm === 'true';
-  const postTime = study ? `${study.year}（發文時間：${formatTimestamp(study.timestamp)}）` : '';
+  const postTime = study ? tStudy('postedAt', { year: study.year, date: formatTimestamp(study.timestamp) }) : '';
 
   return (
     <>
@@ -119,7 +123,7 @@ export default function AdminStudyDetailPage() {
           <div className="flex flex-col relative col-start-2 overflow-hidden">
             {/* Confirm toggle — vite Confirm style */}
             <div className="h-[50px] shrink-0 flex items-center justify-end gap-[10px] px-1">
-              <p className="mr-[10px] m-0">{"\u662f\u5426\u5df2\u5be9\u67e5"}</p>
+              <p className="mr-[10px] m-0">{tMajor('reviewed')}</p>
               <button
                 onClick={() => confirmMutation.mutate()}
                 disabled={confirmMutation.isPending || isLoading}
@@ -160,7 +164,7 @@ export default function AdminStudyDetailPage() {
                 <div className="inline-flex my-[10px] h-[50px] shrink-0">
                   {allStats.map((stat, idx) => (
                     <div key={idx} className="grid grid-rows-[12px_auto] h-[50px] min-w-[75px] mr-[10px]">
-                      <div className="text-[12px]">{stat.isOther ? `\u5176\u4ed6: ${stat.name}` : stat.name}</div>
+                      <div className="text-[12px]">{stat.isOther ? `${tStudy('otherPrefix')}: ${stat.name}` : stat.name}</div>
                       <div className="text-[24px]">{stat.value}</div>
                     </div>
                   ))}
@@ -179,13 +183,13 @@ export default function AdminStudyDetailPage() {
                         onClick={() => setWaitDelete(true)}
                         className="h-[40px] w-[120px] bg-white border-2 border-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                       >
-                        {"\u522a\u9664\u6b64\u5fc3\u5f97"}
+                        {tCommon('deleteStudy')}
                       </button>
                       <button
                         onClick={() => router.push(`/admin/post?type=study&id=${id}`)}
                         className="h-[40px] w-[110px] bg-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75"
                       >
-                        {"\u7de8\u8f2f"}
+                        {tCommon('edit')}
                       </button>
                     </>
                   ) : (
@@ -195,15 +199,15 @@ export default function AdminStudyDetailPage() {
                         onClick={() => deleteMutation.mutate()}
                         className="h-[40px] w-[120px] bg-white border-2 border-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                       >
-                        {"\u78ba\u8a8d\u522a\u9664"}
+                        {tCommon('confirmDelete')}
                       </button>
-                      <p className="font-bold m-[10px] text-sm">{"\u771f\u7684\u8981\u522a\u9664\u9019\u500b\u5fc3\u5f97\u55ce?"}</p>
+                      <p className="font-bold m-[10px] text-sm">{tCommon('confirmDeleteStudy')}</p>
                       <button
                         disabled={deleteMutation.isPending}
                         onClick={() => setWaitDelete(false)}
                         className="h-[40px] w-[110px] bg-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
                       >
-                        {"\u53d6\u6d88"}
+                        {tCommon('cancel')}
                       </button>
                     </>
                   )}

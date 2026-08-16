@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { adminApiFetch, apiFetch } from "@/lib/api-client";
 
@@ -135,6 +136,7 @@ function Dropdown({
 }
 
 export function Step2StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
+  const t = useTranslations("post");
   const { register, watch, setValue } = useFormContext();
   const title = watch("title");
   const major = watch("major");
@@ -165,13 +167,13 @@ export function Step2StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
     <div className="mx-auto w-[458px] bg-white max-[870px]:w-full">
       <p className="relative -top-[15px] mb-[20px] flex justify-center text-[rgba(163,158,158,1)]">
-        留下更多資訊給學弟妹吧!
+        {t("studyIntro")}
       </p>
 
       <div className={field}>
         <div className="relative h-[60px] w-full">
           <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>
-            心得標題
+            {t("studyTitle")}
           </label>
           <input
             {...register("title")}
@@ -190,18 +192,18 @@ export function Step2StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
       <div className={field}>
         <Dropdown
           name="major"
-          label="原主修科系"
+          label={t("originalMajor")}
           value={major ?? ""}
           options={majorOptions}
           onChange={(value) => setValue("major", String(value), { shouldDirty: true, shouldValidate: true })}
         />
-        <div className={remark}>*如不想透漏，可以只填學院或其他。</div>
+        <div className={remark}>{t("originalMajorHint")}</div>
       </div>
 
       <div className={field}>
         <Dropdown
           name="year"
-          label="年份"
+          label={t("year")}
           value={year ?? latestYear}
           options={yearOptions}
           onChange={(value) => setValue("year", Number(value), { shouldDirty: true, shouldValidate: true })}

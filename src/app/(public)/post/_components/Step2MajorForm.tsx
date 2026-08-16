@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { adminApiFetch, apiFetch } from "@/lib/api-client";
 
 type Option = { value: string | number; text: string };
@@ -134,6 +135,7 @@ function DropdownField({
 }
 
 export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
+  const t = useTranslations("post");
   const { register, watch, setValue } = useFormContext();
   const year = watch("year");
   const category = watch("category");
@@ -183,13 +185,13 @@ export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
   // Keep the legacy form's option sets: out_maj includes colleges, in_maj only departments.
   const outMajorOptions = [...departmentOptions, ...collegeOptions];
   const categoryOptions: Option[] = [
-    { value: "轉系", text: "轉系" },
-    { value: "輔系", text: "輔系" },
-    { value: "雙主修", text: "雙主修" },
+    { value: t("categoryTransfer"), text: t("categoryTransfer") },
+    { value: t("categoryMinor"), text: t("categoryMinor") },
+    { value: t("categoryDouble"), text: t("categoryDouble") },
   ];
   const resultOptions: Option[] = [
-    { value: "true", text: "通過" },
-    { value: "false", text: "未通過" },
+    { value: "true", text: t("pass") },
+    { value: "false", text: t("fail") },
   ];
 
   const field = "mb-[20px]";
@@ -202,20 +204,20 @@ export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
       <div className={field}>
         <DropdownField
           name="year"
-          label="申請年度"
+          label={t("applicationYear")}
           value={year ?? latestYear}
           options={yearOptions}
           register={register}
           onChange={(value) => setValue("year", Number(value), { shouldDirty: true, shouldValidate: true })}
         />
-        <div className={remark}>*例: 110年7月申請，就填寫110年。</div>
+        <div className={remark}>{t("applicationYearHint")}</div>
       </div>
 
       <div className={field}>
         <DropdownField
           name="category"
-          label="申請類別"
-          value={category ?? "轉系"}
+          label={t("applicationCategory")}
+          value={category ?? t("categoryTransfer")}
           options={categoryOptions}
           register={register}
           onChange={(value) => setValue("category", String(value), { shouldDirty: true, shouldValidate: true })}
@@ -225,19 +227,19 @@ export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
       <div className={field}>
         <DropdownField
           name="out_maj"
-          label="原主修科系"
+          label={t("originalMajor")}
           value={outMaj ?? ""}
           options={outMajorOptions}
           register={register}
           onChange={(value) => setValue("out_maj", String(value), { shouldDirty: true, shouldValidate: true })}
         />
-        <div className={remark}>*如不想透漏，可以只填學院或其他。</div>
+        <div className={remark}>{t("originalMajorHint")}</div>
       </div>
 
       <div className={field}>
         <DropdownField
           name="in_maj"
-          label="目標申請科系"
+          label={t("targetMajor")}
           value={inMaj ?? ""}
           options={departmentOptions}
           register={register}
@@ -247,22 +249,22 @@ export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
 
       <div className={field}>
         <div className={inputWrap}>
-          <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>排名上</label>
+          <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>{t("rankUpper")}</label>
           <input {...register("rank_1")} value={rank1 ?? ""} className={`${inputClass} relative top-[1px]`} type="number" min={1} max={200} style={{ ...inputStyle, borderBottomColor: "rgba(0, 0, 0, 0.42)" }} />
         </div>
       </div>
 
       <div className={field}>
         <div className={inputWrap}>
-          <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>排名下</label>
+          <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>{t("rankLower")}</label>
           <input {...register("rank_2")} value={rank2 ?? ""} className={`${inputClass} relative top-[1px]`} type="number" min={1} max={200} style={{ ...inputStyle, borderBottomColor: "rgba(0, 0, 0, 0.42)" }} />
         </div>
-        <div className={remark}>*如還不知道，可以留空白。</div>
+        <div className={remark}>{t("rankHint")}</div>
       </div>
 
       <div className={field}>
         <div className={inputWrap}>
-          <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>學年分數</label>
+          <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>{t("academicScore")}</label>
           <input {...register("score")} value={score ?? ""} className={`${inputClass} relative top-[1px]`} type="number" min={50} max={100} step={0.1} style={{ ...inputStyle, borderBottomColor: "rgba(0, 0, 0, 0.42)" }} />
         </div>
       </div>
@@ -270,7 +272,7 @@ export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
       <div className={field}>
         <DropdownField
           name="isPass"
-          label="申請結果"
+          label={t("applicationResult")}
           value={isPass ?? "true"}
           options={resultOptions}
           register={register}
@@ -283,7 +285,7 @@ export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
           className="pointer-events-none absolute left-[14px] bg-white"
           style={{ ...fieldLabelStyle, top: "-2.5px", fontWeight: 700 }}
         >
-          心得
+          {t("comment")}
         </label>
         <textarea
           {...register("comment")}
