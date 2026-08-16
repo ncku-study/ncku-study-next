@@ -21,7 +21,14 @@ function rowToDto(row: {
 export class DbAnnouncementRepository implements AnnouncementRepository {
   async findAll(): Promise<AnnouncementDTO[]> {
     const db = getDb();
-    const rows = await db.selectFrom('announcement').selectAll().execute();
+    let rows = await db.selectFrom('announcement').selectAll().execute();
+    if (rows.length === 0) {
+      await db
+        .insertInto('announcement')
+        .values({ msg: '', isShow: 'false', created_at: null, updated_at: null })
+        .execute();
+      rows = await db.selectFrom('announcement').selectAll().execute();
+    }
     return rows.map(rowToDto);
   }
 
@@ -34,7 +41,9 @@ export class DbAnnouncementRepository implements AnnouncementRepository {
       .executeTakeFirst();
     if (!existing) return null;
 
-    const updateData: Record<string, unknown> = {};
+    const updateData: Record<string, unknown> = {
+      updated_at: new Date(),
+    };
     if (data.msg !== undefined) updateData.msg = data.msg;
     if (data.isShow !== undefined) updateData.isShow = data.isShow;
 

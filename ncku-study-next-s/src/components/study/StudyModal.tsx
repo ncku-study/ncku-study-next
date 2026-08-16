@@ -93,7 +93,7 @@ export default function StudyModal({ id, studies, serverStudy, onClose }: StudyM
     queryFn: () => apiFetch<StudyDTO[]>('/studies'),
     initialData: cachedStudies,
     enabled: !hasLocalStudyList && !cachedStudies,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60_000,
   });
 
   const availableStudies = cachedStudies ?? (fetchedStudies.length > 0 ? fetchedStudies : localStudies ?? []);

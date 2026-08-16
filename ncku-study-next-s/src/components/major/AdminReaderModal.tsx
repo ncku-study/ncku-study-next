@@ -63,9 +63,11 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
     try {
       await fetch(`/api/v2/comments/${comment.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        headers: { "Content-Type": "application/json", "x-api-cache": "no-store" },
         body: JSON.stringify({ confirm: next ? "true" : "false" }),
       });
+      queryClient.invalidateQueries({ queryKey: ["admin-comments"] });
       queryClient.invalidateQueries({ queryKey: ALL_COMMENTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["comments"] });
     } finally {
@@ -76,7 +78,8 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
   const handleDelete = async () => {
     setIsPending(true);
     try {
-      await fetch(`/api/v2/comments/${comment.id}`, { method: "DELETE" });
+      await fetch(`/api/v2/comments/${comment.id}`, { method: "DELETE", cache: "no-store", headers: { "x-api-cache": "no-store" } });
+      queryClient.invalidateQueries({ queryKey: ["admin-comments"] });
       queryClient.invalidateQueries({ queryKey: ALL_COMMENTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["comments"] });
       onClose();

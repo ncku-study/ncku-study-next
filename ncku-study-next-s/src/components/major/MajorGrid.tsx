@@ -28,33 +28,38 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
   const majorRoute = useOptionalMajorModalRoute();
 
   const isDefaultFilter = filters.college === '' && filters.department === '' && filters.year === '' && filters.category === '';
+  const commentsQueryKey = isAdmin
+    ? (isDefaultFilter ? ['admin-comments'] : ['admin-comments', filters])
+    : (isDefaultFilter ? ALL_COMMENTS_QUERY_KEY : ['comments', filters]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: isDefaultFilter ? ALL_COMMENTS_QUERY_KEY : ['comments', filters],
+    queryKey: commentsQueryKey,
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters.college) params.append('college', filters.college);
       if (filters.department) params.append('department', filters.department);
       if (filters.year) params.append('year', filters.year);
       if (filters.category) params.append('category', filters.category);
+      if (!isAdmin) params.set('confirm', 'true');
 
       const queryString = params.toString();
       const path = queryString ? '/comments?' + queryString : '/comments';
 
-      const result = await apiFetch<CommentDTO[] | PaginatedResponse<CommentDTO>>(path);
+      const result = await apiFetch<CommentDTO[] | PaginatedResponse<CommentDTO>>(path, { noStore: isAdmin });
       // API may return a plain array or a paginated wrapper — normalise to wrapper
       return Array.isArray(result)
         ? ({ data: result, total: result.length } satisfies PaginatedResponse<CommentDTO>)
         : result;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const comments = data?.data || [];
 
   return (
     <main className="grid h-full min-h-0 min-w-0 grid-rows-[50px_160px_minmax(0,1fr)] overflow-hidden max-[990px]:grid-rows-[100px_160px_minmax(0,1fr)] max-[576px]:grid-rows-[90px_0px_minmax(0,1fr)] max-[576px]:-mx-[10px]">
-      <MajorFilters filters={filters} onChange={setFilters} />
+      <MajorFilters filters={filters} onChange={setFilters} isAdmin={isAdmin} />
       <StatisticControl>
         <MajorStatistics comments={comments} />
       </StatisticControl>

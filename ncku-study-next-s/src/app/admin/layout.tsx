@@ -2,6 +2,9 @@ import React from "react";
 import { getTranslations } from "next-intl/server";
 import { buildAdminRobots, buildSeoMetadata } from "@/lib/seo/metadata";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function generateMetadata() {
   const t = await getTranslations('site');
   return buildSeoMetadata({

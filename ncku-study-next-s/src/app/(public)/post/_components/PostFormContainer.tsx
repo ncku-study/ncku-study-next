@@ -20,6 +20,7 @@ export interface PostFormEditProps {
   editType: "major" | "study";
   editId: string | number;
   editDefaultValues: Record<string, unknown>;
+  isAdmin?: boolean;
 }
 
 function getLatestAcademicYear() {
@@ -51,6 +52,7 @@ export function PostFormContainer(): ReactElement;
 export function PostFormContainer(props: PostFormEditProps): ReactElement;
 export function PostFormContainer(props?: PostFormEditProps) {
   const isEditMode = props?.editMode === true;
+  const isAdmin = props?.isAdmin === true;
   const t = useTranslations("post");
   const tCommon = useTranslations("common");
   const router = useRouter();
@@ -284,9 +286,9 @@ export function PostFormContainer(props?: PostFormEditProps) {
         <form className="mt-0">
           <div className="mx-auto w-[458px] rounded-[5px] bg-white mb-[20px] max-[870px]:w-[80%]">
             {step === 1 && <Step1TypeSelection />}
-            {step === 2 && postType === "major" && <Step2MajorForm />}
-            {step === 2 && postType === "study" && <Step2StudyForm />}
-            {step === 3 && postType === "study" && <Step3StudyForm />}
+            {step === 2 && postType === "major" && <Step2MajorForm isAdmin={isAdmin} />}
+            {step === 2 && postType === "study" && <Step2StudyForm isAdmin={isAdmin} />}
+            {step === 3 && postType === "study" && <Step3StudyForm isAdmin={isAdmin} />}
 
             <div className={`flex h-[75px] w-full items-center justify-end ${step === 2 && postType === "study" ? "relative -top-[15px]" : ""}`}>
               <button

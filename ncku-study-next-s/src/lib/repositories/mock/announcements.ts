@@ -11,7 +11,7 @@ const seedData: AnnouncementDTO[] = [
   },
 ];
 
-let store: AnnouncementDTO[] = [...seedData];
+const store: AnnouncementDTO[] = [...seedData];
 
 export class MockAnnouncementRepository implements AnnouncementRepository {
   async findAll(): Promise<AnnouncementDTO[]> {
@@ -21,7 +21,11 @@ export class MockAnnouncementRepository implements AnnouncementRepository {
   async update(id: number, data: UpdateAnnouncementInput): Promise<AnnouncementDTO | null> {
     const idx = store.findIndex((a) => a.id === id);
     if (idx === -1) return null;
-    store[idx] = { ...store[idx], ...data };
+    store[idx] = {
+      ...store[idx],
+      ...data,
+      updated_at: new Date().toISOString(),
+    };
     return { ...store[idx] };
   }
 }

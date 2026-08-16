@@ -5,6 +5,7 @@ export function makeQueryClient() {
     defaultOptions: {
       queries: {
         staleTime: 60_000,
+        gcTime: 60_000,
         retry: 1,
       },
     },

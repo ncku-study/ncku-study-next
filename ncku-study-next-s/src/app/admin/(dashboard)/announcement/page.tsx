@@ -10,30 +10,41 @@ export default function AdminAnnouncementPage() {
   const [msgNext, setMsgNext] = useState("");
   const [isShow, setIsShow] = useState(false);
 
+  const isAnnouncementEnabled = (value: AnnouncementDTO["isShow"]) =>
+    value === "1" || value === "true";
+
   useEffect(() => {
-    fetch("/api/v2/announcements")
+    fetch("/api/v2/announcements", { cache: "no-store", headers: { "x-api-cache": "no-store" } })
       .then((r) => r.json())
       .then((data: AnnouncementDTO[]) => {
         const first = Array.isArray(data) ? data[0] : null;
         if (first) {
           setAnnouncement(first);
           setMsgNext(first.msg ?? "");
-          setIsShow(first.isShow === "1" || first.isShow === "true");
+          setIsShow(isAnnouncementEnabled(first.isShow));
         }
         setIsLoading(false);
       })
       .catch(() => setIsLoading(false));
   }, []);
 
-  const handleUpdate = async () => {
+  const updateAnnouncement = async (nextMsg: string, nextIsShow: boolean) => {
     if (!announcement) return;
     setIsSubmitting(true);
     try {
-      await fetch(`/api/v2/announcements/${announcement.id}`, {
+      const response = await fetch(`/api/v2/announcements/${announcement.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ msg: msgNext, isShow: isShow ? "true" : "false" }),
+        cache: "no-store",
+        headers: { "Content-Type": "application/json", "x-api-cache": "no-store" },
+        body: JSON.stringify({ msg: nextMsg, isShow: nextIsShow ? "true" : "false" }),
       });
+      if (!response.ok) throw new Error(`公告更新失敗：${response.status}`);
+
+      const updated = (await response.json()) as AnnouncementDTO;
+      setAnnouncement(updated);
+      setMsgNext(updated.msg);
+      setIsShow(isAnnouncementEnabled(updated.isShow));
+      window.dispatchEvent(new CustomEvent("announcement-updated"));
     } catch (e) {
       console.error(e);
     } finally {
@@ -41,22 +52,25 @@ export default function AdminAnnouncementPage() {
     }
   };
 
+  const handleUpdate = () => updateAnnouncement(msgNext, isShow);
+
   const handleToggle = async () => {
     if (!announcement) return;
     const nextIsShow = !isShow;
-    setIsShow(nextIsShow);
-    setIsSubmitting(true);
-    try {
-      await fetch(`/api/v2/announcements/${announcement.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ msg: msgNext, isShow: nextIsShow ? "true" : "false" }),
-      });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await updateAnnouncement(msgNext, nextIsShow);
+  };
+
+  const handlePreview = () => {
+    if (!announcement) return;
+    window.dispatchEvent(
+      new CustomEvent<AnnouncementDTO>("announcement-preview", {
+        detail: {
+          ...announcement,
+          msg: msgNext,
+          isShow: isShow ? "true" : "false",
+        },
+      }),
+    );
   };
 
   if (isLoading) {
@@ -107,6 +121,13 @@ export default function AdminAnnouncementPage() {
           className="h-[35px] px-[15px] bg-[var(--color-yellow)] text-[var(--color-light-black)] rounded text-[1.4rem] font-medium hover:opacity-80 transition-opacity disabled:opacity-50"
         >
           修改
+        </button>
+        <button
+          onClick={handlePreview}
+          disabled={isSubmitting || !announcement}
+          className="h-[35px] px-[15px] bg-[var(--color-yellow)] text-[var(--color-light-black)] rounded text-[1.4rem] font-medium hover:opacity-80 transition-opacity disabled:opacity-50"
+        >
+          預覽畫面
         </button>
       </div>
     </div>

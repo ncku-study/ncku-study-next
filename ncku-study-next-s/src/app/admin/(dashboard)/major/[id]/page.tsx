@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api-client';
+import { adminApiFetch } from '@/lib/api-client';
 import type { CommentDTO } from '@/types/api';
 import MajorGrid from '@/components/major/MajorGrid';
 import ModalOverlay from '@/components/major/ModalOverlay';
@@ -18,22 +18,26 @@ export default function AdminMajorDetailPage() {
   const [waitDelete, setWaitDelete] = useState(false);
 
   const { data: comment, isLoading } = useQuery<CommentDTO>({
-    queryKey: ['comment', numId],
-    queryFn: () => apiFetch<CommentDTO>(`/comments/${numId}`),
-    staleTime: 5 * 60 * 1000,
+    queryKey: ['admin-comment', numId],
+    queryFn: () => adminApiFetch<CommentDTO>(`/comments/${numId}`),
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const confirmMutation = useMutation({
-    mutationFn: () => apiFetch<CommentDTO>(`/comments/${numId}`, { method: 'PATCH' }),
+    mutationFn: () => adminApiFetch<CommentDTO>(`/comments/${numId}`, { method: 'PATCH' }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-comment', numId] });
+      queryClient.invalidateQueries({ queryKey: ['admin-comments'] });
       queryClient.invalidateQueries({ queryKey: ['comment', numId] });
       queryClient.invalidateQueries({ queryKey: ['comments'] });
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => apiFetch<void>(`/comments/${numId}`, { method: 'DELETE' }),
+    mutationFn: () => adminApiFetch<void>(`/comments/${numId}`, { method: 'DELETE' }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-comments'] });
       queryClient.invalidateQueries({ queryKey: ['comments'] });
       router.push('/admin/major');
     },
@@ -80,7 +84,7 @@ export default function AdminMajorDetailPage() {
                 </div>
 
                 <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-                  <ModalContent id={numId} serverComment={comment} />
+                <ModalContent id={numId} serverComment={comment} isAdmin />
                 </div>
 
                 {/* AdvanceAdmin — matches vite AdvanceAdmin */}

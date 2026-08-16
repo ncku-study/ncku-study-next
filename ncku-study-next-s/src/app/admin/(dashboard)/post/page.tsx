@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api-client";
+import { adminApiFetch } from "@/lib/api-client";
 import type { CommentDTO, StudyDTO } from "@/types/api";
 import { PostFormContainer, type PostFormEditProps } from "@/app/(public)/post/_components/PostFormContainer";
 
@@ -44,17 +44,19 @@ export default function AdminPostPage() {
   const isValidParams = (type === "major" || type === "study") && id != null;
 
   const { data: comment } = useQuery<CommentDTO>({
-    queryKey: ["comment", id],
-    queryFn: () => apiFetch<CommentDTO>(`/comments/${id}`),
+    queryKey: ["admin-comment", id],
+    queryFn: () => adminApiFetch<CommentDTO>(`/comments/${id}`),
     enabled: isValidParams && type === "major",
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const { data: study } = useQuery<StudyDTO>({
-    queryKey: ["study", id],
-    queryFn: () => apiFetch<StudyDTO>(`/studies/${id}`),
+    queryKey: ["admin-study", id],
+    queryFn: () => adminApiFetch<StudyDTO>(`/studies/${id}`),
     enabled: isValidParams && type === "study",
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   if (!isValidParams) {
@@ -86,6 +88,7 @@ export default function AdminPostPage() {
     editMode: true,
     editType: type!,
     editId: id!,
+    isAdmin: true,
     editDefaultValues:
       type === "major" ? mapCommentToDefaults(comment!) : mapStudyToDefaults(study!),
   };

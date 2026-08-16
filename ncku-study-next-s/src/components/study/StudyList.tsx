@@ -15,27 +15,30 @@ export function StudyList({ isAdmin = false, renderClientModal = true }: { isAdm
   const t = useTranslations('study');
   const [filter, setFilter] = useState<StudyFilterState>({ categories: [], stats: [], years: [] });
   const studyRoute = useOptionalStudyModalRoute();
+  const isDefaultFilter = filter.categories.length === 0 && filter.stats.length === 0 && filter.years.length === 0;
+  const studiesQueryKey = isAdmin
+    ? (isDefaultFilter ? ['admin-studies'] : ['admin-studies', filter])
+    : (isDefaultFilter ? ALL_STUDIES_QUERY_KEY : ['studies', filter]);
 
   const { data: studies = [], isLoading, isError } = useQuery<StudyDTO[]>({
-    queryKey: filter.categories.length === 0 && filter.stats.length === 0 && filter.years.length === 0
-      ? ALL_STUDIES_QUERY_KEY
-      : ['studies', filter],
+    queryKey: studiesQueryKey,
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filter.categories.length > 0) params.set('category', filter.categories.join(','));
       if (filter.stats.length > 0) params.set('stat_id', filter.stats.join(','));
       if (filter.years.length > 0) params.set('year', filter.years.join(','));
       const qs = params.toString();
-      return apiFetch(`/studies${qs ? `?${qs}` : ''}`);
+      return apiFetch(`/studies${qs ? `?${qs}` : ''}`, { noStore: isAdmin });
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   return (
     <div className="grid grid-cols-[600px_auto] overflow-y-hidden grid-rows-[50px_auto] max-[576px]:grid-cols-[100vw] max-[576px]:-mx-[10px]">
       <section className="flex items-center flex-wrap px-[5px] w-fit h-[50px] mb-[10px] row-start-1 col-start-1 col-end-2">
         <div className="relative m-[8px] min-w-[120px]">
-          <StudyFilterPopup filter={filter} onFilterChange={setFilter} />
+          <StudyFilterPopup filter={filter} onFilterChange={setFilter} isAdmin={isAdmin} />
         </div>
       </section>
 

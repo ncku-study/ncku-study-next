@@ -133,7 +133,7 @@ function DropdownField({
   );
 }
 
-export function Step2MajorForm() {
+export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
   const { register, watch, setValue } = useFormContext();
   const year = watch("year");
   const category = watch("category");
@@ -146,13 +146,17 @@ export function Step2MajorForm() {
   const comment = watch("comment");
 
   const { data: departments } = useQuery({
-    queryKey: ["departments"],
-    queryFn: () => apiFetch<{ id: string; name: string }[]>("/departments"),
+    queryKey: isAdmin ? ["admin-departments-form"] : ["departments"],
+    queryFn: () => apiFetch<{ id: string; name: string }[]>("/departments", { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const { data: colleges } = useQuery({
-    queryKey: ["colleges"],
-    queryFn: () => apiFetch<{ id: string; name: string }[]>("/colleges"),
+    queryKey: isAdmin ? ["admin-colleges-form"] : ["colleges"],
+    queryFn: () => apiFetch<{ id: string; name: string }[]>("/colleges", { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   useEffect(() => {

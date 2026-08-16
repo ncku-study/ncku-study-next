@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { getUserRepository } from '@/lib/repositories';
+import { verifyPassword } from '@/lib/password';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   providers: [
@@ -14,8 +15,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         const repo = await getUserRepository();
         const user = await repo.findByEmail(credentials.email as string);
         if (!user) return null;
-        // Plain string comparison (mock uses plain passwords)
-        if (user.password !== credentials.password) return null;
+        if (!(await verifyPassword(credentials.password as string, user.password))) return null;
         return { id: String(user.id), email: user.email };
       },
     }),

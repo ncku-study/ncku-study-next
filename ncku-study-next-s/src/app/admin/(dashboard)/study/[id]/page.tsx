@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { apiFetch } from '@/lib/api-client';
+import { adminApiFetch } from '@/lib/api-client';
 import type { StudyDTO } from '@/types/api';
 import { StudyList } from '@/components/study/StudyList';
 
@@ -29,28 +29,33 @@ export default function AdminStudyDetailPage() {
   const [waitDelete, setWaitDelete] = useState(false);
 
   const { data: study, isLoading } = useQuery<StudyDTO>({
-    queryKey: ['study', id],
-    queryFn: () => apiFetch<StudyDTO>(`/studies/${id}`),
-    staleTime: 5 * 60 * 1000,
+    queryKey: ['admin-study', id],
+    queryFn: () => adminApiFetch<StudyDTO>(`/studies/${id}`),
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const { data: allStudies = [] } = useQuery<StudyDTO[]>({
-    queryKey: ['studies', { categories: [], stats: [], years: [] }],
-    queryFn: () => apiFetch<StudyDTO[]>('/studies'),
-    staleTime: 5 * 60 * 1000,
+    queryKey: ['admin-studies'],
+    queryFn: () => adminApiFetch<StudyDTO[]>('/studies'),
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const confirmMutation = useMutation({
-    mutationFn: () => apiFetch<StudyDTO>(`/studies/${id}`, { method: 'PATCH' }),
+    mutationFn: () => adminApiFetch<StudyDTO>(`/studies/${id}`, { method: 'PATCH' }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-study', id] });
+      queryClient.invalidateQueries({ queryKey: ['admin-studies'] });
       queryClient.invalidateQueries({ queryKey: ['study', id] });
       queryClient.invalidateQueries({ queryKey: ['studies'] });
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => apiFetch<void>(`/studies/${id}`, { method: 'DELETE' }),
+    mutationFn: () => adminApiFetch<void>(`/studies/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-studies'] });
       queryClient.invalidateQueries({ queryKey: ['studies'] });
       router.push('/admin/study');
     },

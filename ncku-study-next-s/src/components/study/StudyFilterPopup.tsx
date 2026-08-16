@@ -74,9 +74,10 @@ export interface StudyFilterState {
 interface StudyFilterPopupProps {
   filter: StudyFilterState;
   onFilterChange: (filter: StudyFilterState) => void;
+  isAdmin?: boolean;
 }
 
-export function StudyFilterPopup({ filter, onFilterChange }: StudyFilterPopupProps) {
+export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: StudyFilterPopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
   const [mounted, setMounted] = useState(false);
@@ -88,13 +89,17 @@ export function StudyFilterPopup({ filter, onFilterChange }: StudyFilterPopupPro
   }, []);
 
   const { data: categories = [] } = useQuery<CategoryDTO[]>({
-    queryKey: ['categories'],
-    queryFn: () => apiFetch('/categories'),
+    queryKey: isAdmin ? ['admin-categories'] : ['categories'],
+    queryFn: () => apiFetch('/categories', { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const { data: statistics = [] } = useQuery<StatisticManageDTO[]>({
-    queryKey: ['statistics'],
-    queryFn: () => apiFetch('/statistics'),
+    queryKey: isAdmin ? ['admin-statistics'] : ['statistics'],
+    queryFn: () => apiFetch('/statistics', { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const years = useMemo(() => getYearOptions(), []);

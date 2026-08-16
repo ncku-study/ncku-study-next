@@ -9,11 +9,12 @@ import { useOptionalMajorModalRoute } from "@/components/major/MajorModalRouteCo
 
 import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
 
-function useModalNav(currentId: number) {
+function useModalNav(currentId: number, isAdmin: boolean) {
   const { data } = useQuery({
-    queryKey: ALL_COMMENTS_QUERY_KEY,
-    queryFn: () => apiFetch<PaginatedResponse<CommentDTO>>("/comments"),
-    staleTime: 5 * 60 * 1000,
+    queryKey: isAdmin ? ['admin-comments'] : ALL_COMMENTS_QUERY_KEY,
+    queryFn: () => apiFetch<PaginatedResponse<CommentDTO>>("/comments", { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const comments = data?.data ?? [];
@@ -65,7 +66,7 @@ function ChangeBtn({
 }
 
 export function ModalPrevBtn({ currentId, basePath = '/major' }: { currentId: number; basePath?: string }) {
-  const { prevId } = useModalNav(currentId);
+  const { prevId } = useModalNav(currentId, basePath === '/admin/major');
   const { setPendingHref } = useSidebar();
   const majorRoute = useOptionalMajorModalRoute();
   const href = prevId !== null ? `${basePath}/${prevId}` : null;
@@ -74,7 +75,7 @@ export function ModalPrevBtn({ currentId, basePath = '/major' }: { currentId: nu
 }
 
 export function ModalNextBtn({ currentId, basePath = '/major' }: { currentId: number; basePath?: string }) {
-  const { nextId } = useModalNav(currentId);
+  const { nextId } = useModalNav(currentId, basePath === '/admin/major');
   const { setPendingHref } = useSidebar();
   const majorRoute = useOptionalMajorModalRoute();
   const href = nextId !== null ? `${basePath}/${nextId}` : null;

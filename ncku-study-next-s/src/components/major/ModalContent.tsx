@@ -22,25 +22,28 @@ function isPassDisplay(value: string): string {
 interface Props {
   id: number;
   serverComment?: CommentDTO;
+  isAdmin?: boolean;
 }
 
-export default function ModalContent({ id, serverComment }: Props) {
+export default function ModalContent({ id, serverComment, isAdmin = false }: Props) {
   const t = useTranslations('site');
   const queryClient = useQueryClient();
-  const cachedComment = queryClient
+  const cachedComment = isAdmin ? undefined : queryClient
     .getQueryData<PaginatedResponse<CommentDTO>>(ALL_COMMENTS_QUERY_KEY)
     ?.data.find((c) => c.id === id);
   const initialComment = cachedComment ?? serverComment;
 
-  const { data: comment } = useQuery({
-    queryKey: ["comment", id],
+  const { data: fetchedComment } = useQuery({
+    queryKey: isAdmin ? ["admin-comment", id] : ["comment", id],
     queryFn: () => apiFetch<CommentDTO>(`/comments/${id}`),
-    initialData: initialComment,
+    initialData: isAdmin ? undefined : initialComment,
     // A client-side major navigation must use the hydrated list. Direct URL
     // requests provide serverComment; neither path needs another detail fetch.
-    enabled: Boolean(initialComment),
-    staleTime: 5 * 60 * 1000,
+    enabled: !isAdmin && Boolean(initialComment),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
+  const comment = isAdmin ? serverComment : fetchedComment;
 
   useClientSeo({
     baseline: {

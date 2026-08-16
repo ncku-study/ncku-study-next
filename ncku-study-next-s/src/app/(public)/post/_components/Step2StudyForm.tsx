@@ -134,15 +134,17 @@ function Dropdown({
   );
 }
 
-export function Step2StudyForm() {
+export function Step2StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
   const { register, watch, setValue } = useFormContext();
   const title = watch("title");
   const major = watch("major");
   const year = watch("year");
 
   const { data: departments = [] } = useQuery({
-    queryKey: ["departments"],
-    queryFn: () => apiFetch<{ id: string; name: string }[]>("/departments"),
+    queryKey: isAdmin ? ["admin-departments-form"] : ["departments"],
+    queryFn: () => apiFetch<{ id: string; name: string }[]>("/departments", { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const latestYear = getLatestAcademicYear();

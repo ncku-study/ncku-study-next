@@ -25,14 +25,16 @@ type StudyFormValues = {
 const inputClass =
   "w-full h-[40px] border-b border-gray-400 bg-transparent outline-none text-[1.7rem] focus:border-[var(--color-yellow)]";
 
-export function Step3StudyForm() {
+export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
   const { register, watch, setValue, formState: { errors } } = useFormContext<StudyFormValues>();
   const [search, setSearch] = useState("");
   const title = watch("title") as string;
   const selected = (watch("studyCategories") ?? []) as string[];
   const { data: statisticOptions = [] } = useQuery({
-    queryKey: ["statistics"],
-    queryFn: () => apiFetch<Statistic[]>("/statistics"),
+    queryKey: isAdmin ? ["admin-statistics-form"] : ["statistics"],
+    queryFn: () => apiFetch<Statistic[]>("/statistics", { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const visibleOptions = useMemo(() => {

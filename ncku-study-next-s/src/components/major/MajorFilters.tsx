@@ -17,25 +17,28 @@ export interface FilterState {
 interface MajorFiltersProps {
   filters: FilterState;
   onChange: (filters: FilterState) => void;
+  isAdmin?: boolean;
 }
 
 const selectClass = "rounded-[4px] border border-[#c4c4c4] bg-transparent px-[14px] pt-[14.5px] pb-[6.5px] text-[1.5rem] focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] min-w-[120px]";
 const labelClass = "mr-[10px]";
 const wrapClass = "flex items-center w-fit mr-[7px] max-sm:scale-90";
 
-export function MajorFilters({ filters, onChange }: MajorFiltersProps) {
+export function MajorFilters({ filters, onChange, isAdmin = false }: MajorFiltersProps) {
   const t = useTranslations('major');
 
   const { data: colleges = [] } = useQuery({
-    queryKey: ['colleges'],
-    queryFn: () => apiFetch<CollegeDTO[]>('/colleges'),
-    staleTime: 5 * 60 * 1000,
+    queryKey: isAdmin ? ['admin-colleges'] : ['colleges'],
+    queryFn: () => apiFetch<CollegeDTO[]>('/colleges', { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const { data: allDepartments = [] } = useQuery({
-    queryKey: ['departments'],
-    queryFn: () => apiFetch<DepartmentDTO[]>('/departments'),
-    staleTime: 5 * 60 * 1000,
+    queryKey: isAdmin ? ['admin-departments'] : ['departments'],
+    queryFn: () => apiFetch<DepartmentDTO[]>('/departments', { noStore: isAdmin }),
+    staleTime: isAdmin ? 0 : 60_000,
+    gcTime: isAdmin ? 0 : 60_000,
   });
 
   const departments = useMemo(() => {

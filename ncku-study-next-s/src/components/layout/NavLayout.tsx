@@ -5,6 +5,7 @@ import { SidebarProvider, SidebarDrawer, useSidebar } from "@/components/sidebar
 import { Search as SearchIcon } from "@/components/logos";
 import NavigationSkeleton from "@/components/layout/NavigationSkeleton";
 import ModalSkeleton from "@/components/layout/ModalSkeleton";
+import AnnouncementNotification from "@/components/layout/AnnouncementNotification";
 
 /** Returns true when the href is a detail modal route, e.g. /major/123 */
 function isModalRoute(href: string): boolean {
@@ -96,6 +97,7 @@ function NavContent({ children }: { children: React.ReactNode }) {
 export default function NavLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
+      <AnnouncementNotification />
       <div className="md:grid md:grid-cols-[110px_1fr] flex flex-col h-screen overflow-hidden bg-[var(--color-dark-white)]">
         <SidebarDrawer />
         <NavContent>{children}</NavContent>

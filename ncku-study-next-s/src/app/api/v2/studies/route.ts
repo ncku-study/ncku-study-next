@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getStudyRepository } from '@/lib/repositories';
+import { notifyNewStudy } from '@/lib/discord';
 import { auth } from '@/auth';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function POST(request: Request) {
   const body = await request.json();
+  await notifyNewStudy(body);
   const repo = await getStudyRepository();
   const data = await repo.create({ ...body, confirm: false });
   return NextResponse.json(data, { status: 201 });

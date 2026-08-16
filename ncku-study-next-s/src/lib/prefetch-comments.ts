@@ -10,7 +10,7 @@ export async function prefetchAllComments(queryClient: QueryClient) {
     queryKey: ALL_COMMENTS_QUERY_KEY,
     queryFn: async () => {
       const repo = await getCommentRepository();
-      const data = await repo.findAll({});
+      const data = await repo.findAll({ confirm: true });
       return { data, total: data.length } satisfies PaginatedResponse<CommentDTO>;
     },
   });
