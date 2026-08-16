@@ -34,6 +34,10 @@ const nextConfig: NextConfig = {
         headers: publicApiCacheHeaders,
       },
       {
+        source: '/api/v2/admin/:path*',
+        headers: noStoreHeaders,
+      },
+      {
         source: '/admin/:path*',
         headers: noStoreHeaders,
       },
