@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "@/components/logos";
-import { apiFetch } from "@/lib/api-client";
+import { adminApiFetch, apiFetch } from "@/lib/api-client";
 
 type Statistic = {
   id: string;
@@ -32,7 +32,9 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
   const selected = (watch("studyCategories") ?? []) as string[];
   const { data: statisticOptions = [] } = useQuery({
     queryKey: isAdmin ? ["admin-statistics-form"] : ["statistics"],
-    queryFn: () => apiFetch<Statistic[]>("/statistics", { noStore: isAdmin }),
+    queryFn: () => isAdmin
+      ? adminApiFetch<Statistic[]>("/statistics")
+      : apiFetch<Statistic[]>("/statistics"),
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,
   });

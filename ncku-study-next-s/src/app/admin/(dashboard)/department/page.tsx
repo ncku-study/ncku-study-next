@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CollegeDTO, DepartmentDTO } from "@/types/api";
+import { adminApiFetch } from "@/lib/api-client";
 
 // ---------- Types ----------
 
@@ -88,8 +89,8 @@ export default function AdminDepartmentPage() {
   const loadData = async () => {
     try {
       const [colRes, depRes] = await Promise.all([
-        fetch("/api/v2/colleges", { cache: "no-store", headers: { "x-api-cache": "no-store" } }).then((r) => r.json()),
-        fetch("/api/v2/departments", { cache: "no-store", headers: { "x-api-cache": "no-store" } }).then((r) => r.json()),
+        adminApiFetch<College[]>("/colleges"),
+        adminApiFetch<Department[]>("/departments"),
       ]);
       setColleges(colRes);
       setDepartments(depRes);
@@ -111,10 +112,9 @@ export default function AdminDepartmentPage() {
   // College operations
   const handleUpdateCollege = async (college: College) => {
     if (!college.nameNext || college.nameNext === college.name) return;
-    await fetch(`/api/v2/colleges/${college.id}`, {
+    await adminApiFetch(`/colleges/${college.id}`, {
       method: "PUT",
-      cache: "no-store",
-      headers: { "Content-Type": "application/json", "x-api-cache": "no-store" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: college.nameNext }),
     });
     await loadData();
@@ -124,17 +124,16 @@ export default function AdminDepartmentPage() {
   };
 
   const handleDeleteCollege = async (id: number) => {
-    await fetch(`/api/v2/colleges/${id}`, { method: "DELETE", cache: "no-store", headers: { "x-api-cache": "no-store" } });
+    await adminApiFetch(`/colleges/${id}`, { method: "DELETE" });
     setColSelected(undefined);
     await loadData();
   };
 
   const handleCreateCollege = async () => {
     if (!newCollegeName.trim()) return;
-    await fetch("/api/v2/colleges", {
+    await adminApiFetch("/colleges", {
       method: "POST",
-      cache: "no-store",
-      headers: { "Content-Type": "application/json", "x-api-cache": "no-store" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newCollegeName.trim() }),
     });
     setNewCollegeName("");
@@ -145,10 +144,9 @@ export default function AdminDepartmentPage() {
   // Department operations
   const handleUpdateDepartment = async (dep: Department) => {
     if (!dep.nameNext || dep.nameNext === dep.name) return;
-    await fetch(`/api/v2/departments/${dep.id}`, {
+    await adminApiFetch(`/departments/${dep.id}`, {
       method: "PUT",
-      cache: "no-store",
-      headers: { "Content-Type": "application/json", "x-api-cache": "no-store" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: dep.nameNext, college: dep.college }),
     });
     setDepartments((prev) =>
@@ -157,16 +155,15 @@ export default function AdminDepartmentPage() {
   };
 
   const handleDeleteDepartment = async (id: number) => {
-    await fetch(`/api/v2/departments/${id}`, { method: "DELETE", cache: "no-store", headers: { "x-api-cache": "no-store" } });
+    await adminApiFetch(`/departments/${id}`, { method: "DELETE" });
     setDepartments((prev) => prev.filter((d) => d.id !== id));
   };
 
   const handleCreateDepartment = async () => {
     if (!newDepartmentName.trim() || !colSelected || colSelected.id === -1) return;
-    await fetch("/api/v2/departments", {
+    await adminApiFetch("/departments", {
       method: "POST",
-      cache: "no-store",
-      headers: { "Content-Type": "application/json", "x-api-cache": "no-store" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newDepartmentName.trim(), college: colSelected.name }),
     });
     setNewDepartmentName("");

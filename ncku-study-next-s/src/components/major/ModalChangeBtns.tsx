@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { apiFetch } from "@/lib/api-client";
+import { adminApiFetch, apiFetch } from "@/lib/api-client";
 import { CommentDTO, PaginatedResponse } from "@/types/api";
 import { useSidebar } from "@/components/sidebar/SidebarContext";
 import { useOptionalMajorModalRoute } from "@/components/major/MajorModalRouteContext";
@@ -12,7 +12,12 @@ import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
 function useModalNav(currentId: number, isAdmin: boolean) {
   const { data } = useQuery({
     queryKey: isAdmin ? ['admin-comments'] : ALL_COMMENTS_QUERY_KEY,
-    queryFn: () => apiFetch<PaginatedResponse<CommentDTO>>("/comments", { noStore: isAdmin }),
+    queryFn: async () => {
+      const result = isAdmin
+        ? await adminApiFetch<CommentDTO[] | PaginatedResponse<CommentDTO>>("/comments")
+        : await apiFetch<CommentDTO[] | PaginatedResponse<CommentDTO>>("/comments");
+      return Array.isArray(result) ? { data: result, total: result.length } : result;
+    },
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,
   });

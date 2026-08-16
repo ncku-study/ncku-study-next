@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api-client';
+import { adminApiFetch, apiFetch } from '@/lib/api-client';
 import { CollegeDTO, DepartmentDTO } from '@/types/api';
 import Filter from '@/components/Filter';
 
@@ -29,14 +29,18 @@ export function MajorFilters({ filters, onChange, isAdmin = false }: MajorFilter
 
   const { data: colleges = [] } = useQuery({
     queryKey: isAdmin ? ['admin-colleges'] : ['colleges'],
-    queryFn: () => apiFetch<CollegeDTO[]>('/colleges', { noStore: isAdmin }),
+    queryFn: () => isAdmin
+      ? adminApiFetch<CollegeDTO[]>('/colleges')
+      : apiFetch<CollegeDTO[]>('/colleges'),
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,
   });
 
   const { data: allDepartments = [] } = useQuery({
     queryKey: isAdmin ? ['admin-departments'] : ['departments'],
-    queryFn: () => apiFetch<DepartmentDTO[]>('/departments', { noStore: isAdmin }),
+    queryFn: () => isAdmin
+      ? adminApiFetch<DepartmentDTO[]>('/departments')
+      : apiFetch<DepartmentDTO[]>('/departments'),
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,
   });

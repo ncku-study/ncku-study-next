@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { CommentDTO } from "@/types/api";
 import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
+import { adminApiFetch } from "@/lib/api-client";
 
 const colorMap: Record<string, { backgroundColor: string; color: string }> = {
   轉系: { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" },
@@ -61,10 +62,9 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
     setLocalConfirm(next);
     setIsPending(true);
     try {
-      await fetch(`/api/v2/comments/${comment.id}`, {
+      await adminApiFetch(`/comments/${comment.id}`, {
         method: "PUT",
-        cache: "no-store",
-        headers: { "Content-Type": "application/json", "x-api-cache": "no-store" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ confirm: next ? "true" : "false" }),
       });
       queryClient.invalidateQueries({ queryKey: ["admin-comments"] });
@@ -78,7 +78,7 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
   const handleDelete = async () => {
     setIsPending(true);
     try {
-      await fetch(`/api/v2/comments/${comment.id}`, { method: "DELETE", cache: "no-store", headers: { "x-api-cache": "no-store" } });
+      await adminApiFetch(`/comments/${comment.id}`, { method: "DELETE" });
       queryClient.invalidateQueries({ queryKey: ["admin-comments"] });
       queryClient.invalidateQueries({ queryKey: ALL_COMMENTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["comments"] });

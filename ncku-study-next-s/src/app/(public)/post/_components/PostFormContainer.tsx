@@ -7,7 +7,7 @@ import { CustomStepper } from "./CustomStepper";
 import { useForm, FormProvider } from "react-hook-form";
 import * as z from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api-client";
+import { adminApiFetch, apiFetch } from "@/lib/api-client";
 import { Step1TypeSelection } from "./Step1TypeSelection";
 import { Step2MajorForm } from "./Step2MajorForm";
 import { Step2StudyForm } from "./Step2StudyForm";
@@ -142,7 +142,8 @@ export function PostFormContainer(props?: PostFormEditProps) {
           props!.editType === "major"
             ? `/comments/${props!.editId}`
             : `/studies/${props!.editId}`;
-        return apiFetch(endpoint, {
+        const fetcher = isAdmin ? adminApiFetch : apiFetch;
+        return fetcher(endpoint, {
           method: "PUT",
           body: JSON.stringify(data),
         });

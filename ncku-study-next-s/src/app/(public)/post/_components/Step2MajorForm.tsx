@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api-client";
+import { adminApiFetch, apiFetch } from "@/lib/api-client";
 
 type Option = { value: string | number; text: string };
 
@@ -147,14 +147,18 @@ export function Step2MajorForm({ isAdmin = false }: { isAdmin?: boolean }) {
 
   const { data: departments } = useQuery({
     queryKey: isAdmin ? ["admin-departments-form"] : ["departments"],
-    queryFn: () => apiFetch<{ id: string; name: string }[]>("/departments", { noStore: isAdmin }),
+    queryFn: () => isAdmin
+      ? adminApiFetch<{ id: string; name: string }[]>("/departments")
+      : apiFetch<{ id: string; name: string }[]>("/departments"),
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,
   });
 
   const { data: colleges } = useQuery({
     queryKey: isAdmin ? ["admin-colleges-form"] : ["colleges"],
-    queryFn: () => apiFetch<{ id: string; name: string }[]>("/colleges", { noStore: isAdmin }),
+    queryFn: () => isAdmin
+      ? adminApiFetch<{ id: string; name: string }[]>("/colleges")
+      : apiFetch<{ id: string; name: string }[]>("/colleges"),
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,
   });

@@ -23,5 +23,6 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 }
 
 export function adminApiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  return apiFetch<T>(path, { ...options, noStore: true });
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return apiFetch<T>(`/admin${normalizedPath}`, { ...options, noStore: true });
 }

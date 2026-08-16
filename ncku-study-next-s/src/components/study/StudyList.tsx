@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api-client';
+import { adminApiFetch, apiFetch } from '@/lib/api-client';
 import type { StudyDTO } from '@/types/api';
 import { StudyCard } from './StudyCard';
 import { StudyFilterPopup, type StudyFilterState } from './StudyFilterPopup';
@@ -28,7 +28,10 @@ export function StudyList({ isAdmin = false, renderClientModal = true }: { isAdm
       if (filter.stats.length > 0) params.set('stat_id', filter.stats.join(','));
       if (filter.years.length > 0) params.set('year', filter.years.join(','));
       const qs = params.toString();
-      return apiFetch(`/studies${qs ? `?${qs}` : ''}`, { noStore: isAdmin });
+      const path = `/studies${qs ? `?${qs}` : ''}`;
+      return isAdmin
+        ? adminApiFetch<StudyDTO[]>(path)
+        : apiFetch<StudyDTO[]>(path);
     },
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,

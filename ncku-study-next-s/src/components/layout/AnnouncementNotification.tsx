@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import type { AnnouncementDTO } from "@/types/api";
+import { adminApiFetch, apiFetch } from "@/lib/api-client";
 
 const READ_STORAGE_KEY = "announcementUpdateAt";
 
@@ -59,12 +60,9 @@ export default function AnnouncementNotification() {
 
   const loadAnnouncement = useCallback(async () => {
     try {
-      const response = await fetch("/api/v2/announcements", {
-        cache: "default",
-      });
-      if (!response.ok) return;
-
-      const data: unknown = await response.json();
+      const data = pathname.startsWith("/admin")
+        ? await adminApiFetch<AnnouncementDTO[]>("/announcements")
+        : await apiFetch<AnnouncementDTO[]>("/announcements");
       const first = Array.isArray(data) ? (data[0] as AnnouncementDTO | undefined) : undefined;
       if (!first) {
         setAnnouncement(null);
@@ -81,7 +79,7 @@ export default function AnnouncementNotification() {
     } catch {
       // The notification is optional UI and should not interrupt page rendering.
     }
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {

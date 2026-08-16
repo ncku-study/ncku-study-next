@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api-client';
+import { adminApiFetch, apiFetch } from '@/lib/api-client';
 import type { CategoryDTO, StatisticManageDTO } from '@/types/api';
 
 // Material UI SVG paths — match the icons used in the Vite app exactly
@@ -90,14 +90,18 @@ export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: St
 
   const { data: categories = [] } = useQuery<CategoryDTO[]>({
     queryKey: isAdmin ? ['admin-categories'] : ['categories'],
-    queryFn: () => apiFetch('/categories', { noStore: isAdmin }),
+    queryFn: () => isAdmin
+      ? adminApiFetch<CategoryDTO[]>('/categories')
+      : apiFetch<CategoryDTO[]>('/categories'),
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,
   });
 
   const { data: statistics = [] } = useQuery<StatisticManageDTO[]>({
     queryKey: isAdmin ? ['admin-statistics'] : ['statistics'],
-    queryFn: () => apiFetch('/statistics', { noStore: isAdmin }),
+    queryFn: () => isAdmin
+      ? adminApiFetch<StatisticManageDTO[]>('/statistics')
+      : apiFetch<StatisticManageDTO[]>('/statistics'),
     staleTime: isAdmin ? 0 : 60_000,
     gcTime: isAdmin ? 0 : 60_000,
   });

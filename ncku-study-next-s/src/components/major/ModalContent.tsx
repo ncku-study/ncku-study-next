@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api-client";
+import { adminApiFetch, apiFetch } from "@/lib/api-client";
 import { CommentDTO, PaginatedResponse } from "@/types/api";
 import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
 import { useTranslations } from 'next-intl';
@@ -35,7 +35,9 @@ export default function ModalContent({ id, serverComment, isAdmin = false }: Pro
 
   const { data: fetchedComment } = useQuery({
     queryKey: isAdmin ? ["admin-comment", id] : ["comment", id],
-    queryFn: () => apiFetch<CommentDTO>(`/comments/${id}`),
+    queryFn: () => isAdmin
+      ? adminApiFetch<CommentDTO>(`/comments/${id}`)
+      : apiFetch<CommentDTO>(`/comments/${id}`),
     initialData: isAdmin ? undefined : initialComment,
     // A client-side major navigation must use the hydrated list. Direct URL
     // requests provide serverComment; neither path needs another detail fetch.

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { AnnouncementDTO } from "@/types/api";
+import { adminApiFetch } from "@/lib/api-client";
 
 export default function AdminAnnouncementPage() {
   const [announcement, setAnnouncement] = useState<AnnouncementDTO | null>(null);
@@ -14,8 +15,7 @@ export default function AdminAnnouncementPage() {
     value === "1" || value === "true";
 
   useEffect(() => {
-    fetch("/api/v2/announcements", { cache: "no-store", headers: { "x-api-cache": "no-store" } })
-      .then((r) => r.json())
+    adminApiFetch<AnnouncementDTO[]>("/announcements")
       .then((data: AnnouncementDTO[]) => {
         const first = Array.isArray(data) ? data[0] : null;
         if (first) {
@@ -32,15 +32,11 @@ export default function AdminAnnouncementPage() {
     if (!announcement) return;
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/v2/announcements/${announcement.id}`, {
+      const updated = await adminApiFetch<AnnouncementDTO>(`/announcements/${announcement.id}`, {
         method: "PUT",
-        cache: "no-store",
-        headers: { "Content-Type": "application/json", "x-api-cache": "no-store" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ msg: nextMsg, isShow: nextIsShow ? "true" : "false" }),
       });
-      if (!response.ok) throw new Error(`公告更新失敗：${response.status}`);
-
-      const updated = (await response.json()) as AnnouncementDTO;
       setAnnouncement(updated);
       setMsgNext(updated.msg);
       setIsShow(isAnnouncementEnabled(updated.isShow));

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api-client';
+import { adminApiFetch, apiFetch } from '@/lib/api-client';
 import { CommentDTO, PaginatedResponse } from '@/types/api';
 import { TransCard } from './TransCard';
 import { MajorFilters, FilterState } from './MajorFilters';
@@ -45,7 +45,9 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
       const queryString = params.toString();
       const path = queryString ? '/comments?' + queryString : '/comments';
 
-      const result = await apiFetch<CommentDTO[] | PaginatedResponse<CommentDTO>>(path, { noStore: isAdmin });
+      const result = isAdmin
+        ? await adminApiFetch<CommentDTO[] | PaginatedResponse<CommentDTO>>(path)
+        : await apiFetch<CommentDTO[] | PaginatedResponse<CommentDTO>>(path);
       // API may return a plain array or a paginated wrapper — normalise to wrapper
       return Array.isArray(result)
         ? ({ data: result, total: result.length } satisfies PaginatedResponse<CommentDTO>)
