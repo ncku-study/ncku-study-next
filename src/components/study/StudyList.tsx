@@ -58,7 +58,7 @@ export function StudyList({ isAdmin = false, renderClientModal = true }: { isAdm
             {t('noResults')}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-0 w-[590px] max-sm:w-auto max-sm:mx-[10px]">
+          <div className="grid grid-cols-1 gap-0 w-[590px] max-[640px]:w-auto max-[640px]:mx-[10px] max-[576px]:w-[calc(100%_-_10px)] max-[576px]:ml-[10px] max-[576px]:mr-0">
             {studies.map((study) => (
               <StudyCard key={study.id} study={study} isAdmin={isAdmin} />
             ))}

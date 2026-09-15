@@ -74,7 +74,7 @@ export function StudyCard({ study, isAdmin = false }: StudyCardProps) {
           {study.category.map((cat) => (
             <span
               key={cat.id}
-              className="mr-[5px] rounded-[30px] font-normal text-[14px] px-[10px] py-[3px] bg-[var(--color-background-yellow)] text-[var(--color-dark-yellow)]"
+              className="inline-flex items-center mr-[5px] h-[26px] rounded-[30px] font-normal text-[14px] px-[10px] py-[3px] bg-[var(--color-background-yellow)] text-[var(--color-dark-yellow)]"
             >
               {cat.name}
             </span>

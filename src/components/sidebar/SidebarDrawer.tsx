@@ -70,15 +70,15 @@ export function SidebarDrawer() {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 min-[993px]:hidden"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
       )}
       <aside
         className={`fixed top-0 left-0 z-50 h-full w-[110px] box-content border-r border-[rgba(0,0,0,0.12)] bg-white shadow-md transition-transform duration-300 ease-[ease] flex flex-col items-center ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 md:flex md:shadow-none shrink-0`}
+          isOpen ? "translate-x-0" : "max-[992px]:hidden -translate-x-full"
+        } min-[993px]:relative min-[993px]:translate-x-0 min-[993px]:flex min-[993px]:shadow-none shrink-0`}
       >
         <nav className="flex w-full flex-col pt-[8px]">
           {navLinks.map((link) => {

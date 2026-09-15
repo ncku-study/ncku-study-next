@@ -1,4 +1,8 @@
+import { Major as MajorLogo } from '@/components/logos';
+
 const skeletonClass = 'bg-[var(--color-dark-white)] animate-pulse';
+
+export const MAJOR_CARDS_CONTAINER_CLASS = 'flex min-h-0 min-w-0 flex-wrap justify-start items-start bg-white w-full h-full rounded-[10px] overflow-x-hidden overflow-y-auto max-[576px]:gap-0 gap-[10px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-track]:bg-transparent';
 
 function MajorFilterSkeleton() {
   return (
@@ -28,7 +32,7 @@ function MajorStatisticsSkeleton() {
 
 function MajorCardSkeleton() {
   return (
-    <div className="relative border border-black/12.5 p-[5px] rounded-[15px] h-[180px] w-[220px] box-border bg-white max-sm:border-x-0 max-sm:border-t-0 max-sm:w-full max-sm:rounded-none max-sm:h-[145px]">
+    <div className="relative p-[5px] rounded-[15px] h-[180px] w-[220px] box-border bg-white max-sm:w-full max-sm:rounded-none max-sm:h-[145px]">
       <div className="grid box-border grid-cols-[57px_auto] grid-rows-[auto_30px] [grid-template-areas:'icon_main'_'year_tags'] w-[210px] h-[160px] px-[10px] pt-[5px] pb-0 max-sm:w-full max-sm:h-[125px]">
         <div className={`w-[42px] h-[42px] rounded-full my-[10px] mx-auto ${skeletonClass}`} />
         <div className="grid grid-rows-[35px_25px_auto]">
@@ -50,7 +54,7 @@ function MajorCardSkeleton() {
 
 export function MajorCardsSkeleton({ count = 8 }: { count?: number }) {
   return (
-    <div className="flex min-h-0 min-w-0 flex-wrap justify-start items-start bg-white w-full h-full rounded-[10px] overflow-x-hidden overflow-y-auto max-[576px]:gap-0 gap-[10px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-track]:bg-transparent">
+    <div className={MAJOR_CARDS_CONTAINER_CLASS}>
       {Array.from({ length: count }).map((_, i) => (
         <MajorCardSkeleton key={i} />
       ))}
@@ -120,3 +124,36 @@ export function StudyPageSkeleton() {
   );
 }
 
+function PostFormSkeleton() {
+  return (
+    <div className="mx-auto w-[458px] rounded-[5px] bg-white mb-[20px] max-[870px]:w-[80%]">
+      <div className="flex flex-col items-center py-[25px]">
+        <div className={`h-[18px] w-[220px] rounded ${skeletonClass} mb-[74px]`} />
+        <MajorLogo className="h-[105px] w-[86px] text-[var(--color-dark-white)] animate-pulse mb-[54px]" />
+        <div className={`h-[42px] w-[316px] rounded ${skeletonClass} mb-[20px] max-[368px]:w-full`} />
+        <div className="flex items-center justify-center gap-[10px] mb-[29px]">
+          <div className={`h-[6px] w-[32px] ${skeletonClass}`} />
+          <div className={`h-[6px] w-[32px] ${skeletonClass}`} />
+        </div>
+        <div className="flex items-center justify-center gap-[50px] mb-[26px] max-sm:gap-[20px]">
+          <div className={`h-[36px] w-[128px] rounded-[50px] ${skeletonClass} max-sm:w-[170px]`} />
+          <div className={`h-[36px] w-[128px] rounded-[50px] ${skeletonClass} max-sm:w-[170px]`} />
+        </div>
+      </div>
+      <div className="flex h-[75px] w-full items-center justify-end px-[20px]">
+        <div className={`h-[40px] w-[100px] rounded-[5px] ${skeletonClass}`} />
+      </div>
+    </div>
+  );
+}
+
+export function PostPageSkeleton() {
+  return (
+    <div className="pb-[25px]">
+      <div className="mx-auto w-full max-w-[650px]">
+        <div className="h-[130px]" />
+        <PostFormSkeleton />
+      </div>
+    </div>
+  );
+}

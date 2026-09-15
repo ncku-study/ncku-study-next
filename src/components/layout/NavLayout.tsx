@@ -36,7 +36,7 @@ function HamburgerButton() {
   const { toggle } = useSidebar();
   const t = useTranslations("nav");
   return (
-    <button className="md:hidden cursor-pointer border-0 bg-transparent p-0 mr-0 leading-none" onClick={toggle} aria-label={t("menu")}>
+    <button className="min-[993px]:hidden cursor-pointer border-0 bg-transparent p-0 mr-0 leading-none" onClick={toggle} aria-label={t("menu")}>
       <svg
         focusable="false"
         aria-hidden="true"
@@ -58,31 +58,33 @@ function NavContent({ children }: { children: React.ReactNode }) {
   const isNavigating = pendingHref !== null && pendingHref !== pathname;
   const isModalNavigating = isNavigating && isModalRoute(pendingHref!);
   const isPageNavigating = isNavigating && !isModalNavigating;
-  const title = isNavigating ? getTitle(pendingHref!, t) : getTitle(pathname, t);
-  const isShowSearch = pathname === '/study';
-  const isMajorPage = pathname === '/' || pathname.startsWith('/major') || pathname.startsWith('/admin/major');
+  const displayPathname = isNavigating ? pendingHref! : pathname;
+  const title = getTitle(displayPathname, t);
+  const isShowSearch = displayPathname === '/study';
+  const isMajorPage = displayPathname === '/' || displayPathname.startsWith('/major') || displayPathname.startsWith('/admin/major');
 
   return (
     <div
-      className={`box-border grid grid-cols-auto w-full h-screen min-h-0 py-[20px] px-[30px] bg-white overflow-x-hidden ${isMajorPage ? 'overflow-y-hidden grid-rows-[50px_minmax(0,1fr)]' : 'overflow-y-auto max-lg:grid-rows-[50px_auto]'} max-sm:p-[10px] max-sm:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0 ${!isMajorPage && (isShowSearch ? 'grid-rows-[120px_auto]' : 'grid-rows-[50px_auto]')}`}
+      className={`box-border grid grid-cols-auto w-full h-screen min-h-0 py-[20px] px-[30px] bg-white overflow-x-hidden ${isMajorPage ? 'overflow-y-hidden grid-rows-[50px_minmax(0,1fr)]' : 'overflow-y-auto max-[992px]:grid-rows-[50px_auto]'} max-[576px]:p-[10px] max-[576px]:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0 ${!isMajorPage && (isShowSearch ? 'grid-rows-[120px_auto]' : 'grid-rows-[50px_auto]')}`}
     >
-      <header className="w-full flex flex-wrap items-center h-[50px]">
+      <header className="w-full flex flex-wrap items-center">
         <HamburgerButton />
-        <h1 className="m-0 text-[1.7rem] font-medium w-full max-lg:w-auto max-lg:pl-[20px]">{title}</h1>
+        <h1 className="m-0 text-[1.7rem] font-medium w-full max-[992px]:w-auto max-[992px]:pl-[20px]">{title}</h1>
         {isShowSearch && (
           <form
-            className="relative flex items-center w-[550px] h-[45px] max-lg:grow max-lg:w-1/2 max-lg:h-[35px] max-lg:pl-[25px] max-sm:w-[30%] max-sm:h-[35px] max-sm:pl-[25px]"
+            className="relative flex items-center w-[550px] h-[45px] max-[992px]:grow max-[992px]:w-1/2 max-[992px]:h-[35px] max-[992px]:pl-[25px] max-[576px]:w-[30%] max-[576px]:h-[35px] max-[576px]:pl-[25px]"
             onSubmit={(e) => e.preventDefault()}
           >
             <input
-              className="w-full h-full py-[10px] px-[15px] box-border border border-black/5 rounded-[55px] focus-visible:outline focus-visible:outline-1 focus-visible:outline-black/50 max-sm:h-[35px] text-[1.5rem] outline-none"
+              className="w-full h-[45px] py-[10px] px-[15px] box-border border border-black/5 rounded-[55px] bg-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-black/50 max-[640px]:h-[35px] text-[13.3333px] leading-[normal] outline-none"
               aria-label="search"
             />
             <button
               type="submit"
-              className="inline-flex absolute right-[12px] cursor-pointer p-0 border-0 bg-white"
+              className="block absolute top-[5.0625px] right-[12px] h-[24.875px] cursor-pointer p-0 border-0 bg-white text-[13.3333px] leading-[normal]"
             >
               <SearchIcon
+                className="block"
                 style={{ fill: 'var(--color-yellow)', width: '2.1875rem', height: '2.1875rem' }}
                 aria-hidden="true"
               />
@@ -102,7 +104,7 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AnnouncementNotification />
-      <div className="md:grid md:grid-cols-[110px_1fr] flex flex-col h-screen overflow-hidden bg-[var(--color-dark-white)]">
+      <div className="min-[993px]:grid min-[993px]:grid-cols-[110px_1fr] flex flex-col h-screen overflow-hidden bg-[var(--color-dark-white)]">
         <SidebarDrawer />
         <NavContent>{children}</NavContent>
       </div>

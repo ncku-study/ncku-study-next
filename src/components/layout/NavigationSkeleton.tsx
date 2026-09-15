@@ -1,4 +1,4 @@
-import { MajorPageSkeleton, StudyPageSkeleton } from './PageSkeletons';
+import { MajorPageSkeleton, PostPageSkeleton, StudyPageSkeleton } from './PageSkeletons';
 
 function GenericPageSkeleton() {
   return (
@@ -25,6 +25,10 @@ export default function NavigationSkeleton({ pathname }: { pathname: string }) {
 
   if (/^\/(?:admin\/)?study(?:\/|$)/.test(pathname)) {
     return <StudyPageSkeleton />;
+  }
+
+  if (/^\/(?:admin\/)?post(?:\/|$)/.test(pathname)) {
+    return <PostPageSkeleton />;
   }
 
   return <GenericPageSkeleton />;

@@ -44,3 +44,12 @@ export function getDb(): Kysely<Database> {
   }
   return db;
 }
+
+export async function resetDbConnection(): Promise<void> {
+  const currentDb = db;
+  db = undefined;
+
+  if (currentDb) {
+    await currentDb.destroy();
+  }
+}

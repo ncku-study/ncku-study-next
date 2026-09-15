@@ -227,11 +227,11 @@ export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: St
         ref={buttonRef}
         type="button"
         onClick={handleOpen}
-        className="w-full h-[38px] px-[14px] text-[1.5rem] bg-white border border-black/23 rounded-[4px] cursor-pointer text-left flex justify-between items-center text-black/87 hover:border-black/87 focus:outline-none"
+        className="relative w-full h-[38.8125px] p-0 bg-transparent border-0 rounded-[4px] cursor-pointer text-left text-black/87 focus:outline-none before:content-[''] before:absolute before:pointer-events-none before:left-0 before:right-0 before:top-[-5px] before:h-[43.8125px] before:rounded-[4px] before:border before:border-black/23 hover:before:border-black/87"
       >
-        <span>{t('filterButton')}</span>
+        <span className="absolute left-[14px] top-[12px] z-[1] text-[15px] leading-[15px] text-black/54 font-['Roboto','Helvetica','Arial',sans-serif]">{t('filterButton')}</span>
         <svg
-          className="w-[1em] h-[1em] ml-[4px] shrink-0"
+          className="absolute right-[9px] top-[7.40625px] z-[1] w-[15px] h-[15px] fill-black/54"
           focusable="false"
           viewBox="0 0 24 24"
           aria-hidden="true"

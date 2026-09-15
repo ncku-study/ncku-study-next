@@ -54,6 +54,10 @@ export function buildSeoMetadata({
     metadataBase: getMetadataBase(),
     title,
     description: normalizedDescription,
+    icons: {
+      icon: [{ url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' }],
+      shortcut: ['/favicon.ico'],
+    },
     alternates: {
       canonical: canonicalUrl,
     },

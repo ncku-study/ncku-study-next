@@ -13,7 +13,7 @@ import AdminReaderModal from './AdminReaderModal';
 import { ALL_COMMENTS_QUERY_KEY } from '@/lib/query-keys';
 import MajorModal from './MajorModal';
 import { useOptionalMajorModalRoute } from './MajorModalRouteContext';
-import { MajorCardsSkeleton } from '@/components/layout/PageSkeletons';
+import { MAJOR_CARDS_CONTAINER_CLASS, MajorCardsSkeleton } from '@/components/layout/PageSkeletons';
 
 export default function MajorGrid({ isAdmin = false, renderClientModal = true }: { isAdmin?: boolean; renderClientModal?: boolean }) {
   const t = useTranslations('major');
@@ -64,7 +64,7 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
     <main className="grid h-full min-h-0 min-w-0 grid-rows-[50px_160px_minmax(0,1fr)] overflow-hidden max-[990px]:grid-rows-[100px_160px_minmax(0,1fr)] max-[576px]:grid-rows-[90px_0px_minmax(0,1fr)] max-[576px]:-mx-[10px]">
       <MajorFilters filters={filters} onChange={setFilters} isAdmin={isAdmin} />
       <StatisticControl>
-        <MajorStatistics comments={comments} />
+        <MajorStatistics comments={comments} filters={filters} />
       </StatisticControl>
       
       {isLoading && (
@@ -84,7 +84,7 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
       )}
 
       {!isLoading && !isError && comments.length > 0 && (
-        <div className="flex min-h-0 min-w-0 flex-wrap justify-start items-start bg-white w-full h-full rounded-[10px] overflow-x-hidden overflow-y-auto max-[576px]:gap-0 gap-[10px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-track]:bg-transparent">
+        <div className={MAJOR_CARDS_CONTAINER_CLASS}>
           {comments.map((comment) => (
             <TransCard key={comment.id} data={comment} isAdmin={isAdmin} onOpen={isAdmin ? setSelectedComment : undefined} />
           ))}
