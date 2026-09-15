@@ -1,0 +1,217 @@
+name: Deploy production
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ncku-study-next-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: ap-northeast-1
+  ENVIRONMENT_PARAMETER_NAME: /ncku-study-next/production/environment
+
+jobs:
+  deploy:
+    name: Deploy through AWS Systems Manager
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out deployment configuration
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials through OIDC
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Synchronize production environment secret
+        env:
+          PRODUCTION_ENV: ${{ secrets.PRODUCTION_ENV }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [[ -z "$PRODUCTION_ENV" ]]; then
+            echo "The required PRODUCTION_ENV GitHub secret is empty or unavailable." >&2
+            exit 1
+          fi
+
+          trap 'rm -f production.env filtered-production.env' EXIT
+          printf '%s\n' "$PRODUCTION_ENV" > production.env
+          sed -i 's/\r$//' production.env
+
+          awk '
+            NR == FNR {
+              if ($0 ~ /^[A-Za-z_][A-Za-z0-9_]*=/) {
+                key = $0
+                sub(/=.*/, "", key)
+                allowed[key] = 1
+              }
+              next
+            }
+            /^[[:space:]]*($|#)/ { next }
+            /^[A-Za-z_][A-Za-z0-9_]*=/ {
+              key = $0
+              sub(/=.*/, "", key)
+              if (!allowed[key]) {
+                print "PRODUCTION_ENV contains a key absent from .env.sample: " key > "/dev/stderr"
+                invalid = 1
+                next
+              }
+              print
+              next
+            }
+            {
+              print "PRODUCTION_ENV contains an invalid line." > "/dev/stderr"
+              invalid = 1
+            }
+            END { exit invalid }
+          ' .env.sample production.env > filtered-production.env
+
+          if [[ ! -s filtered-production.env ]]; then
+            echo 'PRODUCTION_ENV has no variables permitted by .env.sample.' >&2
+            exit 1
+          fi
+
+          encoded_environment="$(base64 --wrap=0 filtered-production.env)"
+          if (( ${#encoded_environment} > 4096 )); then
+            echo "PRODUCTION_ENV exceeds the 4 KiB SSM Standard parameter limit after encoding." >&2
+            exit 1
+          fi
+
+          aws ssm put-parameter \
+            --name "$ENVIRONMENT_PARAMETER_NAME" \
+            --type SecureString \
+            --tier Standard \
+            --value "$encoded_environment" \
+            --overwrite \
+            --description 'NCKU Study Next production environment; managed by GitHub Actions' \
+            --no-cli-pager
+          unset PRODUCTION_ENV encoded_environment
+
+      - name: Request SSM deployment
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          instance_ids="$(aws ec2 describe-instances \
+            --filters 'Name=tag:Application,Values=ncku-study-next' 'Name=tag:Environment,Values=production' 'Name=instance-state-name,Values=running' \
+            --query 'Reservations[].Instances[].InstanceId' \
+            --output text)"
+
+          if [[ -z "$instance_ids" || "$instance_ids" == *$'\t'* || "$instance_ids" == *' '* ]]; then
+            echo "Expected exactly one running, tagged production instance; found: $instance_ids" >&2
+            exit 1
+          fi
+
+          cat > ssm-command.sh <<'REMOTE'
+          set -Eeuo pipefail
+
+          app_name='ncku-study-next'
+          deploy_user='ncku-deploy'
+          aws_region='ap-northeast-1'
+          environment_parameter_name='/ncku-study-next/production/environment'
+          bootstrap_script="/usr/local/sbin/$app_name-bootstrap"
+          deployment_script="/usr/local/bin/$app_name-deploy"
+          environment_file="/etc/$app_name/environment"
+          release_id='__RELEASE_ID__'
+          needs_bootstrap=0
+
+          # AWS CLI is required to obtain the GitHub-secret-backed environment.
+          # It should always be present from user data; this fallback repairs an
+          # interrupted initial bootstrap before continuing.
+          if ! command -v aws >/dev/null 2>&1; then
+            if [[ ! -x "$bootstrap_script" ]]; then
+              echo "Bootstrap script is missing. EC2 user data did not complete; repair it before deployment." >&2
+              exit 1
+            fi
+            "$bootstrap_script"
+          fi
+
+          temporary_environment="$(mktemp)"
+          umask 077
+          aws ssm get-parameter \
+            --name "$environment_parameter_name" \
+            --with-decryption \
+            --region "$aws_region" \
+            --query 'Parameter.Value' \
+            --output text | base64 --decode > "$temporary_environment"
+          sed -i 's/\r$//' "$temporary_environment"
+          install -o root -g "$deploy_user" -m 0640 "$temporary_environment" "$environment_file"
+          rm -f "$temporary_environment"
+
+          set -a
+          . "$environment_file"
+          set +a
+
+          command -v nginx >/dev/null 2>&1 && systemctl is-active --quiet nginx && test -f "/etc/nginx/sites-enabled/$app_name" || needs_bootstrap=1
+          command -v mysql >/dev/null 2>&1 && systemctl is-active --quiet mysql && test -f "/etc/mysql/mysql.conf.d/99-$app_name-local.cnf" || needs_bootstrap=1
+          command -v certbot >/dev/null 2>&1 && test -x "/usr/local/bin/$app_name-enable-ssl" || needs_bootstrap=1
+          command -v pm2 >/dev/null 2>&1 && command -v aws >/dev/null 2>&1 || needs_bootstrap=1
+
+          if systemctl list-unit-files --type=timer --no-legend | awk '{print $1}' | grep -Fxq certbot.timer; then
+            systemctl is-enabled --quiet certbot.timer || needs_bootstrap=1
+          elif [[ ! -f "/etc/cron.d/$app_name-certbot-renew" ]]; then
+            needs_bootstrap=1
+          fi
+
+          if (( needs_bootstrap )); then
+            if [[ ! -x "$bootstrap_script" ]]; then
+              echo "Bootstrap script is missing. EC2 user data did not complete; repair it before deployment." >&2
+              exit 1
+            fi
+            "$bootstrap_script"
+          fi
+
+          exec "$deployment_script" "$release_id"
+          REMOTE
+          sed -i "s/__RELEASE_ID__/${GITHUB_SHA}/g" ssm-command.sh
+          jq --rawfile command ssm-command.sh '{commands: [$command]}' > ssm-parameters.json
+          command_id="$(aws ssm send-command \
+            --document-name AWS-RunShellScript \
+            --instance-ids "$instance_ids" \
+            --comment "Deploy ncku-study-next ${GITHUB_SHA}" \
+            --parameters file://ssm-parameters.json \
+            --query 'Command.CommandId' \
+            --output text)"
+          echo "SSM_COMMAND_ID=$command_id" >> "$GITHUB_ENV"
+          echo "INSTANCE_ID=$instance_ids" >> "$GITHUB_ENV"
+
+      - name: Wait for deployment
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for attempt in {1..120}; do
+            status="$(aws ssm get-command-invocation --command-id "$SSM_COMMAND_ID" --instance-id "$INSTANCE_ID" --query Status --output text)"
+            case "$status" in
+              Success)
+                exit 0
+                ;;
+              Pending|InProgress|Delayed)
+                sleep 10
+                ;;
+              *)
+                echo "SSM deployment ended with status: $status" >&2
+                exit 1
+                ;;
+            esac
+          done
+
+          echo 'Timed out waiting for the SSM deployment command.' >&2
+          exit 1
+
+      - name: Show deployment output
+        if: always() && env.SSM_COMMAND_ID != ''
+        shell: bash
+        run: |
+          aws ssm get-command-invocation \
+            --command-id "$SSM_COMMAND_ID" \
+            --instance-id "$INSTANCE_ID" \
+            --query '{Status:Status,Stdout:StandardOutputContent,Stderr:StandardErrorContent}' \
+            --output json

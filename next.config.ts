@@ -17,6 +17,13 @@ const publicApiCacheHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  // next-auth@5.0.0-beta.31 currently exposes type declarations that are
+  // incompatible with this project's React/Next versions. Only the EC2 deploy
+  // command sets this flag, so local and CI type checks still surface the issue.
+  typescript: {
+    ignoreBuildErrors: process.env.SKIP_NEXT_TYPECHECK === 'true',
+  },
   devIndicators: false,
   turbopack: {
     root: path.resolve(__dirname),
