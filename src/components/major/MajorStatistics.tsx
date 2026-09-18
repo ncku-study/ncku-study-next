@@ -22,14 +22,16 @@ function ProgressCircle({ value, name, noValue }: ProgressCircleProps & { noValu
   const displayValue = value === null ? noValue : Number(percent).toFixed(1);
 
   return (
-    <div className="relative w-[115px] flex justify-items-center items-center flex-col">
-      <div style={{ position: 'relative', width: '70px', margin: '0 11.25px' }}>
-        <ProgressArc value={value} size={70} />
+    <div className="relative w-46 flex justify-items-center items-center flex-col">
+      <div className="relative w-28 mx-4">
+        <div className="translate-y-px">
+          <ProgressArc value={value} size={70} />
+        </div>
         <span className="absolute text-[1.9rem] flex w-full justify-center text-dark-black" style={{ top: '21px', left: 0 }}>
           {displayValue}
         </span>
       </div>
-      <h4 className="flex justify-center text-[1.4rem] my-[7px] mx-0">{name}</h4>
+      <h4 className="flex justify-center text-[1.4rem] my-3 mx-0">{name}</h4>
     </div>
   );
 }
@@ -89,8 +91,8 @@ export function MajorStatistics({ comments, filters }: MajorStatisticsProps) {
   });
 
   return (
-    <section className="h-full grid grid-cols-[400px_auto] gap-x-[20px] py-[10px] max-[576px]:h-[160px] max-[576px]:grid-cols-[1fr_0] max-[576px]:gap-x-0">
-      <div className="bg-white w-full h-full rounded-[10px] flex items-center justify-evenly">
+    <section className="h-full flex gap-8 py-4 max-sm:h-64">
+      <div className="bg-white w-160 h-full rounded-lg flex-none flex items-center justify-evenly max-sm:w-full">
         <ProgressCircle value={average} name={t('averageScore')} noValue={t('noValue')} />
         <ProgressCircle value={min} name={t('minimumScore')} noValue={t('noValue')} />
         <ProgressCircle

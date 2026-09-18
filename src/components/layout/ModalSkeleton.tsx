@@ -2,44 +2,43 @@ export default function ModalSkeleton() {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
         {/* Modal shell — matches page.tsx: w-[600px] h-[700px], three-column grid */}
         <div
-          className="relative w-[600px] h-[700px] max-h-[75vh] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] max-lg:w-[360px] max-lg:max-h-[65vh] max-lg:min-w-[95vw]"
-          style={{ gridTemplateRows: '100%' }}
+          className="relative flex w-150 h-175 max-h-3/4 p-1.25 bg-white text-card-text max-lg:w-90 max-lg:max-h-2/3 max-lg:min-w-full"
         >
           {/* Left arrow column — invisible placeholder */}
           <div className="flex justify-center items-center invisible">
-            <div className="border-r-2 border-t-2 border-gray-500 h-[30px] w-[30px] inline-block rotate-[225deg]" />
+            <div className="border-r-2 border-t-2 border-arrow h-7.5 w-7.5 inline-block rotate-45" style={{ transform: 'rotate(225deg)' }} />
           </div>
 
           {/* Content column */}
-          <div className="w-full flex flex-col py-[20px] px-[5px]">
+          <div className="w-full flex flex-1 flex-col py-5 px-1">
             {/* TitleBar skeleton */}
-            <div className="flex items-center mb-[10px]">
-              <div className="w-[46px] h-[46px] rounded-full bg-[var(--color-dark-white)] animate-pulse shrink-0" />
-              <div className="ml-[10px] flex-1 flex flex-col gap-[8px]">
-                <div className="h-[20px] w-[140px] bg-[var(--color-dark-white)] rounded animate-pulse" />
-                <div className="h-[14px] w-[100px] bg-[var(--color-dark-white)] rounded animate-pulse" />
+            <div className="flex items-center mb-2.5">
+              <div className="w-11.5 h-11.5 rounded-full bg-dark-white animate-pulse shrink-0" />
+              <div className="ml-2.5 flex-1 flex flex-col gap-2">
+                <div className="h-5 w-35 bg-dark-white rounded animate-pulse" />
+                <div className="h-3.5 w-25 bg-dark-white rounded animate-pulse" />
               </div>
             </div>
 
             {/* DetailList skeleton — 4 tags */}
-            <div className="flex flex-wrap my-[20px] mx-0 gap-[4px]">
+            <div className="flex flex-wrap my-5 mx-0 gap-1">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="min-w-[75px] h-[50px] p-[5px] flex flex-col gap-[6px]">
-                  <div className="h-[14px] w-[56px] bg-[var(--color-dark-white)] rounded animate-pulse" />
-                  <div className="h-[18px] w-[72px] bg-[var(--color-dark-white)] rounded animate-pulse" />
+                <div key={i} className="min-w-18.75 h-12.5 p-1.25 flex flex-col gap-1.5">
+                  <div className="h-3.5 w-14 bg-dark-white rounded animate-pulse" />
+                  <div className="h-4.5 w-18 bg-dark-white rounded animate-pulse" />
                 </div>
               ))}
             </div>
 
             {/* ReaderText skeleton */}
-            <div className="flex flex-col gap-[10px] flex-1">
+            <div className="flex flex-col gap-2.5 flex-1">
               {Array.from({ length: 10 }).map((_, i) => (
                 <div
                   key={i}
-                  className={`h-[17px] bg-[var(--color-dark-white)] rounded animate-pulse ${i === 9 ? 'w-[60%]' : 'w-full'}`}
+                  className={`h-4.25 bg-dark-white rounded animate-pulse ${i === 9 ? 'w-3/5' : 'w-full'}`}
                 />
               ))}
             </div>
@@ -47,7 +46,7 @@ export default function ModalSkeleton() {
 
           {/* Right arrow column — invisible placeholder */}
           <div className="flex justify-center items-center invisible">
-            <div className="border-r-2 border-t-2 border-gray-500 h-[30px] w-[30px] inline-block rotate-45" />
+            <div className="border-r-2 border-t-2 border-arrow h-7.5 w-7.5 inline-block rotate-45" />
           </div>
         </div>
       </div>

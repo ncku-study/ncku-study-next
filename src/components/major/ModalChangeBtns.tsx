@@ -44,14 +44,13 @@ function ChangeBtn({
 }) {
   const arrow = (
     <div
-      className={`border-r-2 border-t-2 border-gray-500 h-[30px] w-[30px] border-l border-b border-l-transparent border-b-transparent inline-block ${
-        direction === "left" ? "rotate-[225deg]" : "rotate-45"
-      }`}
+      className="border-r-2 border-t-2 border-arrow h-12 w-12 border-l border-b border-l-transparent border-b-transparent inline-block rotate-45"
+      style={direction === "left" ? { transform: 'rotate(225deg)' } : undefined}
     />
   );
 
   if (!href) {
-    return <div className="flex justify-center items-center invisible">{arrow}</div>;
+    return <div className="w-20 flex-none flex justify-center items-center invisible">{arrow}</div>;
   }
 
   const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -64,10 +63,10 @@ function ChangeBtn({
   };
 
   if (useClientNavigation) {
-    return <a href={href} onClick={onClick} className="flex justify-center items-center cursor-pointer">{arrow}</a>;
+    return <a href={href} onClick={onClick} className="w-20 flex-none flex justify-center items-center cursor-pointer">{arrow}</a>;
   }
 
-  return <Link href={href} onClick={() => onNavigate(href)} className="flex justify-center items-center cursor-pointer">{arrow}</Link>;
+  return <Link href={href} onClick={() => onNavigate(href)} className="w-20 flex-none flex justify-center items-center cursor-pointer">{arrow}</Link>;
 }
 
 export function ModalPrevBtn({ currentId, basePath = '/major' }: { currentId: number; basePath?: string }) {

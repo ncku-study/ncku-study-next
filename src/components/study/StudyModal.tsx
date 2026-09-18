@@ -51,7 +51,7 @@ function StudyArrow({
   onNavigate: (href: string) => void;
 }) {
   const arrow = (
-    <svg className="w-[35px] h-[35px]" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="w-14 h-14" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
       {direction === 'previous' ? (
         <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
       ) : (
@@ -143,8 +143,8 @@ export default function StudyModal({ id, studies, serverStudy, onClose }: StudyM
   return (
     <StudyModalOverlay onClose={onClose}>
       <div
-        className="grid grid-cols-[50px_auto_50px] w-[600px] h-[90vh] bg-white"
-        style={{ gridTemplateRows: '100%' }}
+        className="study-modal grid w-240 max-xl:w-144 bg-white"
+        style={{ gridTemplateColumns: '50px minmax(0, 1fr) 50px', gridTemplateRows: '100%' }}
         role="dialog"
         aria-modal="true"
         aria-label={study?.title ?? 'Study detail'}
@@ -155,39 +155,40 @@ export default function StudyModal({ id, studies, serverStudy, onClose }: StudyM
           onNavigate={navigateToStudy}
         />
 
-        <div className="flex flex-col relative col-start-2 py-[25px] overflow-hidden">
+        <div className="flex flex-col relative col-start-2 py-10 overflow-hidden">
           {isLoading || !study ? (
             <div className="flex-1 flex items-center justify-center">
-              <div className="w-8 h-8 border-4 border-[var(--color-yellow)] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-yellow border-t-filter-transparent rounded-full animate-spin" />
             </div>
           ) : (
             <>
-              <div className="inline-flex shrink-0">
+              <div className="inline-flex">
                 {categories.map((category) => (
                   <span
                     key={category.id}
-                    className="flex items-center px-[10px] py-[3px] bg-[rgba(254,218,106,0.4)] text-[#E1AF13] text-[14px] select-none rounded-[30px] mr-[10px]"
+                    className="flex items-center px-4 py-1 bg-background-yellow text-dark-yellow text-[14px] select-none rounded-full mr-4"
+                    style={{ paddingBlock: '3px' }}
                   >
                     {category.name}
                   </span>
                 ))}
               </div>
 
-              <h4 className="text-[18px] mt-[15px] shrink-0">{study.title}</h4>
-              <span className="text-[16px] text-[#8c8c8c] shrink-0">
+              <h4 className="text-[18px] mt-6">{study.title}</h4>
+              <span className="text-[16px] text-muted-text">
                 {tStudy('postedAt', { year: study.year, date: formatTimestamp(study.timestamp) })}
               </span>
 
-              <div className="inline-flex my-[10px] h-[50px] shrink-0">
+              <div className="inline-flex my-4 h-20">
                 {allStats.map((stat, index) => (
-                  <div key={index} className="grid grid-rows-[12px_auto] h-[50px] min-w-[75px] mr-[10px]">
+                  <div key={index} className="grid h-20 min-w-30 mr-4" style={{ gridTemplateRows: '12px auto' }}>
                     <div className="text-[12px]">{stat.isOther ? `${tStudy('otherPrefix')}: ${stat.name}` : stat.name}</div>
                     <div className="text-[24px]">{stat.value}</div>
                   </div>
                 ))}
               </div>
 
-              <div className="h-full my-[5px] text-justify leading-[2.8rem] tracking-[2.5px] overflow-y-auto [overflow-wrap:anywhere] whitespace-pre-line custom-scrollbar">
+              <div className="h-full my-2 text-justify leading-11 overflow-y-auto whitespace-pre-line custom-scrollbar" style={{ letterSpacing: '2.5px', lineHeight: '2.8rem', overflowWrap: 'anywhere' }}>
                 {study.content.replace(/<br\s*\/?>(\r?\n)?/gi, '\n')}
               </div>
             </>

@@ -8,11 +8,11 @@ import { ALL_COMMENTS_QUERY_KEY } from "@/lib/query-keys";
 import { adminApiFetch } from "@/lib/api-client";
 
 const categoryColors: Record<string, { backgroundColor: string; color: string }> = {
-  transfer: { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" },
-  minor: { backgroundColor: "rgba(29, 30, 34, 0.2)", color: "rgba(29, 30, 34, 1)" },
-  double: { backgroundColor: "#393F4D", color: "#FFFFFF" },
+  transfer: { backgroundColor: "bg-background-yellow", color: "text-dark-yellow" },
+  minor: { backgroundColor: "bg-minor-surface", color: "text-dark-black" },
+  double: { backgroundColor: "bg-light-black", color: "text-white" },
 };
-const defaultIconStyle = { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" };
+const defaultIconStyle = { backgroundColor: "bg-background-yellow", color: "text-dark-yellow" };
 
 function getCategoryStyle(category: string, labels: { transfer: string; minor: string; double: string }) {
   if (category === labels.transfer) return categoryColors.transfer;
@@ -29,13 +29,12 @@ function isPassDisplay(value: string, passLabel: string, failLabel: string): str
 function ChangeArrow({ direction, visible, onClick }: { direction: "left" | "right"; visible: boolean; onClick: () => void }) {
   return (
     <div
-      className={`flex justify-center items-center ${visible ? "cursor-pointer" : "invisible"}`}
+      className={`w-20 flex-none flex justify-center items-center ${visible ? "cursor-pointer" : "invisible"}`}
       onClick={visible ? onClick : undefined}
     >
       <div
-        className={`border-r-2 border-t-2 border-gray-500 h-[30px] w-[30px] border-l border-b border-l-transparent border-b-transparent inline-block ${
-          direction === "left" ? "rotate-[225deg]" : "rotate-45"
-        }`}
+        className="border-r-2 border-t-2 border-arrow h-12 w-12 border-l border-b border-l-transparent border-b-transparent inline-block rotate-45"
+        style={direction === "left" ? { transform: 'rotate(225deg)' } : undefined}
       />
     </div>
   );
@@ -133,63 +132,61 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
   return (
     /* Backdrop */
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-overlay"
       onClick={onClose}
     >
       {/* Modal container — stop propagation so clicks inside don't close */}
       <div
-        className="relative w-[600px] h-[80vh] max-h-[80vh] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] grid-rows-[100%] max-lg:w-[360px] max-lg:min-w-[95vw] max-lg:h-[65vh]"
+        className="relative flex w-240 h-4/5 max-h-4/5 p-2 bg-white text-card-text max-lg:w-144 max-lg:min-w-full max-lg:h-2/3"
         onClick={(e) => e.stopPropagation()}
       >
         <ChangeArrow direction="left" visible={!!prevComment} onClick={() => prevComment && onNavigate(prevComment)} />
 
         {/* Content */}
-        <div className="w-full flex flex-col py-[20px] px-[5px] overflow-hidden">
+        <div className="w-full flex flex-1 flex-col py-8 px-2 overflow-hidden">
           {/* TitleBar */}
           <div className="flex items-center shrink-0">
             <div
-              className="flex justify-center items-center font-semibold w-[42px] h-[42px] rounded-[42px] my-[10px] mx-auto scale-110"
-              style={iconStyle}
+              className={`flex justify-center items-center font-semibold w-17 h-17 rounded-full my-4 mx-auto scale-110 ${iconStyle.backgroundColor} ${iconStyle.color}`}
             >
               {comment.category?.[0] ?? categoryLabels.transfer[0]}
             </div>
-            <div className="ml-[10px] flex-1">
-              <h4 className="m-0 text-[1.9rem] mb-[5px]">{comment.in_maj}</h4>
-              <p className="text-[1.3rem] m-0" style={{ color: "rgba(163,158,158,1)" }}>
-                {tMajor("originalMajor")}: {comment.out_maj}
+            <div className="ml-4 flex-1">
+              <h4 className="m-0 text-[1.9rem] mb-2">{comment.in_maj}</h4>
+              <p className="text-[1.3rem] text-dark-gray m-0">
+                {tMajor("originalMajor")} {comment.out_maj}
               </p>
             </div>
           </div>
 
           {/* Confirm toggle (admin only) */}
-          <div className="flex items-center gap-[10px] shrink-0 mt-[8px]">
+          <div className="flex items-center gap-2.5 shrink-0 mt-2">
             <span className="text-[1.4rem]">{tMajor("reviewed")}</span>
             <button
               onClick={handleToggle}
               disabled={isPending}
-              className={`relative inline-flex items-center w-[54px] h-[26px] rounded-full transition-colors duration-200 disabled:opacity-50 ${
-                localConfirm ? "bg-[var(--color-yellow)]" : "bg-gray-300"
+              className={`relative inline-flex items-center w-22 h-10 rounded-full transition-colors duration-200 disabled:opacity-50 ${
+                localConfirm ? "bg-yellow" : "bg-toggle-off"
               }`}
               aria-pressed={localConfirm}
             >
               <span
-                className={`absolute top-[3px] w-[20px] h-[20px] bg-white rounded-full shadow transition-transform duration-200 ${
-                  localConfirm ? "translate-x-[30px]" : "translate-x-[3px]"
+                className={`absolute top-1 w-8 h-8 bg-white rounded-full shadow transition-transform duration-200 ${
+                  localConfirm ? "translate-x-12" : "translate-x-1"
                 }`}
               />
             </button>
           </div>
 
           {/* DetailList */}
-          <div className="flex flex-wrap my-[20px] mx-0 shrink-0">
+          <div className="flex flex-wrap my-8 mx-0 shrink-0">
             {tags.map(({ type, value }) => {
               const isFailResult = type === tMajor("applicationResult") && (value === "false" || value === categoryLabels.fail);
               const displayValue = type === tMajor("applicationResult") ? isPassDisplay(value, categoryLabels.pass, categoryLabels.fail) : value;
               return (
                 <div
                   key={type}
-                  className="min-w-[75px] h-[50px] p-[5px] bg-white"
-                  style={{ color: isFailResult ? "rgba(245,88,123,1)" : "rgba(29,30,34,1)" }}
+                  className={`min-w-30 h-20 p-2 bg-white ${isFailResult ? 'text-red' : 'text-dark-black'}`}
                 >
                   <div className="text-[1.4rem]">{type}</div>
                   <div className="text-[1.7rem] font-bold">{displayValue}</div>
@@ -199,25 +196,25 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
           </div>
 
           {/* ReaderText */}
-          <div className="leading-[2.8rem] tracking-[2.5px] overflow-y-auto break-anywhere text-justify whitespace-pre-line text-[17px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0">
+          <div className="overflow-y-auto break-anywhere text-justify whitespace-pre-line text-[17px] custom-scrollbar" style={{ lineHeight: '2.8rem', letterSpacing: '2.5px' }}>
             {comment.comment.replace(/<br\s*\/?>/gi, "\n")}
           </div>
 
           {/* AdvanceAdmin — matches vite AdvanceAdmin layout */}
-          <div className="mt-[50px] h-[50px] shrink-0 flex items-center justify-end gap-[6px]">
+          <div className="mt-20 h-20 shrink-0 flex items-center justify-end gap-2.5">
             {!waitDelete ? (
               <>
                 <button
                   disabled={isPending}
                   onClick={() => setWaitDelete(true)}
-                  className="h-[40px] w-[120px] bg-white border-2 border-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
+                  className="h-16 w-48 bg-white border-2 border-yellow text-light-black cursor-pointer hover:brightness-75 disabled:opacity-50"
                 >
                   {tCommon("deleteStudy")}
                 </button>
                 <button
                   disabled={isPending}
                   onClick={handleEdit}
-                  className="h-[40px] w-[110px] bg-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
+                  className="h-16 w-44 bg-yellow text-light-black cursor-pointer hover:brightness-75 disabled:opacity-50"
                 >
                   {tCommon("edit")}
                 </button>
@@ -227,15 +224,15 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
                 <button
                   disabled={isPending}
                   onClick={handleDelete}
-                  className="h-[40px] w-[120px] bg-white border-2 border-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
+                  className="h-16 w-48 bg-white border-2 border-yellow text-light-black cursor-pointer hover:brightness-75 disabled:opacity-50"
                 >
                   {tCommon("confirmDelete")}
                 </button>
-                <p className="font-bold m-[10px] text-sm">{tCommon("confirmDeleteStudy")}</p>
+                <p className="font-bold m-4 text-sm">{tCommon("confirmDeleteStudy")}</p>
                 <button
                   disabled={isPending}
                   onClick={() => setWaitDelete(false)}
-                  className="h-[40px] w-[110px] bg-[var(--color-yellow)] text-[var(--color-light-black)] cursor-pointer hover:brightness-75 disabled:opacity-50"
+                  className="h-16 w-44 bg-yellow text-light-black cursor-pointer hover:brightness-75 disabled:opacity-50"
                 >
                   {tCommon("cancel")}
                 </button>

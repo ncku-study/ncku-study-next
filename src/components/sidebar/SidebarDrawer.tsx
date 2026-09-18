@@ -70,17 +70,17 @@ export function SidebarDrawer() {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 min-[993px]:hidden"
+          className="fixed inset-0 z-40 bg-overlay-light lg:hidden"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
       )}
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-[110px] box-content border-r border-[rgba(0,0,0,0.12)] bg-white shadow-md transition-transform duration-300 ease-[ease] flex flex-col items-center ${
-          isOpen ? "translate-x-0" : "max-[992px]:hidden -translate-x-full"
-        } min-[993px]:relative min-[993px]:translate-x-0 min-[993px]:flex min-[993px]:shadow-none shrink-0`}
+        className={`fixed top-0 left-0 z-50 h-full w-44 box-border border-r border-card-border bg-white shadow-md transition-transform duration-300 ease-in-out flex flex-col items-center ${
+          isOpen ? "translate-x-0" : "max-lg:hidden -translate-x-full"
+        } lg:relative lg:translate-x-0 lg:flex lg:shadow-none lg:flex-none shrink-0`}
       >
-        <nav className="flex w-full flex-col pt-[8px]">
+        <nav className="flex w-full flex-col pt-3">
           {navLinks.map((link) => {
             const isActive = pendingHref
               ? link.href === pendingHref
@@ -98,19 +98,18 @@ export function SidebarDrawer() {
                 href={link.href}
                 {...linkProps}
                 onClick={() => { if (!isExternal) { setPendingHref(link.href); setIsOpen(false); } }}
-                className="flex flex-col items-center justify-center h-[80px] w-full cursor-pointer"
+                className="flex flex-col items-center justify-center h-32 w-full cursor-pointer"
               >
                 <div
-                  className={`flex justify-center items-center w-[35px] h-[35px] rounded-[10px] mb-[5px] ${
+                  className={`flex justify-center items-center w-14 h-14 min-w-14 rounded-lg mb-2 ${
                     isActive
                       ? "bg-yellow text-white"
                       : "bg-transparent text-yellow"
                   }`}
-                  style={{ minWidth: "35px" }}
                 >
                   <IconComponent style={iconStyle} />
                 </div>
-                <span className="text-[1.4rem] font-medium text-[#333333]">{link.label}</span>
+                <span className="text-[1.4rem] font-medium text-sidebar-label">{link.label}</span>
               </Link>
             );
           })}

@@ -1,15 +1,15 @@
 import { Major as MajorLogo } from '@/components/logos';
 
-const skeletonClass = 'bg-[var(--color-dark-white)] animate-pulse';
+const skeletonClass = 'bg-dark-white animate-pulse';
 
-export const MAJOR_CARDS_CONTAINER_CLASS = 'flex min-h-0 min-w-0 flex-wrap justify-start items-start bg-white w-full h-full rounded-[10px] overflow-x-hidden overflow-y-auto max-[576px]:gap-0 gap-[10px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-track]:bg-transparent';
+export const MAJOR_CARDS_CONTAINER_CLASS = 'flex flex-1 min-h-0 min-w-0 flex-wrap justify-start items-start bg-white w-full h-full rounded-lg overflow-x-hidden overflow-y-auto will-change-transform max-sm:gap-0 gap-4 custom-scrollbar';
 
 function MajorFilterSkeleton() {
   return (
-    <div className="relative top-[1.71875px] flex items-center w-fit mr-[7px] max-sm:scale-90">
-      <div className={`h-[18px] w-[42px] rounded ${skeletonClass}`} />
-      <div className="relative mx-[10px] min-w-[120px]">
-        <div className={`h-[38.8125px] w-[120px] rounded-[4px] ${skeletonClass}`} />
+    <div className="relative top-0.5 flex items-center w-fit mr-3 max-sm:scale-90">
+      <div className={`h-7 w-17 rounded ${skeletonClass}`} />
+      <div className="relative mx-4 min-w-48">
+        <div className={`h-16 w-48 rounded ${skeletonClass}`} />
       </div>
     </div>
   );
@@ -17,12 +17,12 @@ function MajorFilterSkeleton() {
 
 function MajorStatisticsSkeleton() {
   return (
-    <div className="h-full grid grid-cols-[400px_auto] gap-x-[20px] py-[10px] max-[576px]:h-[160px] max-[576px]:grid-cols-[1fr_0] max-[576px]:gap-x-0">
-      <div className="bg-white w-full h-full rounded-[10px] flex items-center justify-evenly">
+    <div className="h-64 flex gap-8 py-4 max-sm:h-64">
+      <div className="bg-white w-160 h-full rounded-lg flex-none flex items-center justify-evenly max-sm:w-full">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="relative w-[115px] flex items-center flex-col">
-            <div className={`w-[70px] h-[70px] rounded-full ${skeletonClass}`} />
-            <div className={`w-[70px] h-[14px] rounded mt-[7px] ${skeletonClass}`} />
+          <div key={i} className="relative w-46 flex items-center flex-col">
+            <div className={`w-28 h-28 rounded-full ${skeletonClass}`} />
+            <div className={`w-28 h-6 rounded mt-2 ${skeletonClass}`} />
           </div>
         ))}
       </div>
@@ -32,20 +32,20 @@ function MajorStatisticsSkeleton() {
 
 function MajorCardSkeleton() {
   return (
-    <div className="relative p-[5px] rounded-[15px] h-[180px] w-[220px] box-border bg-white max-sm:w-full max-sm:rounded-none max-sm:h-[145px]">
-      <div className="grid box-border grid-cols-[57px_auto] grid-rows-[auto_30px] [grid-template-areas:'icon_main'_'year_tags'] w-[210px] h-[160px] px-[10px] pt-[5px] pb-0 max-sm:w-full max-sm:h-[125px]">
-        <div className={`w-[42px] h-[42px] rounded-full my-[10px] mx-auto ${skeletonClass}`} />
-        <div className="grid grid-rows-[35px_25px_auto]">
-          <div className={`w-[95px] h-[20px] rounded mt-[10px] mb-[10px] ${skeletonClass}`} />
-          <div className={`w-[78px] h-[14px] rounded ${skeletonClass}`} />
-          <div className="mt-0 flex flex-col gap-[5px] pt-[2px]">
-            <div className={`w-full h-[12px] rounded ${skeletonClass}`} />
-            <div className={`w-[82%] h-[12px] rounded ${skeletonClass}`} />
+    <div className="relative p-2 rounded-2xl h-72 w-88 box-border bg-white max-sm:w-full max-sm:rounded-none max-sm:h-58">
+      <div className="grid box-border w-84 h-64 px-4 pt-2 pb-0 max-sm:w-full max-sm:h-50" style={{ gridTemplateColumns: '57px auto', gridTemplateRows: 'auto 30px', gridTemplateAreas: '"icon main" "year tags"' }}>
+        <div className={`w-16 h-16 scale-105 translate-y-0.5 rounded-full my-4 mx-auto ${skeletonClass}`} style={{ gridArea: 'icon' }} />
+        <div className="grid" style={{ gridTemplateRows: '35px 25px auto', gridArea: 'main' }}>
+          <div className={`w-24 h-5 rounded mt-4 mb-4 ${skeletonClass}`} />
+          <div className={`w-20 h-6 rounded ${skeletonClass}`} />
+          <div className="mt-0 flex flex-col gap-2 pt-0.5">
+            <div className={`w-full h-3 rounded ${skeletonClass}`} />
+            <div className={`w-10/12 h-3 rounded ${skeletonClass}`} />
           </div>
         </div>
-        <div className={`w-[34px] h-[14px] rounded ${skeletonClass}`} />
-        <div className="flex items-center">
-          <div className={`w-[74px] h-[14px] rounded ${skeletonClass}`} />
+        <div className={`w-8.5 h-3.5 rounded ${skeletonClass}`} style={{ gridArea: 'year' }} />
+        <div className="flex items-center" style={{ gridArea: 'tags' }}>
+          <div className={`w-18.5 h-3.5 rounded ${skeletonClass}`} />
         </div>
       </div>
     </div>
@@ -64,13 +64,13 @@ export function MajorCardsSkeleton({ count = 8 }: { count?: number }) {
 
 export function MajorPageSkeleton() {
   return (
-    <main className="grid h-full min-h-0 min-w-0 grid-rows-[50px_160px_minmax(0,1fr)] overflow-hidden max-[990px]:grid-rows-[100px_160px_minmax(0,1fr)] max-[576px]:grid-rows-[90px_0px_minmax(0,1fr)] max-[576px]:-mx-[10px]">
-      <section className="flex flex-wrap max-[576px]:justify-center w-full items-center h-full">
+    <main className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden max-sm:-mx-4">
+      <section className="flex h-20 max-lg:h-40 max-sm:h-36 flex-wrap max-sm:justify-center w-full items-center">
         {Array.from({ length: 4 }).map((_, i) => (
           <MajorFilterSkeleton key={i} />
         ))}
       </section>
-      <MajorStatisticsSkeleton />
+      <div className="h-64 max-lg:h-0 overflow-hidden"><MajorStatisticsSkeleton /></div>
       <MajorCardsSkeleton />
     </main>
   );
@@ -78,9 +78,9 @@ export function MajorPageSkeleton() {
 
 function StudyFilterSkeleton() {
   return (
-    <section className="flex items-center flex-wrap px-[5px] w-fit h-[50px] mb-[10px] row-start-1 col-start-1 col-end-2">
-      <div className="relative m-[8px] min-w-[120px]">
-        <div className={`w-full h-[38px] rounded-[4px] ${skeletonClass}`} />
+    <section className="flex items-center flex-wrap px-2 w-fit h-20 mb-4 row-start-1 col-start-1 col-end-2">
+      <div className="relative m-3 min-w-48">
+        <div className={`w-full h-15.2 rounded ${skeletonClass}`} />
       </div>
     </section>
   );
@@ -88,24 +88,24 @@ function StudyFilterSkeleton() {
 
 export function StudyCardsSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 gap-0 w-[590px] max-sm:w-auto max-sm:mx-[10px]">
+    <div className="grid grid-cols-1 gap-0 w-236 max-sm:w-auto max-sm:ml-4 max-sm:mr-0">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="relative h-[160px] border-b border-black/12.5 box-border bg-white">
-          <div className="w-full h-[88px] mt-[20px] relative">
-            <div className="inline-flex gap-[5px]">
-              <div className={`w-[62px] h-[22px] rounded-[30px] ${skeletonClass}`} />
-              <div className={`w-[54px] h-[22px] rounded-[30px] ${skeletonClass}`} />
+        <div key={i} className="relative h-64 border-b border-card-border box-border bg-white">
+          <div className="w-full h-35 mt-8 relative">
+            <div className="inline-flex gap-2">
+              <div className={`w-25 h-9 rounded-full ${skeletonClass}`} />
+              <div className={`w-22 h-9 rounded-full ${skeletonClass}`} />
             </div>
-            <div className={`w-[180px] h-[22px] rounded mt-[12px] mb-[6px] ${skeletonClass}`} />
-            <div className="flex flex-col gap-[5px]">
-              <div className={`w-full h-[13px] rounded ${skeletonClass}`} />
-              <div className={`w-[72%] h-[13px] rounded ${skeletonClass}`} />
+            <div className={`w-72 h-9 rounded mt-5 mb-2 ${skeletonClass}`} />
+            <div className="flex flex-col gap-2">
+              <div className={`w-full h-5 rounded ${skeletonClass}`} />
+              <div className={`w-9/12 h-5 rounded ${skeletonClass}`} />
             </div>
           </div>
-          <div className="mt-[10px] flex items-center gap-[15px]">
-            <div className={`w-[42px] h-[14px] rounded ${skeletonClass}`} />
-            <div className={`w-[76px] h-[14px] rounded ${skeletonClass}`} />
-            <div className={`w-[64px] h-[14px] rounded ${skeletonClass}`} />
+          <div className="mt-4 flex items-center gap-6">
+            <div className={`w-16.8 h-5.6 rounded ${skeletonClass}`} />
+            <div className={`w-30.4 h-5.6 rounded ${skeletonClass}`} />
+            <div className={`w-25.6 h-5.6 rounded ${skeletonClass}`} />
           </div>
         </div>
       ))}
@@ -115,9 +115,9 @@ export function StudyCardsSkeleton({ count = 6 }: { count?: number }) {
 
 export function StudyPageSkeleton() {
   return (
-    <div className="grid grid-cols-[600px_auto] overflow-y-hidden grid-rows-[50px_auto] max-[576px]:grid-cols-[100vw] max-[576px]:-mx-[10px]">
+    <div className="grid grid-cols-1 overflow-y-hidden" style={{ gridTemplateRows: '50px auto' }}>
       <StudyFilterSkeleton />
-      <section className="col-start-1 col-end-2 row-start-2 row-end-3 max-[576px]:overflow-y-auto">
+      <section className="col-start-1 col-end-2 row-start-2 row-end-3 max-sm:overflow-y-auto">
         <StudyCardsSkeleton />
       </section>
     </div>

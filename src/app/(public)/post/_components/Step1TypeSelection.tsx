@@ -35,36 +35,36 @@ export function Step1TypeSelection() {
   const ActiveIcon = activeItem.Icon === BookOpen ? MajorLogo : StudyLogo;
 
   return (
-    <div className="flex justify-center flex-col py-[25px] max-[576px]:p-0">
-      <p className="flex justify-center text-[rgba(163,158,158,1)] mb-[74px] max-[576px]:mb-[20px]">
+    <div className="flex flex-col justify-center pt-10 max-sm:p-0">
+      <p className="flex justify-center text-dark-black mb-30 max-sm:mb-8">
         {t("chooseShareType")}
       </p>
 
-      <div className="w-full flex justify-center items-center mb-[20px]">
+      <div className="flex w-full items-center justify-center mb-8">
         <div className="flex flex-col justify-center items-center text-center">
-          <ActiveIcon className="text-[var(--color-yellow)] mb-[54px] max-sm:mb-[10px]" style={{ height: '105.42px', width: '86.25px' }} />
-          <div className="w-[316px] h-[42px] text-center max-[368px]:w-full max-[368px]:h-auto">
+          <ActiveIcon className="w-34.5 text-yellow mb-21.5 max-sm:mb-4" style={{ height: '105.42px' }} />
+          <div className="w-126.5 h-17 text-center">
             {activeItem.description}
           </div>
         </div>
       </div>
 
-      <div className="w-full flex justify-center mb-[29px]">
+      <div className="flex w-full justify-center mb-11.5">
         {typeItems.map((item) => (
           <div
             key={item.type}
-            className={`w-[32px] h-[6px] bg-[var(--color-yellow)] mx-[5px] ${activeType === item.type ? 'opacity-100' : 'opacity-50'}`}
+            className={`mx-2 h-2.5 w-13 bg-yellow ${activeType === item.type ? 'opacity-100' : 'opacity-50'}`}
           />
         ))}
       </div>
 
-      <div className="flex w-full justify-center mb-[26px]">
+      <div className="flex w-full justify-center mb-23.5">
         {typeItems.map((item) => (
           <button
             key={item.type}
             type="button"
             onClick={() => setValue("postType", item.type, { shouldValidate: true })}
-            className={`flex w-[128px] h-[36px] items-center justify-center p-[10px] rounded-[50px] border-[3px] border-[var(--color-yellow)] mx-[25px] max-sm:w-[170px] max-sm:h-auto max-sm:p-[10px] max-sm:mx-[10px] outline-none cursor-pointer ${activeType === item.type ? 'bg-[var(--color-yellow)] text-black' : 'bg-white text-[var(--color-yellow)]'}`}
+            className={`flex h-14.5 w-51.5 items-center justify-center rounded-full border-3 border-yellow p-4 mx-10 outline-none cursor-pointer max-sm:h-auto max-sm:mx-4 max-sm:p-4 ${activeType === item.type ? 'bg-yellow text-black' : 'bg-white text-yellow'}`}
           >
             {item.buttonText}
           </button>
@@ -72,7 +72,7 @@ export function Step1TypeSelection() {
       </div>
 
       {errors.postType && (
-        <p className="text-center text-sm text-[var(--color-red)] mb-4">
+        <p className="mb-4 text-center text-sm text-red">
           {errors.postType.message as string}
         </p>
       )}

@@ -4,11 +4,11 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
   const t = useTranslations("common");
   return (
     <>
-      <div className="fixed inset-0 bg-black/40 z-10" />
+      <div className="fixed inset-0 bg-overlay-light z-10" />
       <div className="fixed inset-0 z-20 flex items-center justify-center p-4">
-        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] p-6 flex flex-col items-center gap-4">
-          <p className="text-[var(--color-red)]">{t("errorDescription")}</p>
-          <button onClick={reset} className="px-4 py-2 bg-[var(--color-yellow)] text-[var(--color-light-black)] rounded-lg hover:opacity-80 transition-opacity">
+        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 flex flex-col items-center gap-4" style={{ maxHeight: '90vh' }}>
+          <p className="text-red">{t("errorDescription")}</p>
+          <button onClick={reset} className="px-4 py-2 bg-yellow text-light-black rounded-lg hover:opacity-80 transition-opacity">
             {t("retry")}
           </button>
         </div>

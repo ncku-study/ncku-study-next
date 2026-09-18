@@ -16,13 +16,13 @@ export default function StatisticControl({ children }: StatisticControlProps) {
   return (
     <>
       {/* Outer div always occupies the grid slot. Inner div hidden on mobile so children don't render. */}
-      <div>
-        <div className="max-[576px]:hidden h-full">{children}</div>
+      <div className="h-64 max-lg:h-0 overflow-hidden">
+        <div className="max-lg:hidden h-full">{children}</div>
       </div>
 
       {/* Mobile float button — fixed bottom-right, hidden on desktop */}
         <button
-          className="min-[577px]:hidden fixed bottom-[40px] right-[20px] z-40 w-[50px] h-[50px] rounded-full bg-white shadow-[0px_0px_4px_rgba(0,0,0,0.25)] flex items-center justify-center text-yellow cursor-pointer border-none"
+          className="hidden max-lg:fixed max-lg:bottom-10 max-lg:right-5 max-lg:flex max-lg:z-40 max-lg:w-20 max-lg:h-20 max-lg:rounded-full bg-white shadow items-center justify-center text-yellow cursor-pointer border-none"
           onClick={() => setOpen(true)}
           aria-label={t("statistics")}
         >
@@ -32,18 +32,18 @@ export default function StatisticControl({ children }: StatisticControlProps) {
       {/* Mobile modal */}
       {open && (
         <div
-          className="min-[577px]:hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-overlay"
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-white rounded-[5px] px-[2px] w-[90vw] max-w-[420px]"
+            className="bg-white rounded-md px-2 w-11/12 max-w-168"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="relative px-[15px] min-h-[50px] flex items-center">
+            <div className="relative px-6 min-h-20 flex items-center">
               <h4 className="m-0 text-[1.6rem]">{t("statistics")}</h4>
               <button
-                className="absolute top-[5px] right-[5px] w-[35px] h-[35px] bg-transparent border-none outline-none flex items-center justify-center text-black/50 cursor-pointer"
+                className="absolute top-2 right-2 w-14 h-14 bg-transparent border-none outline-none flex items-center justify-center text-overlay cursor-pointer"
                 onClick={() => setOpen(false)}
                 aria-label={t("close")}
               >
@@ -52,7 +52,7 @@ export default function StatisticControl({ children }: StatisticControlProps) {
             </div>
 
             {/* Divider */}
-            <div className="bg-black/[0.125] w-[95%] h-[0.5px] mx-[10px] my-0" />
+            <div className="bg-card-border w-11/12 h-px mx-4 my-0" />
 
             {/* Content */}
             {children}

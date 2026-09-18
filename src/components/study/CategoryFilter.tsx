@@ -28,13 +28,13 @@ export function CategoryFilter({ selectedCategories, onChange }: CategoryFilterP
   };
 
   if (isLoading) {
-    return <div className="animate-pulse h-8 bg-gray-100 rounded w-full mb-4"></div>;
+    return <div className="animate-pulse h-8 bg-surface-subtle rounded w-full mb-4"></div>;
   }
 
   return (
     <div className="mb-6">
       <div className="flex items-center mb-3">
-        <h3 className="text-sm font-medium text-gray-700">{t('filterByCategory')}</h3>
+        <h3 className="text-sm font-medium text-category-text">{t('filterByCategory')}</h3>
       </div>
       <div className="flex flex-wrap gap-2">
         {categories.map((category) => {
@@ -47,8 +47,8 @@ export function CategoryFilter({ selectedCategories, onChange }: CategoryFilterP
             >
               <Badge
                 variant={isSelected ? "default" : "outline"}
-                className={`rounded-[30px] px-3 py-1 cursor-pointer hover:bg-[var(--color-primary)] hover:text-white transition-colors
-                  ${isSelected ? 'bg-[var(--color-primary)] text-white border-transparent' : 'border-gray-300 text-gray-600'}
+                className={`rounded-full px-3 py-1 cursor-pointer hover:bg-yellow hover:text-white transition-colors
+                  ${isSelected ? 'bg-yellow text-white border-filter-transparent' : 'border-border-medium text-category-text'}
                 `}
               >
                 {category.name}

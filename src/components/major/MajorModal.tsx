@@ -15,8 +15,7 @@ export default function MajorModal({ id, serverComment, onClose }: Props) {
   return (
     <ModalOverlay onClose={onClose}>
       <div
-        className="relative w-[600px] h-[700px] max-h-[75vh] p-[5px] bg-white text-black grid grid-cols-[50px_auto_50px] max-lg:w-[360px] max-lg:max-h-[65vh] max-lg:min-w-[95vw]"
-        style={{ gridTemplateRows: '100%' }}
+        className="relative flex w-240 h-280 max-h-3/4 p-2 bg-white text-card-text max-lg:w-144 max-lg:max-h-2/3 max-lg:min-w-full"
       >
         <ModalPrevBtn currentId={id} />
         <ModalContent id={id} serverComment={serverComment} />

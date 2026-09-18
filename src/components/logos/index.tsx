@@ -51,7 +51,7 @@ export const ProgressArc: React.FC<{
   trailColor?: string;
   strokeWidth?: number;
   trailWidth?: number;
-}> = ({ value, size = 70, strokeColor = '#FEDA6A', trailColor = 'rgba(163, 158, 158, 1)', strokeWidth = 4, trailWidth = 1 }) => {
+}> = ({ value, size = 70, strokeColor = 'var(--color-yellow)', trailColor = 'var(--color-dark-gray)', strokeWidth = 4, trailWidth = 1 }) => {
   const circumference = 301.593; // 2 * PI * 48
   const percent = value === null ? 100 : Math.min(100, Math.round(value * 100) / 100);
   const dash = (percent / 100) * circumference;

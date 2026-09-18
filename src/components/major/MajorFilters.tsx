@@ -20,10 +20,6 @@ interface MajorFiltersProps {
   isAdmin?: boolean;
 }
 
-const selectClass = "rounded-[4px] border border-[#c4c4c4] bg-transparent px-[14px] pt-[14.5px] pb-[6.5px] text-[1.5rem] focus:outline-none focus:border-[var(--color-yellow)] focus:ring-1 focus:ring-[var(--color-yellow)] min-w-[120px]";
-const labelClass = "mr-[10px]";
-const wrapClass = "flex items-center w-fit mr-[7px] max-sm:scale-90";
-
 export function MajorFilters({ filters, onChange, isAdmin = false }: MajorFiltersProps) {
   const t = useTranslations('major');
 
@@ -46,18 +42,9 @@ export function MajorFilters({ filters, onChange, isAdmin = false }: MajorFilter
   });
 
   const departments = useMemo(() => {
-    if (!filters.college) return allDepartments;
+    if (!filters.college) return [];
     return allDepartments.filter((d) => d.college === filters.college);
   }, [allDepartments, filters.college]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    if (name === 'college') {
-      onChange({ ...filters, college: value, department: '' });
-    } else {
-      onChange({ ...filters, [name]: value });
-    }
-  };
 
   // Dynamic year range: current ROC year down to 104 (2015)
   const currentRocYear = new Date().getFullYear() - 1911;
@@ -67,7 +54,7 @@ export function MajorFilters({ filters, onChange, isAdmin = false }: MajorFilter
   );
 
   return (
-    <section className="flex flex-wrap max-[576px]:justify-center w-full items-center h-full">
+    <section className="flex flex-wrap max-sm:justify-center w-full items-center h-full">
       <Filter
         type={t('filterByYear')}
         options={[{ name: t('allYears'), value: '' }, ...years.map((y) => ({ name: String(y), value: String(y) }))]}
@@ -96,7 +83,7 @@ export function MajorFilters({ filters, onChange, isAdmin = false }: MajorFilter
 
       <Filter
         type={t('filterByDept')}
-        options={[{ name: t('allDepts'), value: '' }, ...departments.map((d) => ({ name: d.name, value: d.name }))]}
+        options={filters.college ? [{ name: t('allDepts'), value: '' }, ...departments.map((d) => ({ name: d.name, value: d.name }))] : []}
         value={filters.department}
         onChange={(v) => onChange({ ...filters, department: v })}
       />

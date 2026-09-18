@@ -15,7 +15,7 @@ export default function StudyModalOverlay({ children, onClose }: StudyModalOverl
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 z-50"
+      className="fixed inset-0 bg-overlay z-50"
       onClick={close}
     >
       <div

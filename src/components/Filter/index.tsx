@@ -97,9 +97,9 @@ export default function Filter({ type, options, value = '', onChange }: FilterPr
   }, [closeMenu, focusedIndex, open, options.length, selectOption]);
 
   return (
-    <div className="relative top-[1.71875px] flex items-center w-fit mr-[7px] max-sm:scale-90 max-[576px]:top-[1.55px]">
-      <span className="relative top-[-1.71875px] text-[1.5rem] max-[576px]:top-[-1.55px]">{`${type} :`}</span>
-      <div className="relative mx-[10px] min-w-[120px]">
+    <div className="relative top-0.5 flex items-center w-fit mr-3 max-sm:scale-90 max-sm:top-0.5">
+      <span className="relative -top-0.5 text-[1.5rem] max-sm:-top-0.5">{`${type} :`}</span>
+      <div className="relative mx-4 min-w-48">
         <button
           ref={triggerRef}
           type="button"
@@ -135,26 +135,11 @@ export default function Filter({ type, options, value = '', onChange }: FilterPr
               }
             }
           }}
-          style={{
-            fontSize: '1.5rem',
-            lineHeight: '11.876px',
-            height: '38.8125px',
-            paddingTop: '0',
-            paddingBottom: '0',
-            paddingLeft: '14px',
-            paddingRight: '32px',
-            border: '1px solid rgba(0,0,0,0.23)',
-            borderRadius: '4px',
-            background: 'transparent',
-            cursor: 'pointer',
-            outline: 'none',
-            width: '100%',
-            color: 'rgba(0,0,0,0.87)',
-            fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
-          }}
+          className="relative h-16 w-full cursor-pointer rounded border border-control-border bg-filter-transparent px-0 pl-5 pr-13 pt-0 pb-0 text-select-text text-[1.5rem] leading-5 outline-none scale-y-95 disabled:border-disabled-border disabled:text-select-arrow"
+          style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}
         >
           <span
-            className="absolute left-[14px] top-[12px] max-w-[calc(100%-32px)] overflow-hidden text-ellipsis whitespace-nowrap text-left text-[15px] leading-[15px]"
+            className={`absolute left-5 top-5 translate-x-0.5 lg:translate-x-0 -translate-y-0.5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-left text-[15px] leading-6 ${value === '' ? 'text-select-arrow' : 'text-select-text'}`}
             style={{ letterSpacing: '0.1407px' }}
           >
             {selectedOption?.name ?? ''}
@@ -162,11 +147,11 @@ export default function Filter({ type, options, value = '', onChange }: FilterPr
         </button>
         {/* Dropdown arrow matching MUI's SVG arrow */}
         <svg
-          className="pointer-events-none absolute right-[7px] top-[7.40625px] w-[1em] h-[1em] shrink-0"
+          className={`pointer-events-none absolute right-3 top-3.5 w-6 h-6 shrink-0 translate-x-0.5 lg:translate-x-0 ${options.length > 0 ? 'fill-select-arrow' : 'fill-disabled-border'}`}
           focusable="false"
           viewBox="0 0 24 24"
           aria-hidden="true"
-          style={{ fill: 'rgba(0,0,0,0.54)', fontSize: '1.5rem' }}
+          style={{ fontSize: '1.5rem' }}
         >
           <path d="M7 10l5 5 5-5z" />
         </svg>
@@ -175,7 +160,7 @@ export default function Filter({ type, options, value = '', onChange }: FilterPr
           <>
               <div
                 aria-hidden="true"
-                className="fixed inset-0 z-[1299] bg-transparent"
+                className="fixed inset-0 z-40 bg-filter-transparent"
                 onMouseDown={() => setOpen(false)}
               />
               <ul
@@ -183,13 +168,13 @@ export default function Filter({ type, options, value = '', onChange }: FilterPr
                 role="listbox"
                 aria-label={type}
                 tabIndex={-1}
-                className="fixed z-[1300] m-0 max-h-[calc(100vh-96px)] list-none overflow-y-auto rounded-[4px] bg-white py-[8px] outline-none"
+                className="fixed z-50 m-0 max-h-screen list-none overflow-y-auto rounded bg-white outline-none shadow-select-menu"
                 style={{
                   top: `${menuPosition.top}px`,
                   left: `${menuPosition.left}px`,
                   minWidth: `${menuPosition.width}px`,
-                  boxShadow:
-                    '0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12)',
+                  padding: '8px 0',
+                  borderRadius: '4px',
                   fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
                 }}
               >
@@ -200,9 +185,10 @@ export default function Filter({ type, options, value = '', onChange }: FilterPr
                       key={option.value}
                       role="option"
                       aria-selected={index === selectedIndex}
-                      className="box-border flex h-[34.5px] cursor-pointer items-center px-[16px] py-[6px] text-[15px] leading-[22.5px] text-[rgba(0,0,0,0.87)] max-[576px]:h-[48px]"
+                      className={`major-filter-option box-border flex cursor-pointer items-center text-[15px] leading-normal text-select-text ${isFocused ? 'bg-hover' : 'bg-filter-transparent'}`}
                       style={{
-                        backgroundColor: isFocused ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
+                        padding: '6px 16px',
+                        borderRadius: '0',
                         letterSpacing: '0.1407px',
                       }}
                       onMouseEnter={() => setFocusedIndex(index)}
@@ -221,4 +207,3 @@ export default function Filter({ type, options, value = '', onChange }: FilterPr
     </div>
   );
 }
-

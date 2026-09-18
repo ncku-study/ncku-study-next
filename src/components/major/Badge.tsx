@@ -14,8 +14,8 @@ export function Badge({ isPass, className }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center justify-center px-3 py-1 text-sm font-medium text-white rounded-[30px]',
-        passed ? 'bg-[var(--color-green)] text-[var(--color-dark-black)]' : 'bg-[var(--color-red)]',
+        'inline-flex items-center justify-center px-3 py-1 text-sm font-medium text-white rounded-full',
+        passed ? 'bg-green text-dark-black' : 'bg-red',
         className
       )}
     >

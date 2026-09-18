@@ -36,14 +36,14 @@ function HamburgerButton() {
   const { toggle } = useSidebar();
   const t = useTranslations("nav");
   return (
-    <button className="min-[993px]:hidden cursor-pointer border-0 bg-transparent p-0 mr-0 leading-none" onClick={toggle} aria-label={t("menu")}>
+    <button className="lg:hidden cursor-pointer border-0 bg-filter-transparent p-0 mr-0 leading-none" onClick={toggle} aria-label={t("menu")}>
       <svg
         focusable="false"
         aria-hidden="true"
         viewBox="0 0 24 24"
         width={30}
         height={30}
-        fill="rgba(29, 30, 34, 1)"
+        fill="var(--color-dark-black)"
       >
         <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
       </svg>
@@ -65,23 +65,25 @@ function NavContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className={`box-border grid grid-cols-auto w-full h-screen min-h-0 py-[20px] px-[30px] bg-white overflow-x-hidden ${isMajorPage ? 'overflow-y-hidden grid-rows-[50px_minmax(0,1fr)]' : 'overflow-y-auto max-[992px]:grid-rows-[50px_auto]'} max-[576px]:p-[10px] max-[576px]:pb-0 [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0 ${!isMajorPage && (isShowSearch ? 'grid-rows-[120px_auto]' : 'grid-rows-[50px_auto]')}`}
+      className={`study-nav-content box-border grid grid-cols-1 w-full h-screen min-h-0 py-8 px-12 bg-white custom-scrollbar ${isMajorPage ? 'overflow-y-hidden' : 'overflow-y-auto'} max-sm:p-4 max-sm:pb-0 lg:flex-1 lg:min-w-0`}
+      data-show-search={isShowSearch}
+      style={{ gridTemplateRows: isShowSearch ? '120px auto' : '50px minmax(0, 1fr)' }}
     >
-      <header className="w-full flex flex-wrap items-center">
+      <header className="w-full flex flex-wrap items-center max-sm:px-0">
         <HamburgerButton />
-        <h1 className="m-0 text-[1.7rem] font-medium w-full max-[992px]:w-auto max-[992px]:pl-[20px]">{title}</h1>
+        <h1 className="m-0 text-[1.7rem] font-medium w-full max-lg:w-auto max-lg:pl-8">{title}</h1>
         {isShowSearch && (
           <form
-            className="relative flex items-center w-[550px] h-[45px] max-[992px]:grow max-[992px]:w-1/2 max-[992px]:h-[35px] max-[992px]:pl-[25px] max-[576px]:w-[30%] max-[576px]:h-[35px] max-[576px]:pl-[25px]"
+            className="relative flex items-center w-220 h-18 max-lg:grow max-lg:w-1/2 max-lg:h-14 max-lg:pl-10 max-sm:w-1/3 max-sm:h-14 max-sm:pl-10"
             onSubmit={(e) => e.preventDefault()}
           >
             <input
-              className="w-full h-[45px] py-[10px] px-[15px] box-border border border-black/5 rounded-[55px] bg-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-black/50 max-[640px]:h-[35px] text-[13.3333px] leading-[normal] outline-none"
+              className="w-full h-18 py-4 px-6 box-border border border-input-border rounded-full bg-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-overlay max-sm:h-14 text-[13.3333px] leading-normal outline-none"
               aria-label="search"
             />
             <button
               type="submit"
-              className="block absolute top-[5.0625px] right-[12px] h-[24.875px] cursor-pointer p-0 border-0 bg-white text-[13.3333px] leading-[normal]"
+              className="block absolute top-2 right-5 h-10 cursor-pointer p-0 border-0 bg-white text-[13.3333px] leading-normal"
             >
               <SearchIcon
                 className="block"
@@ -104,7 +106,7 @@ export default function NavLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AnnouncementNotification />
-      <div className="min-[993px]:grid min-[993px]:grid-cols-[110px_1fr] flex flex-col h-screen overflow-hidden bg-[var(--color-dark-white)]">
+      <div className="lg:flex-row flex flex-col h-screen overflow-hidden bg-dark-white">
         <SidebarDrawer />
         <NavContent>{children}</NavContent>
       </div>

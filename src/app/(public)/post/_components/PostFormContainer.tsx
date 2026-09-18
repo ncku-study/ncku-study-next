@@ -238,14 +238,14 @@ export function PostFormContainer(props?: PostFormEditProps) {
         </div>
       )}
 
-      <div className="mx-auto w-full max-w-[650px]">
+      <div className={`mx-auto w-full ${step === 1 ? "max-w-full" : "max-w-260 max-lg:max-w-full"}`}>
         {/* Stepper row: hidden on step 1, shown on step 2 and ThankYou */}
         {(step !== 1 || isSuccess) ? (
-          <div className="h-[145px] pt-[24px]">
+          <div className="h-52 pt-10">
             <CustomStepper steps={steps} currentStep={isSuccess ? steps.length : step} />
           </div>
         ) : (
-          <div className="h-[130px]" />
+          <div className="h-52" />
         )}
 
         {isSuccess ? (
@@ -285,19 +285,19 @@ export function PostFormContainer(props?: PostFormEditProps) {
           </div>
         ) : (
         <form className="mt-0">
-          <div className="mx-auto w-[458px] rounded-[5px] bg-white mb-[20px] max-[870px]:w-[80%]">
+          <div className="mx-auto mb-8 w-183 rounded-filter bg-white max-lg:w-4/5">
             {step === 1 && <Step1TypeSelection />}
             {step === 2 && postType === "major" && <Step2MajorForm isAdmin={isAdmin} />}
             {step === 2 && postType === "study" && <Step2StudyForm isAdmin={isAdmin} />}
             {step === 3 && postType === "study" && <Step3StudyForm isAdmin={isAdmin} />}
 
-            <div className={`flex h-[75px] w-full items-center justify-end ${step === 2 && postType === "study" ? "relative -top-[15px]" : ""}`}>
+            <div className="flex h-30 w-full items-center justify-end">
               <button
                 type="button"
                 onClick={onPrev}
                 disabled={step === 1}
-                className={`min-w-[100px] h-[40px] rounded-[5px] border-none bg-white text-black outline-none cursor-pointer ${step === 1 || (isEditMode && step === 2) ? "invisible" : ""}`}
-                style={{ marginRight: "20px", fontFamily: "Arial", fontSize: "13.3333px", lineHeight: "normal", padding: "1px 6px" }}
+                className={`min-w-40 h-16 rounded-filter border-none bg-white text-dark-black outline-none cursor-pointer ${step === 1 || (isEditMode && step === 2) ? "invisible" : ""}`}
+                style={{ marginRight: "20px", fontFamily: "Noto Sans TC, Microsoft JhengHei, sans-serif", fontSize: "15px", lineHeight: "21.4286px", padding: "0" }}
               >
                 {t("back")}
               </button>
@@ -306,8 +306,8 @@ export function PostFormContainer(props?: PostFormEditProps) {
                 <button
                   type="button"
                   onClick={onNext}
-                  className="min-w-[100px] h-[40px] rounded-[5px] bg-[var(--color-yellow)] text-black hover:bg-[var(--color-yellow)]/90 border-none outline-none cursor-pointer"
-                  style={{ fontFamily: "Arial", fontSize: "13.3333px", lineHeight: "normal", padding: "1px 6px" }}
+                  className="min-w-40 h-16 rounded-filter bg-yellow text-dark-black hover:bg-yellow/90 border-none outline-none cursor-pointer"
+                  style={{ fontFamily: "Noto Sans TC, Microsoft JhengHei, sans-serif", fontSize: "15px", lineHeight: "21.4286px", padding: "0" }}
                 >
                   {t("next")}
                 </button>
@@ -315,8 +315,8 @@ export function PostFormContainer(props?: PostFormEditProps) {
                 <button
                   type="button"
                   onClick={onNext}
-                  className="min-w-[100px] h-[40px] rounded-[5px] bg-[var(--color-yellow)] text-black hover:bg-[var(--color-yellow)]/90 border-none outline-none cursor-pointer"
-                  style={{ fontFamily: "Arial", fontSize: "13.3333px", lineHeight: "normal", padding: "1px 6px" }}
+                  className="min-w-40 h-16 rounded-filter bg-yellow text-dark-black hover:bg-yellow/90 border-none outline-none cursor-pointer"
+                  style={{ fontFamily: "Noto Sans TC, Microsoft JhengHei, sans-serif", fontSize: "15px", lineHeight: "21.4286px", padding: "0" }}
                 >
                   {t("next")}
                 </button>

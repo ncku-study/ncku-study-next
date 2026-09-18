@@ -29,7 +29,7 @@ export default function StudyDetailClient({ id, serverStudy }: StudyDetailClient
   return (
     <>
       <div className="fixed inset-0">
-        <div className="ml-[140px] mt-[70px]">
+        <div className="ml-56 mt-28">
           <StudyList renderClientModal={false} />
         </div>
       </div>

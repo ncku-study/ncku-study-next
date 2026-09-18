@@ -13,7 +13,7 @@ export async function generateMetadata() {
 
 export default function PostPage() {
   return (
-    <div className="pb-[25px]">
+    <div className="pb-10">
       <PostFormContainer />
     </div>
   );

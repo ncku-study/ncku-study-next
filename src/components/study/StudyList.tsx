@@ -39,26 +39,26 @@ export function StudyList({ isAdmin = false, renderClientModal = true }: { isAdm
   });
 
   return (
-    <div className="grid grid-cols-[600px_auto] overflow-y-hidden grid-rows-[50px_auto] max-[576px]:grid-cols-[100vw] max-[576px]:-mx-[10px]">
-      <section className="flex items-center flex-wrap px-[5px] w-fit h-[50px] mb-[10px] row-start-1 col-start-1 col-end-2">
-        <div className="relative m-[8px] min-w-[120px]">
+    <div className="grid grid-cols-1 overflow-y-hidden" style={{ gridTemplateRows: '50px auto' }}>
+      <section className="flex items-center flex-wrap px-2 w-fit h-20 mb-4 row-start-1 col-start-1 col-end-2">
+        <div className="relative m-3 min-w-48" style={{ margin: '8px' }}>
           <StudyFilterPopup filter={filter} onFilterChange={setFilter} isAdmin={isAdmin} />
         </div>
       </section>
 
-      <section className="col-start-1 col-end-2 row-start-2 row-end-3 max-[576px]:overflow-y-auto">
+      <section className="col-start-1 col-end-2 row-start-2 row-end-3 max-sm:overflow-y-auto">
         {isLoading ? (
           <StudyCardsSkeleton />
         ) : isError ? (
-          <div className="text-center py-10 text-[var(--color-red)]">
+          <div className="text-center py-10 text-red">
             {t('error')}
           </div>
         ) : studies.length === 0 ? (
-          <div className="text-center py-20 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+          <div className="text-center py-20 text-muted-text bg-surface-muted rounded-lg border border-dashed border-border-muted">
             {t('noResults')}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-0 w-[590px] max-[640px]:w-auto max-[640px]:mx-[10px] max-[576px]:w-[calc(100%_-_10px)] max-[576px]:ml-[10px] max-[576px]:mr-0">
+          <div className="grid grid-cols-1 gap-0 w-236 max-sm:w-auto max-sm:ml-4 max-sm:mr-0">
             {studies.map((study) => (
               <StudyCard key={study.id} study={study} isAdmin={isAdmin} />
             ))}

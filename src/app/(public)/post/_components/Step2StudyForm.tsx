@@ -15,28 +15,25 @@ function getLatestAcademicYear() {
 }
 
 const fieldLabelStyle = {
-  top: "-15px",
-  fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-  fontSize: "22px",
-  lineHeight: "22px",
+  top: "-18px",
+  fontFamily: "Noto Sans TC, Microsoft JhengHei, sans-serif",
+  fontSize: "13.75px",
+  lineHeight: "19.6429px",
   fontWeight: 400,
-  letterSpacing: "0.20636px",
-  color: "rgba(0, 0, 0, 0.54)",
-  transform: "translateY(1.5px) scale(0.75)",
-  transformOrigin: "top left",
+  color: "var(--color-form-label)",
 };
 
 const inputStyle = {
-  fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+  fontFamily: "Noto Sans TC, Microsoft JhengHei, sans-serif",
   fontSize: "17px",
-  lineHeight: "11.876px",
-  letterSpacing: "0.0938px",
+  lineHeight: "24.2857px",
 };
 
 const dropdownStyle = {
   ...inputStyle,
   fontSize: "18px",
-  color: "rgba(0, 0, 0, 0.87)",
+  lineHeight: "25.7143px",
+  color: "var(--color-dark-black)",
 };
 
 function Dropdown({
@@ -68,10 +65,10 @@ function Dropdown({
   }, [open]);
 
   return (
-    <div ref={rootRef} className="relative h-[60px] w-full">
+    <div ref={rootRef} className="relative h-24 w-full">
       <label
         className="pointer-events-none absolute left-0"
-        style={{ ...fieldLabelStyle, color: focused || open ? "#f5a623" : fieldLabelStyle.color }}
+        style={{ ...fieldLabelStyle, color: focused || open ? "var(--color-form-accent)" : fieldLabelStyle.color }}
       >
         {label}
       </label>
@@ -92,25 +89,21 @@ function Dropdown({
             setOpen(true);
           }
         }}
-        className="flex h-[40px] w-full cursor-pointer select-none items-center justify-between border-b border-gray-400 bg-transparent outline-none"
+        className="flex h-16 w-full cursor-pointer select-none items-center justify-between border-b border-form-border bg-transparent outline-none"
         style={{
           ...dropdownStyle,
-          position: "relative",
-          top: "1px",
-          borderBottomColor: focused || open ? "#f5a623" : "rgba(0, 0, 0, 0.42)",
+          borderBottomColor: focused || open ? "var(--color-form-accent)" : "var(--color-form-field-border)",
           borderBottomWidth: focused || open ? "2px" : undefined,
         }}
       >
         {selected?.text ?? ""}
-        <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-          <path d="M7 10l5 5 5-5z" />
-        </svg>
+        <span aria-hidden="true" className="ml-1 text-[0.75rem] text-form-arrow">▾</span>
       </div>
       <input type="hidden" {...register(name)} value={String(value ?? "")} readOnly />
       {open && (
         <ul
           role="listbox"
-          className="absolute left-0 top-[42px] z-50 max-h-[300px] min-w-full overflow-y-auto rounded bg-white py-1 shadow-lg outline outline-1 outline-gray-200"
+          className="absolute left-0 top-17 z-50 max-h-120 min-w-full overflow-y-auto rounded bg-white py-1 shadow-lg outline outline-1 outline-border-muted"
         >
           {options.map((option) => {
             const isSelected = String(option.value) === String(value);
@@ -123,7 +116,7 @@ function Dropdown({
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={`flex cursor-pointer select-none items-center px-4 py-2 text-[1.8rem] hover:bg-gray-100 ${isSelected ? "font-medium" : ""}`}
+                className={`flex cursor-pointer select-none items-center px-4 py-2 text-[1.8rem] hover:bg-surface-subtle ${isSelected ? "font-medium" : ""}`}
               >
                 {option.text}
               </li>
@@ -161,30 +154,30 @@ export function Step2StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
     text: item.name,
   }));
 
-  const field = "mb-[20px]";
-  const remark = "relative -top-[15px] text-[1.5rem] leading-[2.14286rem] text-[var(--color-red)]";
+  const field = "mb-8";
+  const remark = "text-[1.5rem] text-red";
 
   return (
-    <div className="mx-auto w-[458px] bg-white max-[870px]:w-full">
-      <p className="relative -top-[15px] mb-[20px] flex justify-center text-[rgba(163,158,158,1)]">
+    <div className="mx-auto w-183 bg-white max-lg:w-full">
+      <p className="mb-8 flex justify-center text-form-label">
         {t("studyIntro")}
       </p>
 
       <div className={field}>
-        <div className="relative h-[60px] w-full">
+        <div className="relative h-24 w-full">
           <label className="pointer-events-none absolute left-0" style={fieldLabelStyle}>
             {t("studyTitle")}
           </label>
           <input
             {...register("title")}
             value={title ?? ""}
-            className="relative top-[4.40625px] h-[33.1875px] w-full border-0 bg-transparent p-0 outline-none"
-            style={{ ...inputStyle, boxSizing: "border-box", padding: "6px 0 7px" }}
+            className="h-16 w-full border-0 bg-transparent p-0 outline-none"
+            style={inputStyle}
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 w-full border-t border-gray-400"
-            style={{ top: "39.578125px", borderTopColor: "rgba(0, 0, 0, 0.42)" }}
+            className="pointer-events-none absolute left-0 w-full border-t border-form-border"
+            style={{ top: "38.578125px", borderTopColor: "var(--color-form-field-border)" }}
           />
         </div>
       </div>

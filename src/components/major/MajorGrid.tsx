@@ -61,8 +61,10 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
   const comments = data?.data || [];
 
   return (
-    <main className="grid h-full min-h-0 min-w-0 grid-rows-[50px_160px_minmax(0,1fr)] overflow-hidden max-[990px]:grid-rows-[100px_160px_minmax(0,1fr)] max-[576px]:grid-rows-[90px_0px_minmax(0,1fr)] max-[576px]:-mx-[10px]">
-      <MajorFilters filters={filters} onChange={setFilters} isAdmin={isAdmin} />
+    <main className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
+      <div className="h-20 max-lg:h-40 max-sm:h-36">
+        <MajorFilters filters={filters} onChange={setFilters} isAdmin={isAdmin} />
+      </div>
       <StatisticControl>
         <MajorStatistics comments={comments} filters={filters} />
       </StatisticControl>
@@ -72,13 +74,13 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
       )}
       
       {isError && (
-        <div className="flex flex-wrap justify-start items-start bg-white w-full h-full max-h-full rounded-[10px] overflow-x-hidden gap-[10px]">
-          <span className="text-[var(--color-red)]">{tCommon('error')}</span>
+        <div className="flex flex-1 min-h-0 flex-wrap justify-start items-start bg-white w-full h-full max-h-full rounded-lg overflow-x-hidden gap-2.5">
+          <span className="text-red">{tCommon('error')}</span>
         </div>
       )}
 
       {!isLoading && !isError && comments.length === 0 && (
-        <div className="flex flex-wrap justify-start items-start bg-white w-full h-full max-h-full rounded-[10px] overflow-x-hidden gap-[10px] text-[var(--color-light-black)]">
+        <div className="flex flex-1 min-h-0 flex-wrap justify-start items-start bg-white w-full h-full max-h-full rounded-lg overflow-x-hidden gap-2.5 text-light-black">
           {t('noResults')}
         </div>
       )}

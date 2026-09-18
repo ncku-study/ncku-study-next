@@ -121,18 +121,41 @@ export default function AnnouncementNotification() {
   return (
     <div
       role="alert"
-      className="fixed left-1/2 top-4 z-[100] flex w-[min(90vw,700px)] -translate-x-1/2 items-center gap-3 rounded-[4px] bg-[var(--color-yellow)] px-4 py-3 text-[var(--color-dark-black)] shadow-lg"
+      className="fixed left-1/2 top-10 z-50 flex w-1/2 max-w-full -translate-x-1/2 items-center rounded border-x border-transparent bg-snackbar px-6 py-2.5 text-[0.875rem] text-white shadow-xl max-sm:w-149 max-sm:border-x-0 max-sm:top-3 lg:-translate-y-px"
+      style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif', lineHeight: 1.43, boxShadow: 'var(--shadow-snackbar)' }}
     >
-      <p className="m-0 min-w-0 flex-1 whitespace-pre-wrap break-words text-justify text-[15px]">
+      <p
+        className="m-0 hidden min-w-0 flex-1 -translate-y-px py-3 text-justify text-[15px] sm:block lg:translate-y-0"
+        style={{ letterSpacing: '0.09px', lineHeight: 1.43, position: 'relative', top: '0.25px' }}
+      >
         {announcement.msg}
       </p>
-      <button
-        type="button"
-        onClick={handleClose}
-        className="shrink-0 rounded-full border-0 bg-white/80 px-3 py-2 text-[14px] text-[var(--color-dark-black)] hover:bg-white"
+      <p
+        className="m-0 block min-w-0 flex-1 translate-y-px py-3 text-justify text-[15.005px] sm:hidden"
+        style={{ letterSpacing: '0.0937125px', lineHeight: 1.43, position: 'relative', left: '0.25px', top: '-0.25px' }}
       >
-        {t("acknowledge")}
-      </button>
+        {announcement.msg}
+      </p>
+      <div className="ml-8 -mr-3 hidden -translate-y-px items-center pl-5 sm:flex lg:translate-y-0" style={{ position: 'relative', left: '0.5px', top: '0.25px' }}>
+        <button
+          type="button"
+          onClick={handleClose}
+          className="h-16 shrink-0 rounded-full border-0 bg-white px-4 py-2 text-[0.875rem] text-white hover:bg-white"
+          style={{ letterSpacing: '0.0937125px' }}
+        >
+          {t("acknowledge")}
+        </button>
+      </div>
+      <div className="ml-8 -mr-3 flex translate-y-px items-center pl-5 sm:hidden" style={{ position: 'relative', left: '0.25px', top: '-0.25px' }}>
+        <button
+          type="button"
+          onClick={handleClose}
+          className="h-16 shrink-0 rounded-full border-0 bg-white px-4 py-2 text-[0.875rem] text-white hover:bg-white"
+          style={{ letterSpacing: '0.125px' }}
+        >
+          {t("acknowledge")}
+        </button>
+      </div>
     </div>
   );
 }

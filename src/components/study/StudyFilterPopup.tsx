@@ -33,16 +33,16 @@ interface CheckboxItemProps {
 
 function CheckboxItem({ checked, label, onChange }: CheckboxItemProps) {
   return (
-    <label className="inline-flex items-center cursor-pointer py-[5px] px-[10px] hover:bg-black/5 rounded-full justify-center w-full">
+    <label className="inline-flex items-center cursor-pointer py-2 px-4 hover:bg-hover-strong rounded-full justify-center w-full">
       <span
-        className="flex items-center justify-center w-[18px] h-[18px] border-2 rounded-[2px] shrink-0"
+        className="flex items-center justify-center w-7 h-7 border-2 rounded-sm shrink-0"
         style={{
-          backgroundColor: checked ? 'var(--color-yellow)' : 'transparent',
+          backgroundColor: checked ? 'var(--color-yellow)' : 'var(--color-filter-transparent)',
           borderColor: checked ? 'var(--color-yellow)' : 'var(--color-dark-gray)',
         }}
       >
         {checked && (
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--color-white)" aria-hidden="true">
             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
           </svg>
         )}
@@ -54,7 +54,7 @@ function CheckboxItem({ checked, label, onChange }: CheckboxItemProps) {
         onChange={(e) => onChange(e.target.checked)}
         tabIndex={-1}
       />
-      <span className="ml-[4px] text-[14px] w-[60px]">{label}</span>
+      <span className="ml-2 text-[14px] w-24">{label}</span>
     </label>
   );
 }
@@ -177,16 +177,17 @@ export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: St
     <div
       ref={popupRef}
       style={popupStyle}
-      className="bg-white shadow-[0_0_4px_rgba(0,0,0,0.25)] rounded-[5px] py-[10px] outline-none"
+      className="bg-white shadow-filter-popup rounded-filter mt-4 py-4 outline-none"
     >
-      <div className="flex flex-row py-[10px]">
+      <div className="flex flex-row py-4">
         {sections.map((section, i) => (
           <div
             key={section.type}
-            className={`w-[114px] p-[5px]${i < sections.length - 1 ? ' border-r border-black/5' : ''}`}
+            className={`w-46 p-2${i < sections.length - 1 ? ' border-r border-divider' : ''}`}
+            style={{ width: '114px' }}
           >
             <div
-              className="flex justify-center items-center mb-[20px]"
+              className="flex justify-center items-center mb-8"
               style={{ color: 'var(--color-dark-yellow)' }}
             >
               <svg
@@ -227,11 +228,12 @@ export function StudyFilterPopup({ filter, onFilterChange, isAdmin = false }: St
         ref={buttonRef}
         type="button"
         onClick={handleOpen}
-        className="relative w-full h-[38.8125px] p-0 bg-transparent border-0 rounded-[4px] cursor-pointer text-left text-black/87 focus:outline-none before:content-[''] before:absolute before:pointer-events-none before:left-0 before:right-0 before:top-[-5px] before:h-[43.8125px] before:rounded-[4px] before:border before:border-black/23 hover:before:border-black/87"
+        className="relative flex w-44 h-16 items-center justify-between px-6 bg-filter-transparent border border-control-border rounded cursor-pointer text-left text-select-text focus:outline-none hover:border-select-text"
+        style={{ width: '109px', height: '38px' }}
       >
-        <span className="absolute left-[14px] top-[12px] z-[1] text-[15px] leading-[15px] text-black/54 font-['Roboto','Helvetica','Arial',sans-serif]">{t('filterButton')}</span>
+        <span className="text-[15px]">{t('filterButton')}</span>
         <svg
-          className="absolute right-[9px] top-[7.40625px] z-[1] w-[15px] h-[15px] fill-black/54"
+          className="w-6 h-6 shrink-0 fill-card-text"
           focusable="false"
           viewBox="0 0 24 24"
           aria-hidden="true"

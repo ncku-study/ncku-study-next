@@ -8,11 +8,11 @@ import { useTranslations } from 'next-intl';
 import { useClientSeo } from '@/lib/seo/use-client-seo';
 
 const categoryColors: Record<string, { backgroundColor: string; color: string }> = {
-  transfer: { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" },
-  minor: { backgroundColor: "rgba(29, 30, 34, 0.2)", color: "rgba(29, 30, 34, 1)" },
-  double: { backgroundColor: "#393F4D", color: "#FFFFFF" },
+  transfer: { backgroundColor: "bg-background-yellow", color: "text-dark-yellow" },
+  minor: { backgroundColor: "bg-minor-surface", color: "text-dark-black" },
+  double: { backgroundColor: "bg-light-black", color: "text-white" },
 };
-const defaultIconStyle = { backgroundColor: "rgba(254, 218, 106, 0.4)", color: "rgba(225, 175, 19, 1)" };
+const defaultIconStyle = { backgroundColor: "bg-background-yellow", color: "text-dark-yellow" };
 
 function getCategoryStyle(category: string, labels: { transfer: string; minor: string; double: string }) {
   if (category === labels.transfer) return categoryColors.transfer;
@@ -95,33 +95,31 @@ export default function ModalContent({ id, serverComment, isAdmin = false }: Pro
   ];
 
   return (
-    <div className="w-full flex flex-col py-[20px] px-[5px]">
+    <div className="w-full flex flex-col py-8 px-2 flex-1">
       {/* TitleBar */}
       <div className="flex items-center">
         <div
-          className="flex justify-center items-center font-semibold w-[42px] h-[42px] rounded-[42px] my-[10px] mx-auto scale-110"
-          style={iconStyle}
+          className={`flex justify-center items-center font-semibold w-17 h-17 rounded-full my-4 mx-auto scale-110 ${iconStyle.backgroundColor} ${iconStyle.color}`}
         >
           {comment.category?.[0] ?? categoryLabels.transfer[0]}
         </div>
-        <div className="ml-[10px] flex-1">
-          <h4 className="m-0 text-[1.9rem] mb-[5px]">{comment.in_maj}</h4>
-          <p className="text-[1.3rem] m-0" style={{ color: "rgba(163,158,158,1)" }}>
-            {tMajor('originalMajor')}: {comment.out_maj}
+        <div className="ml-4 flex-1">
+          <h4 className="m-0 text-[1.9rem] mb-2">{comment.in_maj}</h4>
+          <p className="text-[1.3rem] text-dark-gray m-0">
+            {tMajor('originalMajor')} {comment.out_maj}
           </p>
         </div>
       </div>
 
       {/* DetailList */}
-      <div className="flex flex-wrap my-[20px] mx-0">
+      <div className="flex flex-wrap my-8 mx-0">
         {tags.map(({ type, value }) => {
           const isFailResult = type === tMajor('applicationResult') && (value === "false" || value === categoryLabels.fail);
           const displayValue = type === tMajor('applicationResult') ? isPassDisplay(value, categoryLabels.pass, categoryLabels.fail) : value;
           return (
             <div
               key={type}
-              className="min-w-[75px] h-[50px] p-[5px] bg-white"
-              style={{ color: isFailResult ? "rgba(245,88,123,1)" : "rgba(29,30,34,1)" }}
+              className={`min-w-30 h-20 p-2 bg-white ${isFailResult ? 'text-red' : 'text-dark-black'}`}
             >
               <div className="text-[1.4rem]">{type}</div>
               <div className="text-[1.7rem] font-bold">{displayValue}</div>
@@ -131,7 +129,7 @@ export default function ModalContent({ id, serverComment, isAdmin = false }: Pro
       </div>
 
       {/* ReaderText */}
-      <div className="leading-[2.8rem] tracking-[2.5px] overflow-y-auto break-anywhere text-justify whitespace-pre-line text-[17px] [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar]:border-none [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[#555] [&::-webkit-scrollbar-thumb]:opacity-50 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:border-0">
+      <div className="overflow-y-auto break-anywhere text-justify whitespace-pre-line text-[17px] custom-scrollbar" style={{ lineHeight: '2.8rem', letterSpacing: '2.5px' }}>
         {comment.comment.replace(/<br\s*\/?>/gi, '\n')}
       </div>
     </div>

@@ -7,6 +7,7 @@
   --color-lightYellow: rgba(255, 238, 173, 1);
   --color-dark-yellow: #E1AF13;
   --color-white: #FFFFFF;
+  --color-filter-transparent: transparent;
   --color-dark-white: #F8F8F8;
   --color-light-gray: rgba(212, 212, 220, 1);
   --color-dark-gray: rgba(163, 158, 158, 1);
@@ -14,6 +15,41 @@
   --color-dark-black: rgba(29, 30, 34, 1);
   --color-red: rgba(245, 88, 123, 1);
   --color-green: #4ade80;
+  --color-card-border: rgba(0, 0, 0, 0.125);
+  --color-control-border: rgba(0, 0, 0, 0.23);
+  --color-input-border: rgba(0, 0, 0, 0.05);
+  --color-minor-surface: rgba(29, 30, 34, 0.2);
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-light: rgba(0, 0, 0, 0.4);
+  --color-snackbar: #313131;
+  --color-hover: rgba(0, 0, 0, 0.04);
+  --color-select-text: rgba(0, 0, 0, 0.87);
+  --color-select-arrow: rgba(0, 0, 0, 0.54);
+  --color-disabled-border: rgba(0, 0, 0, 0.38);
+  --color-arrow: #555555;
+  --color-scrollbar: #555555;
+  --color-toggle-off: #d1d5db;
+  --color-sidebar-label: #333333;
+  --color-card-text: #000000;
+  --color-form-accent: #f5a623;
+  --color-form-label: rgba(0, 0, 0, 0.54);
+  --color-form-value: rgba(0, 0, 0, 0.87);
+  --color-form-border: oklch(0.707 0.022 261.325);
+  --color-form-field-border: oklch(0.707 0.022 261.325);
+  --color-form-arrow: oklch(0.551 0.027 264.364);
+  --color-stepper-inactive: #eaeaf0;
+  --color-muted-text: #8c8c8c;
+  --color-category-text: #4b5563;
+  --color-surface-muted: #f9fafb;
+  --color-surface-subtle: #f3f4f6;
+  --color-border-muted: #e5e7eb;
+  --color-border-medium: #d1d5db;
+  --color-divider: rgba(0, 0, 0, 0.05);
+  --color-hover-strong: rgba(0, 0, 0, 0.05);
+  --radius-filter: 5px;
+  --shadow-snackbar: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+  --shadow-filter-popup: 0 0 4px rgba(0, 0, 0, 0.25);
+  --shadow-select-menu: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 html {
@@ -32,11 +68,31 @@ html {
 
 @layer base {
   body {
-    font-family: 'Noto Sans TC', 'Microsoft JhengHei';
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
     color: var(--color-dark-black);
     font-size: 1.5rem;
     line-height: 1.42857143;
     overflow-y: hidden;
+  }
+
+  .major-filter-option {
+    height: 34.5px;
+  }
+
+  .study-nav-content[data-show-search="true"] {
+    grid-template-rows: 120px auto;
+  }
+
+  @media (max-width: 63.999rem) {
+    .study-nav-content[data-show-search="true"] {
+      grid-template-rows: 50px auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .major-filter-option {
+      height: 48px;
+    }
   }
 
   #root, body > div:first-child {
@@ -98,7 +154,7 @@ a {
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background-color: #555;
+    background-color: var(--color-scrollbar);
     opacity: 0.5;
   }
 
@@ -134,7 +190,7 @@ a {
     position: fixed;
     top: 0;
     left: 0;
-    background-color: rgba(0,0,0,0.4);
+    background-color: var(--color-overlay-light);
     width: 100%;
     height: 100%;
   }
@@ -145,5 +201,17 @@ a {
 
   .animate-slideInRight {
     animation: slideInRight 0.3s ease-out;
+  }
+}
+
+.study-modal {
+  height: 90vh;
+}
+
+@media (max-width: 62rem) {
+  .study-modal {
+    width: 360px;
+    min-width: 95vw;
+    height: 65vh;
   }
 }
