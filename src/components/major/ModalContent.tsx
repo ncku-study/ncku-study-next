@@ -99,14 +99,15 @@ export default function ModalContent({ id, serverComment, isAdmin = false }: Pro
       {/* TitleBar */}
       <div className="flex items-center">
         <div
-          className={`flex justify-center items-center font-semibold w-17 h-17 rounded-full my-4 mx-auto scale-110 ${iconStyle.backgroundColor} ${iconStyle.color}`}
+          className={`flex justify-center items-center font-semibold rounded-full my-4 mx-auto scale-110 ${iconStyle.backgroundColor} ${iconStyle.color}`}
+          style={{ width: '42px', height: '42px' }}
         >
           {comment.category?.[0] ?? categoryLabels.transfer[0]}
         </div>
         <div className="ml-4 flex-1">
           <h4 className="m-0 text-[1.9rem] mb-2">{comment.in_maj}</h4>
-          <p className="text-[1.3rem] text-dark-gray m-0">
-            {tMajor('originalMajor')} {comment.out_maj}
+          <p className="text-[1.3rem] text-card-text m-0">
+            {tMajor('originalMajor')}: {comment.out_maj}
           </p>
         </div>
       </div>
@@ -119,7 +120,7 @@ export default function ModalContent({ id, serverComment, isAdmin = false }: Pro
           return (
             <div
               key={type}
-              className={`min-w-30 h-20 p-2 bg-white ${isFailResult ? 'text-red' : 'text-dark-black'}`}
+              className={`min-w-30 h-20 p-2 bg-white ${isFailResult ? 'text-red' : 'text-card-text'}`}
             >
               <div className="text-[1.4rem]">{type}</div>
               <div className="text-[1.7rem] font-bold">{displayValue}</div>

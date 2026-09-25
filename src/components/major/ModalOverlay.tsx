@@ -2,7 +2,17 @@
 import { useRouter } from "next/navigation";
 import { useOptionalMajorModalRoute } from "@/components/major/MajorModalRouteContext";
 
-export default function ModalOverlay({ children, backHref = '/major', onClose }: { children: React.ReactNode; backHref?: string; onClose?: () => void }) {
+interface ModalOverlayProps {
+  children: React.ReactNode;
+  backHref?: string;
+  onClose?: () => void;
+}
+
+export default function ModalOverlay({
+  children,
+  backHref = '/major',
+  onClose,
+}: ModalOverlayProps) {
   const router = useRouter();
   const majorRoute = useOptionalMajorModalRoute();
 

@@ -61,7 +61,7 @@ export default function MajorGrid({ isAdmin = false, renderClientModal = true }:
   const comments = data?.data || [];
 
   return (
-    <main className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
+    <main className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden max-sm:-mx-4">
       <div className="h-20 max-lg:h-40 max-sm:h-36">
         <MajorFilters filters={filters} onChange={setFilters} isAdmin={isAdmin} />
       </div>

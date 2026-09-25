@@ -46,6 +46,7 @@ type PostFormValues = {
   major: string;
   studyCategories: string[];
   statistics: Record<string, string | number>;
+  otherStat: Array<{ name: string; value: string }>;
 };
 
 export function PostFormContainer(): ReactElement;
@@ -110,6 +111,7 @@ export function PostFormContainer(props?: PostFormEditProps) {
     major: t("defaultMajor"),
     studyCategories: [] as string[],
     statistics: {} as Record<string, string | number>,
+    otherStat: [] as Array<{ name: string; value: string }>,
   };
 
   const methods = useForm<PostFormValues>({
@@ -181,17 +183,21 @@ export function PostFormContainer(props?: PostFormEditProps) {
       const values = methods.getValues();
       const selected = Array.isArray(values.studyCategories) ? values.studyCategories : [];
       const statistics = values.statistics ?? {};
+      const otherStats = Array.isArray(values.otherStat) ? values.otherStat : [];
       const hasEmptyStatistic = selected.some((name: string) => {
         const value = statistics[name];
         return value === undefined || value === null || String(value).trim() === "";
       });
+      const hasIncompleteOtherStatistic = otherStats.some((item) =>
+        !item.name.trim() || !item.value.trim()
+      );
 
       clearErrors("studyCategories");
       isValid = await trigger("content");
-      if (selected.length === 0) {
+      if (selected.length === 0 && otherStats.length === 0) {
         setError("studyCategories", { type: "manual", message: t("selectAtLeastOne") });
         isValid = false;
-      } else if (hasEmptyStatistic) {
+      } else if (hasEmptyStatistic || hasIncompleteOtherStatistic) {
         setError("studyCategories", { type: "manual", message: t("fillSelectedStatistic") });
         isValid = false;
       }
@@ -212,16 +218,16 @@ export function PostFormContainer(props?: PostFormEditProps) {
       {/* Preview Modal */}
       {isPreviewOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative bg-white p-[5px]">
+          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white p-0 outline-none" style={{ padding: "5px" }}>
             <h4 className="text-center text-[1.5rem]">{t("previewConfirm")}</h4>
-            <hr className="border-[rgba(0,0,0,0.12)]" />
+            <hr className="border-modal-divider" />
             <Step3Preview />
-            <div className="w-full h-[75px] flex justify-end items-center">
+            <div className="flex w-full items-center justify-end" style={{ height: "75px" }}>
               <button
                 type="button"
                 onClick={() => setIsPreviewOpen(false)}
-                className="min-w-[100px] h-[40px] rounded-[5px] bg-white text-black border-none outline-none cursor-pointer"
-                style={{ marginRight: "20px" }}
+                className="h-0 min-w-0 cursor-pointer rounded-filter border-none bg-white p-0 text-black outline-none"
+                style={{ minWidth: "100px", height: "40px", marginRight: "20px" }}
               >
                 {t("backToEdit")}
               </button>
@@ -229,7 +235,8 @@ export function PostFormContainer(props?: PostFormEditProps) {
                 type="button"
                 onClick={onConfirmSubmit}
                 disabled={mutation.isPending}
-                className="min-w-[100px] h-[40px] rounded-[5px] bg-[var(--color-yellow)] text-black border-none outline-none cursor-pointer disabled:opacity-50"
+                className="h-0 min-w-0 cursor-pointer rounded-filter border-none bg-yellow p-0 text-black outline-none disabled:opacity-50"
+                style={{ minWidth: "100px", height: "40px" }}
               >
                 {mutation.isPending ? tCommon("loading") : t("confirmSubmit")}
               </button>

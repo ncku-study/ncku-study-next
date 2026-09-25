@@ -27,6 +27,7 @@
   --color-select-arrow: rgba(0, 0, 0, 0.54);
   --color-disabled-border: rgba(0, 0, 0, 0.38);
   --color-arrow: #555555;
+  --color-reader-arrow: #6b7280;
   --color-scrollbar: #555555;
   --color-toggle-off: #d1d5db;
   --color-sidebar-label: #333333;
@@ -45,6 +46,7 @@
   --color-border-muted: #e5e7eb;
   --color-border-medium: #d1d5db;
   --color-divider: rgba(0, 0, 0, 0.05);
+  --color-modal-divider: rgba(0, 0, 0, 0.12);
   --color-hover-strong: rgba(0, 0, 0, 0.05);
   --radius-filter: 5px;
   --shadow-snackbar: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);

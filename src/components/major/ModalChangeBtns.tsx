@@ -44,8 +44,8 @@ function ChangeBtn({
 }) {
   const arrow = (
     <div
-      className="border-r-2 border-t-2 border-arrow h-12 w-12 border-l border-b border-l-transparent border-b-transparent inline-block rotate-45"
-      style={direction === "left" ? { transform: 'rotate(225deg)' } : undefined}
+      className="border-r-2 border-t-2 border-reader-arrow h-12 w-12 border-l border-b border-l-transparent border-b-transparent inline-block rotate-45"
+      style={direction === "left" ? { rotate: '225deg' } : undefined}
     />
   );
 

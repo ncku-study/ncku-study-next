@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "@/components/logos";
@@ -19,19 +19,31 @@ type StudyFormValues = {
   title: string;
   studyCategories: string[];
   statistics: Record<string, string | number>;
+  otherStat: Array<{ name: string; value: string }>;
   content: string;
   [key: string]: unknown;
 };
 
 const inputClass =
-  "w-full h-[40px] border-b border-gray-400 bg-transparent outline-none text-[1.7rem] focus:border-[var(--color-yellow)]";
+  "h-10 w-full border-b border-form-field-border bg-transparent text-[1.7rem] outline-none focus:border-yellow";
 
 export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
   const t = useTranslations("post");
-  const { register, watch, setValue, formState: { errors } } = useFormContext<StudyFormValues>();
+  const { control, register, watch, setValue, formState: { errors } } = useFormContext<StudyFormValues>();
+  const { fields: otherStats, append, remove } = useFieldArray({ control, name: "otherStat" });
   const [search, setSearch] = useState("");
+  const [viewportWidth, setViewportWidth] = useState(0);
   const title = watch("title") as string;
   const selected = (watch("studyCategories") ?? []) as string[];
+  const isCompact = viewportWidth > 0 && viewportWidth <= 1024;
+  const isMobile = viewportWidth > 0 && viewportWidth <= 640;
+
+  useEffect(() => {
+    const updateViewportWidth = () => setViewportWidth(window.innerWidth);
+    updateViewportWidth();
+    window.addEventListener("resize", updateViewportWidth);
+    return () => window.removeEventListener("resize", updateViewportWidth);
+  }, []);
   const { data: statisticOptions = [] } = useQuery({
     queryKey: isAdmin ? ["admin-statistics-form"] : ["statistics"],
     queryFn: () => isAdmin
@@ -55,21 +67,34 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
   };
 
   return (
-    <div className="mx-auto w-[458px] max-[870px]:w-[80%] bg-white">
-      <p className="mb-[20px] text-center text-[1.7rem] text-[rgba(163,158,158,1)]">
-        {title || t("missingStudyTitle")}
-      </p>
+    <div
+      className="mx-auto w-full bg-white"
+      style={{ width: isCompact ? "100%" : "458px" }}
+    >
+      <div className="flex items-center" style={{ marginBottom: "20px" }}>
+        <div className="mr-2 bg-yellow" style={{ width: "7px" }} />
+        <p
+          className="text-[18px] text-form-label"
+          style={{ margin: 0, lineHeight: "25.7143px" }}
+        >
+          {title || t("missingStudyTitle")}
+        </p>
+      </div>
 
-      <p className="mb-[20px] text-center text-[1.7rem] text-[rgba(163,158,158,1)]">
+      <p className="text-center text-[1.5rem] text-form-label" style={{ marginBottom: "20px" }}>
         {t("selectStatistics")}
       </p>
 
-      <div className="relative mb-[20px] h-[45px] w-full">
+      <div
+        className="relative w-full"
+        style={{ height: isMobile ? "35px" : "45px", marginBottom: "20px" }}
+      >
         <input
           aria-label={t("searchStatistics")}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          className="h-full w-full rounded-[55px] border border-black/5 bg-white px-[15px] pr-[55px] text-[1.5rem] outline-none focus:border-black/20"
+          className="h-full w-full rounded-full border border-input-border bg-white p-0 text-[1.5rem] outline-none focus:border-control-border"
+          style={{ padding: "10px 15px" }}
         />
         <Search
           aria-hidden="true"
@@ -84,7 +109,7 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
         />
       </div>
 
-      <div className="mb-[20px] flex flex-wrap justify-center gap-[8px]">
+      <div className="flex flex-wrap" style={{ marginBottom: "20px" }}>
         {visibleOptions.map((statistic) => {
           const isSelected = selected.includes(statistic.name);
           return (
@@ -93,9 +118,10 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
               type="button"
               aria-pressed={isSelected}
               onClick={() => toggleStatistic(statistic)}
-              className={`flex min-h-[36px] items-center justify-center rounded-[50px] border-[2px] border-[var(--color-yellow)] px-[12px] text-[1.4rem] outline-none ${
-                isSelected ? "bg-[var(--color-yellow)] text-black" : "bg-white text-[var(--color-yellow)]"
+              className={`m-0 flex h-auto items-center justify-center rounded-full border border-solid border-yellow p-0 text-[1.4rem] outline-none ${
+                isSelected ? "bg-yellow text-card-text" : "bg-white text-yellow"
               }`}
+              style={{ margin: "5px", padding: "5px 10px" }}
             >
               {statistic.name}
             </button>
@@ -103,29 +129,68 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
         })}
         <button
           type="button"
-          className="flex min-h-[36px] items-center justify-center rounded-[50px] border-[2px] border-[var(--color-yellow)] bg-white px-[12px] text-[1.4rem] text-[var(--color-yellow)] outline-none"
+          onClick={() => append({ name: "", value: "" }, { shouldFocus: true })}
+          className="m-0 flex h-auto items-center justify-center rounded-full border border-solid border-yellow bg-white p-0 text-[1.4rem] text-yellow outline-none"
+          style={{ margin: "5px", padding: "5px 10px" }}
         >
           {t("otherCategory")}
         </button>
       </div>
 
-      {selected.length === 0 && (
-        <p className="mb-[20px] text-left text-[1.5rem] text-black">
+      {selected.length === 0 && otherStats.length === 0 && (
+        <p className="text-left text-[1.5rem] text-card-text" style={{ marginBottom: "20px" }}>
           {t("noStatisticsSelected")}
         </p>
       )}
       {errors.studyCategories?.message && (
-        <p className="mb-[20px] text-left text-[1.5rem] text-[var(--color-red)]">
+        <p className="text-left text-[1.5rem] text-red" style={{ marginBottom: "20px" }}>
           {errors.studyCategories.message as string}
         </p>
       )}
 
-      <div className="mb-[20px]">
+      {otherStats.length > 0 && (
+        <div style={{ marginBottom: "20px" }}>
+          {otherStats.map((field, index) => (
+            <div key={field.id} style={{ marginBottom: "20px" }}>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="block text-[1.7rem] text-dark-gray">
+                  {t("otherOption")} - {index + 1}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  aria-label={t("removeOtherOption")}
+                  className="border-0 bg-transparent p-0 text-[1.5rem] text-dark-gray outline-none"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <input
+                  {...register(`otherStat.${index}.name`)}
+                  aria-label={t("otherOptionNamePlaceholder")}
+                  placeholder={t("otherOptionNamePlaceholder")}
+                  className={inputClass}
+                />
+                <input
+                  {...register(`otherStat.${index}.value`)}
+                  aria-label={t("otherOptionValuePlaceholder")}
+                  placeholder={t("otherOptionValuePlaceholder")}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+          ))}
+          <p className="text-[1.3rem] text-form-label">{t("otherOptionReviewHint")}</p>
+        </div>
+      )}
+
+      <div style={{ marginBottom: "20px" }}>
         {statisticOptions
           .filter((statistic) => selected.includes(statistic.name))
           .map((statistic) => (
-            <div key={statistic.id} className="mb-[20px]">
-              <label className="mb-[2px] block text-[1.7rem] text-[rgba(163,158,158,1)]">
+            <div key={statistic.id} style={{ marginBottom: "20px" }}>
+              <label className="block text-[1.7rem] text-dark-gray" style={{ marginBottom: "2px" }}>
                 {statistic.name}
               </label>
               <input
@@ -139,13 +204,22 @@ export function Step3StudyForm({ isAdmin = false }: { isAdmin?: boolean }) {
           ))}
       </div>
 
-      <div className="relative mb-[20px]">
-        <label className="absolute left-0 top-[-18px] text-[1.7rem] text-[rgba(0,0,0,0.54)]">
+      <div className="relative" style={{ marginBottom: "30px" }}>
+        <label
+          className="pointer-events-none absolute left-0 text-form-label"
+          style={{
+            top: "-18px",
+            fontSize: "1.375rem",
+            fontWeight: 700,
+            backgroundColor: "var(--color-white)",
+          }}
+        >
           {t("studyComment")}
         </label>
         <textarea
           {...register("content")}
-          className="h-[250px] w-full resize-none border border-gray-400 bg-transparent p-[10px] text-[1.7rem] leading-[2.8rem] tracking-[2.5px] outline-none focus:border-[var(--color-yellow)]"
+          className="w-full resize-none border border-form-field-border bg-transparent p-0 text-[1.7rem] outline-none focus:border-yellow"
+          style={{ height: "250px", padding: "10px", lineHeight: "22px", letterSpacing: "2.5px" }}
         />
       </div>
     </div>

@@ -34,6 +34,9 @@ function mapStudyToDefaults(s: StudyDTO): Record<string, unknown> {
     year: s.year ?? 114,
     major: s.major ?? "",
     studyCategories: categoryNames,
+    otherStat: Array.isArray(s.otherStat)
+      ? s.otherStat.map(({ name, value }) => ({ name, value }))
+      : [],
   };
 }
 
