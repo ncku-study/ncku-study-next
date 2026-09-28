@@ -169,17 +169,14 @@ jobs:
           fi
 
           if (( needs_bootstrap )); then
-            if [[ ! -x "$bootstrap_script" ]]; then
-              echo "Bootstrap script is missing. EC2 user data did not complete; repair it before deployment." >&2
-              exit 1
-            fi
-            "$bootstrap_script"
+            echo "EC2 bootstrap prerequisites are incomplete. Repair the instance before deployment." >&2
+            exit 1
           fi
 
           exec "$deployment_script" "$release_id"
           REMOTE
           sed -i "s/__RELEASE_ID__/${GITHUB_SHA}/g" ssm-command.sh
-          jq --rawfile command ssm-command.sh '{commands: [$command]}' > ssm-parameters.json
+          jq -n --rawfile command ssm-command.sh '{commands: [$command]}' > ssm-parameters.json
           command_id="$(aws ssm send-command \
             --document-name AWS-RunShellScript \
             --instance-ids "$instance_id" \
