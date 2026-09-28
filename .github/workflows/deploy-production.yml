@@ -101,14 +101,21 @@ jobs:
         run: |
           set -Eeuo pipefail
           instance_ids="$(aws ec2 describe-instances \
-            --filters 'Name=tag:Application,Values=ncku-study-next' 'Name=tag:Environment,Values=production' 'Name=instance-state-name,Values=running' \
+            --filters \
+              'Name=tag:Application,Values=ncku-study-next' \
+              'Name=tag:Environment,Values=production' \
+              'Name=tag:Project,Values=ncku-study-next' \
+              'Name=tag:ManagedBy,Values=terraform' \
+              'Name=tag:Name,Values=ncku-study-next-production' \
+              'Name=instance-state-name,Values=running' \
             --query 'Reservations[].Instances[].InstanceId' \
-            --output text)"
+            --output json)"
 
-          if [[ -z "$instance_ids" || "$instance_ids" == *$'\t'* || "$instance_ids" == *' '* ]]; then
-            echo "Expected exactly one running, tagged production instance; found: $instance_ids" >&2
+          if ! jq -e 'type == "array" and length == 1 and (.[0] | type == "string")' <<< "$instance_ids" >/dev/null; then
+            echo "Expected exactly one running Terraform-managed production instance; found: $(jq -c . <<< "$instance_ids")" >&2
             exit 1
           fi
+          instance_id="$(jq -r '.[0]' <<< "$instance_ids")"
 
           cat > ssm-command.sh <<'REMOTE'
           set -Eeuo pipefail
@@ -175,13 +182,13 @@ jobs:
           jq --rawfile command ssm-command.sh '{commands: [$command]}' > ssm-parameters.json
           command_id="$(aws ssm send-command \
             --document-name AWS-RunShellScript \
-            --instance-ids "$instance_ids" \
+            --instance-ids "$instance_id" \
             --comment "Deploy ncku-study-next ${GITHUB_SHA}" \
             --parameters file://ssm-parameters.json \
             --query 'Command.CommandId' \
             --output text)"
           echo "SSM_COMMAND_ID=$command_id" >> "$GITHUB_ENV"
-          echo "INSTANCE_ID=$instance_ids" >> "$GITHUB_ENV"
+          echo "INSTANCE_ID=$instance_id" >> "$GITHUB_ENV"
 
       - name: Wait for deployment
         shell: bash
