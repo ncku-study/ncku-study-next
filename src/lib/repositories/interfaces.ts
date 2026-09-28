@@ -4,6 +4,7 @@ import type {
   DepartmentDTO,
   CollegeDTO,
   CategoryDTO,
+  OtherStatisticDTO,
   StatisticManageDTO,
   AnnouncementDTO,
   UserDTO,
@@ -30,7 +31,10 @@ export type StudyFilters = {
 export type CreateCommentInput = Omit<CommentDTO, 'id'>;
 export type UpdateCommentInput = Partial<Omit<CommentDTO, 'id'>>;
 
-export type CreateStudyInput = Omit<StudyDTO, 'id'>;
+export type CreateStudyInput = Omit<StudyDTO, 'id' | 'timestamp' | 'otherStat'> & {
+  timestamp: string;
+  otherStat: Array<Pick<OtherStatisticDTO, 'name' | 'value'> & Partial<OtherStatisticDTO>>;
+};
 export type UpdateStudyInput = Partial<Omit<StudyDTO, 'id'>>;
 
 export type CreateDepartmentInput = Omit<DepartmentDTO, 'id'>;

@@ -1,15 +1,29 @@
 import { NextResponse } from 'next/server';
 import { getStudyRepository } from '@/lib/repositories';
 import { notifyNewStudy } from '@/lib/discord';
+import { normalizeStudySubmission } from '@/lib/study-submission';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  await notifyNewStudy(body);
+  let submission: ReturnType<typeof normalizeStudySubmission>;
+  try {
+    submission = normalizeStudySubmission(await request.json());
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '送出的資料格式錯誤';
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+
   const repo = await getStudyRepository();
-  const data = await repo.create({ ...body, confirm: false });
+  const data = await repo.create(submission);
+
+  try {
+    await notifyNewStudy(data);
+  } catch (error) {
+    console.error('Unable to send new study notification', error);
+  }
+
   return NextResponse.json(data, { status: 201 });
 }
 
