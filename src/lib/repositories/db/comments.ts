@@ -65,7 +65,8 @@ export class DbCommentRepository implements CommentRepository {
         query = query.where('confirm', '=', String(filters.confirm));
       }
 
-      return query.execute();
+      // Match the legacy Laravel endpoint, which returns newest comments first.
+      return query.orderBy('id', 'desc').execute();
     });
 
     return rows.map(rowToDto);

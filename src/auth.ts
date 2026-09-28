@@ -4,6 +4,9 @@ import { getUserRepository } from '@/lib/repositories';
 import { verifyPassword } from '@/lib/password';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
+  // Requests arrive through the EC2 Nginx reverse proxy, outside the hosts
+  // Auth.js trusts automatically (such as Vercel). Nginx is the trusted edge.
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {

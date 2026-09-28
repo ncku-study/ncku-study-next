@@ -48,7 +48,11 @@ function rowToDto(
 export class DbStudyRepository implements StudyRepository {
   async findAll(filters?: StudyFilters): Promise<StudyDTO[]> {
     const db = getDb();
-    const rows = await db.selectFrom('study').selectAll().execute();
+    const rows = await db
+      .selectFrom('study')
+      .selectAll()
+      .orderBy('created_at', 'desc')
+      .execute();
     let result = rows.map(rowToDto);
 
     if (filters?.category) {
