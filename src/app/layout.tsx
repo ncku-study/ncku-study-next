@@ -2,6 +2,7 @@
 import { getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import QueryProvider from "@/providers/query-provider";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { buildSeoMetadata } from "@/lib/seo/metadata";
 import "./globals.css";
 
@@ -39,6 +40,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>{children}</QueryProvider>
         </NextIntlClientProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );
