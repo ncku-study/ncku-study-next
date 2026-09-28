@@ -2,7 +2,7 @@ import { Major as MajorLogo } from '@/components/logos';
 
 const skeletonClass = 'bg-dark-white animate-pulse';
 
-export const MAJOR_CARDS_CONTAINER_CLASS = 'flex flex-1 min-h-0 min-w-0 flex-wrap justify-start items-start bg-white w-full h-full rounded-lg overflow-x-hidden overflow-y-auto will-change-transform max-sm:gap-0 gap-4 custom-scrollbar';
+export const MAJOR_CARDS_CONTAINER_CLASS = 'flex flex-1 min-h-0 min-w-0 flex-wrap justify-start items-start content-start bg-white w-full h-full rounded-lg overflow-x-hidden overflow-y-auto will-change-transform max-sm:gap-0 gap-4 custom-scrollbar';
 
 function MajorFilterSkeleton() {
   return (
