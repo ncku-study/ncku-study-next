@@ -217,7 +217,7 @@ jobs:
 
           temporary_artifact="$(mktemp)"
           trap 'rm -f "$temporary_artifact"' EXIT
-          aws s3 cp "s3://ncku-study-tf/$artifact_key" "$temporary_artifact" --region "$aws_region"
+          aws s3 cp "s3://ncku-study-tf/$artifact_key" "$temporary_artifact" --region "$aws_region" --no-progress
           printf '%s  %s\n' "$artifact_sha" "$temporary_artifact" | sha256sum -c -
 
           install -d -o "$deploy_user" -g "$deploy_user" -m 0755 "$release_dir"
@@ -227,18 +227,35 @@ jobs:
           test -d "$release_dir/.next/standalone/.next/static"
           test -f "$release_dir/ecosystem.config.cjs"
 
+          previous_dir="$(readlink -f "$current_link" || true)"
+          rollback_release() {
+            if [[ -n "$previous_dir" && -f "$previous_dir/.next/standalone/server.js" ]]; then
+              ln -sfn "$previous_dir" "$current_link.next"
+              mv -Tf "$current_link.next" "$current_link"
+              chown -h "$deploy_user:$deploy_user" "$current_link"
+              su -s /bin/bash "$deploy_user" -c "pm2 delete '$app_name'" || true
+              su -s /bin/bash "$deploy_user" -c "set -a; . '$environment_file'; set +a; pm2 start '$current_link/ecosystem.config.cjs' --env production --update-env; pm2 save"
+            fi
+          }
           ln -sfn "$release_dir" "$current_link.next"
           mv -Tf "$current_link.next" "$current_link"
           chown -h "$deploy_user:$deploy_user" "$current_link"
-          su -s /bin/bash "$deploy_user" -c "set -a; . '$environment_file'; set +a; pm2 startOrReload '$current_link/ecosystem.config.cjs' --env production --update-env; pm2 save"
+          if su -s /bin/bash "$deploy_user" -c "pm2 describe '$app_name'" >/dev/null 2>&1; then
+            su -s /bin/bash "$deploy_user" -c "pm2 delete '$app_name'"
+          fi
+          if ! su -s /bin/bash "$deploy_user" -c "set -a; . '$environment_file'; set +a; pm2 start '$current_link/ecosystem.config.cjs' --env production --update-env; pm2 save"; then
+            rollback_release
+            exit 1
+          fi
 
           for attempt in 1 2 3 4 5 6 7 8 9 10; do
-            if curl --fail --silent --show-error http://127.0.0.1:3000/api/health >/dev/null; then
+            if curl --fail --silent http://127.0.0.1:3000/api/health >/dev/null; then
               exit 0
             fi
             sleep 2
           done
           echo 'Application health check failed after PM2 reload.' >&2
+          rollback_release
           exit 1
           REMOTE
           sed -i "s/__RELEASE_ID__/${GITHUB_SHA}/g" ssm-command.sh
