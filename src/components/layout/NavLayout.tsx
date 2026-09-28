@@ -67,7 +67,7 @@ function NavContent({ children }: { children: React.ReactNode }) {
     <div
       className={`study-nav-content box-border grid grid-cols-1 w-full h-screen min-h-0 py-8 px-12 bg-white custom-scrollbar ${isMajorPage ? 'overflow-y-hidden' : 'overflow-y-auto'} max-sm:p-4 max-sm:pb-0 lg:flex-1 lg:min-w-0`}
       data-show-search={isShowSearch}
-      style={{ gridTemplateRows: isShowSearch ? '120px auto' : '50px minmax(0, 1fr)' }}
+      style={isShowSearch ? undefined : { gridTemplateRows: '50px minmax(0, 1fr)' }}
     >
       <header className="w-full flex flex-wrap items-center max-sm:px-0">
         <HamburgerButton />
@@ -94,7 +94,7 @@ function NavContent({ children }: { children: React.ReactNode }) {
           </form>
         )}
       </header>
-      <div className={`relative min-h-0 ${isMajorPage ? 'h-full overflow-hidden' : ''}`}>
+      <div className={`relative min-h-0 ${isMajorPage ? 'h-full overflow-hidden' : ''} ${isShowSearch ? 'max-[576px]:-mx-[10px]' : ''}`}>
         {isPageNavigating ? <NavigationSkeleton pathname={pendingHref!} /> : children}
         {isModalNavigating && <ModalSkeleton />}
       </div>

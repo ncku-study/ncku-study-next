@@ -5,6 +5,10 @@ import QueryProvider from "@/providers/query-provider";
 import { buildSeoMetadata } from "@/lib/seo/metadata";
 import "./globals.css";
 
+export const viewport = {
+  themeColor: "rgba(254, 218, 106, 1)",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('site');
   return buildSeoMetadata({
