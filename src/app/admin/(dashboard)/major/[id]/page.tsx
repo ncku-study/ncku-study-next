@@ -39,10 +39,10 @@ export default function AdminMajorDetailPage() {
 
   const deleteMutation = useMutation({
     mutationFn: () => adminApiFetch<void>(`/comments/${numId}`, { method: 'DELETE' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-comments'] });
-      queryClient.invalidateQueries({ queryKey: ['comments'] });
+    onSuccess: async () => {
+      const refreshLists = queryClient.invalidateQueries({ queryKey: ['admin-comments'], refetchType: 'all' });
       router.push('/admin/major');
+      await refreshLists;
     },
   });
 

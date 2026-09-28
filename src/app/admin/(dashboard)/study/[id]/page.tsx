@@ -58,10 +58,10 @@ export default function AdminStudyDetailPage() {
 
   const deleteMutation = useMutation({
     mutationFn: () => adminApiFetch<void>(`/studies/${id}`, { method: 'DELETE' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-studies'] });
-      queryClient.invalidateQueries({ queryKey: ['studies'] });
+    onSuccess: async () => {
+      const refreshLists = queryClient.invalidateQueries({ queryKey: ['admin-studies'], refetchType: 'all' });
       router.push('/admin/study');
+      await refreshLists;
     },
   });
 

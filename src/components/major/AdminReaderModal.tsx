@@ -88,10 +88,9 @@ export default function AdminReaderModal({ comment, allComments, onClose, onNavi
     setIsPending(true);
     try {
       await adminApiFetch(`/comments/${comment.id}`, { method: "DELETE" });
-      queryClient.invalidateQueries({ queryKey: ["admin-comments"] });
-      queryClient.invalidateQueries({ queryKey: ALL_COMMENTS_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      const refreshLists = queryClient.invalidateQueries({ queryKey: ["admin-comments"], refetchType: "all" });
       onClose();
+      await refreshLists;
     } finally {
       setIsPending(false);
     }
