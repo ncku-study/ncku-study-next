@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { FilterState } from './MajorFilters';
 
 const OFFICIAL_PASS_RATE_URL =
-  'https://script.google.com/macros/s/AKfycbx7m5jeetEwjtZ8vbicrH8VfQ7tBp_hGyTWX7d73a5NQANmTvU/exec';
+  'https://script.google.com/macros/s/AKfycbyzPURbajvYo7w25mJAEWOKypzvnKaHZP3R9zyc2fOBOa1XJLY4zyvhRHtEh2yhf2oK/exec';
 
 interface ProgressCircleProps {
   value: number | null;
