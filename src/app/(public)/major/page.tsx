@@ -5,6 +5,8 @@ import { buildSeoMetadata } from '@/lib/seo/metadata';
 import { getTranslations } from 'next-intl/server';
 import MajorGrid from '@/components/major/MajorGrid';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata() {
   const t = await getTranslations('site');
   return buildSeoMetadata({

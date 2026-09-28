@@ -5,6 +5,8 @@ import { getQueryClient } from '@/lib/query-client';
 import { prefetchAllStudies } from '@/lib/prefetch-studies';
 import { buildSeoMetadata } from '@/lib/seo/metadata';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata() {
   const t = await getTranslations('site');
   return buildSeoMetadata({

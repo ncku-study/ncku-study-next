@@ -16,21 +16,60 @@ permissions:
 env:
   AWS_REGION: ap-northeast-1
   ENVIRONMENT_PARAMETER_NAME: /ncku-study-next/production/environment
+  ARTIFACT_BUCKET: ncku-study-tf
+  ARTIFACT_KEY: ncku-study-next/releases/${{ github.run_id }}-${{ github.run_attempt }}/${{ github.sha }}.tar.gz
 
 jobs:
   deploy:
     name: Deploy through AWS Systems Manager
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - name: Check out deployment configuration
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build ARM64 standalone release
+        shell: bash
+        env:
+          USE_MOCK: 'false'
+          NEXTAUTH_URL: https://nckustudy.com
+          SKIP_NEXT_TYPECHECK: 'true'
+        run: |
+          set -Eeuo pipefail
+          test "$(uname -m)" = aarch64
+          npm install
+          npm run build
+          mkdir -p .next/standalone/.next
+          cp -a .next/static .next/standalone/.next/static
+          if [[ -d public ]]; then
+            cp -a public .next/standalone/public
+          fi
+          tar -czf release.tar.gz .next/standalone ecosystem.config.cjs
+
       - name: Configure AWS credentials through OIDC
+        id: credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Stage build artifact
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          artifact_sha="$(sha256sum release.tar.gz | awk '{print $1}')"
+          aws s3api put-object \
+            --bucket "$ARTIFACT_BUCKET" \
+            --key "$ARTIFACT_KEY" \
+            --body release.tar.gz \
+            --server-side-encryption AES256 \
+            --no-cli-pager >/dev/null
+          echo "ARTIFACT_SHA=$artifact_sha" >> "$GITHUB_ENV"
 
       - name: Synchronize production environment secret
         env:
@@ -125,9 +164,12 @@ jobs:
           aws_region='ap-northeast-1'
           environment_parameter_name='/ncku-study-next/production/environment'
           bootstrap_script="/usr/local/sbin/$app_name-bootstrap"
-          deployment_script="/usr/local/bin/$app_name-deploy"
           environment_file="/etc/$app_name/environment"
           release_id='__RELEASE_ID__'
+          artifact_key='__ARTIFACT_KEY__'
+          artifact_sha='__ARTIFACT_SHA__'
+          release_dir="/opt/$app_name/releases/${release_id}-__RUN_ID__-__RUN_ATTEMPT__"
+          current_link="/opt/$app_name/current"
           needs_bootstrap=0
 
           # AWS CLI is required to obtain the GitHub-secret-backed environment.
@@ -173,9 +215,36 @@ jobs:
             exit 1
           fi
 
-          exec "$deployment_script" "$release_id"
+          temporary_artifact="$(mktemp)"
+          trap 'rm -f "$temporary_artifact"' EXIT
+          aws s3 cp "s3://ncku-study-tf/$artifact_key" "$temporary_artifact" --region "$aws_region"
+          printf '%s  %s\n' "$artifact_sha" "$temporary_artifact" | sha256sum -c -
+
+          install -d -o "$deploy_user" -g "$deploy_user" -m 0755 "$release_dir"
+          chown "$deploy_user:$deploy_user" "$temporary_artifact"
+          su -s /bin/bash "$deploy_user" -c "tar -xzf '$temporary_artifact' -C '$release_dir'"
+          test -f "$release_dir/.next/standalone/server.js"
+          test -d "$release_dir/.next/standalone/.next/static"
+          test -f "$release_dir/ecosystem.config.cjs"
+
+          ln -sfn "$release_dir" "$current_link.next"
+          mv -Tf "$current_link.next" "$current_link"
+          chown -h "$deploy_user:$deploy_user" "$current_link"
+          su -s /bin/bash "$deploy_user" -c "set -a; . '$environment_file'; set +a; pm2 startOrReload '$current_link/ecosystem.config.cjs' --env production --update-env; pm2 save"
+
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --fail --silent --show-error http://127.0.0.1:3000/api/health >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'Application health check failed after PM2 reload.' >&2
+          exit 1
           REMOTE
           sed -i "s/__RELEASE_ID__/${GITHUB_SHA}/g" ssm-command.sh
+          sed -i "s|__ARTIFACT_KEY__|${ARTIFACT_KEY}|g" ssm-command.sh
+          sed -i "s/__ARTIFACT_SHA__/${ARTIFACT_SHA}/g" ssm-command.sh
+          sed -i "s/__RUN_ID__/${GITHUB_RUN_ID}/g; s/__RUN_ATTEMPT__/${GITHUB_RUN_ATTEMPT}/g" ssm-command.sh
           encoded_command="$(base64 --wrap=0 ssm-command.sh)"
           jq -n --arg command "printf '%s' '$encoded_command' | base64 --decode | bash" \
             '{commands: [$command]}' > ssm-parameters.json
@@ -221,3 +290,29 @@ jobs:
             --instance-id "$INSTANCE_ID" \
             --query '{Status:Status,Stdout:StandardOutputContent,Stderr:StandardErrorContent}' \
             --output json
+
+      - name: Permanently remove staged artifact versions
+        if: always() && steps.credentials.outcome == 'success'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          version_json="$(aws s3api list-object-versions \
+            --bucket "$ARTIFACT_BUCKET" \
+            --prefix "$ARTIFACT_KEY" \
+            --output json)"
+          mapfile -t version_ids < <(jq -r --arg key "$ARTIFACT_KEY" \
+            '(.Versions // []) + (.DeleteMarkers // []) | .[] | select(.Key == $key) | .VersionId' \
+            <<< "$version_json")
+          for version_id in "${version_ids[@]}"; do
+            aws s3api delete-object \
+              --bucket "$ARTIFACT_BUCKET" \
+              --key "$ARTIFACT_KEY" \
+              --version-id "$version_id" \
+              --no-cli-pager >/dev/null
+          done
+          remaining="$(aws s3api list-object-versions \
+            --bucket "$ARTIFACT_BUCKET" \
+            --prefix "$ARTIFACT_KEY" \
+            --output json | jq --arg key "$ARTIFACT_KEY" \
+              '[((.Versions // []) + (.DeleteMarkers // []))[] | select(.Key == $key)] | length')"
+          test "$remaining" = 0
