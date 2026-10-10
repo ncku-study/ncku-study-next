@@ -7,9 +7,6 @@ import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import type { FilterState } from './MajorFilters';
 
-const OFFICIAL_PASS_RATE_URL =
-  'https://script.google.com/macros/s/AKfycbyzPURbajvYo7w25mJAEWOKypzvnKaHZP3R9zyc2fOBOa1XJLY4zyvhRHtEh2yhf2oK/exec';
-
 interface ProgressCircleProps {
   value: number | null;
   name: string;
@@ -65,15 +62,13 @@ export function MajorStatistics({ comments, filters }: MajorStatisticsProps) {
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     queryFn: async ({ signal }) => {
-      const body = new URLSearchParams({
+      const query = new URLSearchParams({
         major: officialPassRateMajor,
         year: officialPassRateYear,
       });
-      const response = await fetch(OFFICIAL_PASS_RATE_URL, {
-        method: 'POST',
-        body: body.toString(),
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      const response = await fetch(`/api/v2/pass-rate?${query}`, {
         signal,
+        cache: 'no-store',
       });
 
       if (!response.ok) {
@@ -83,10 +78,10 @@ export function MajorStatistics({ comments, filters }: MajorStatisticsProps) {
       const result: unknown = await response.json();
       const value =
         typeof result === 'object' && result !== null && 'passRate' in result
-          ? Number(result.passRate)
-          : Number.NaN;
+          ? result.passRate
+          : null;
 
-      return Number.isFinite(value) ? value : null;
+      return typeof value === 'number' && Number.isFinite(value) ? value : null;
     },
   });
 
