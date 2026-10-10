@@ -12,8 +12,8 @@ const noStoreHeaders = [
 ];
 
 const publicApiCacheHeaders = [
-  { key: 'Cache-Control', value: 'public, max-age=60, s-maxage=60, stale-while-revalidate=60' },
-  { key: 'Surrogate-Control', value: 'max-age=60' },
+  { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=30, stale-while-revalidate=30' },
+  { key: 'Surrogate-Control', value: 'max-age=30' },
 ];
 
 const nextConfig: NextConfig = {

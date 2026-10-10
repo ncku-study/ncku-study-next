@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getCommentRepository } from '@/lib/repositories';
+import { getPublicComment } from '@/lib/public-cache';
 import { getQueryClient } from '@/lib/query-client';
 import { prefetchAllComments } from '@/lib/prefetch-comments';
 import { buildSeoMetadata } from '@/lib/seo/metadata';
@@ -13,17 +12,16 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-function isClientNavigation(requestHeaders: Headers) {
-  return requestHeaders.get('RSC') === '1';
+export const revalidate = 30;
+
+export function generateStaticParams() {
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const [repo, t] = await Promise.all([
-    getCommentRepository(),
-    getTranslations('site'),
-  ]);
-  const comment = await repo.findById(parseInt(id, 10));
+  const t = await getTranslations('site');
+  const comment = await getPublicComment(parseInt(id, 10));
   const pathname = `/major/${encodeURIComponent(id)}`;
 
   if (!comment || comment.confirm !== 'true') {
@@ -48,18 +46,10 @@ export default async function MajorDetailPage({ params }: Props) {
 
   if (!Number.isInteger(numId)) notFound();
 
-  const repo = await getCommentRepository();
-  const comment = await repo.findById(numId);
+  const comment = await getPublicComment(numId);
 
   if (!comment) notFound();
   if (comment.confirm !== 'true') redirect('/major');
-
-  // Next uses an RSC request for client-side Link/router navigation. Do not
-  // prefetch the list for that request: MajorDetailClient will read the
-  // already hydrated list from React Query on the browser.
-  if (isClientNavigation(await headers())) {
-    return <MajorDetailClient id={numId} />;
-  }
 
   const queryClient = getQueryClient();
   await prefetchAllComments(queryClient);

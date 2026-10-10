@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { getStudyRepository } from '@/lib/repositories';
 import { notifyNewStudy } from '@/lib/discord';
 import { normalizeStudySubmission } from '@/lib/study-submission';
+import { getPublicStudies } from '@/lib/public-cache';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 30;
 
 export async function POST(request: Request) {
   let submission: ReturnType<typeof normalizeStudySubmission>;
@@ -31,7 +31,6 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const category = searchParams.get('category') ?? undefined;
   const year = searchParams.get('year') ?? undefined;
-  const repo = await getStudyRepository();
-  const data = await repo.findAll({ category, year, confirm: true });
+  const data = await getPublicStudies(category, year);
   return NextResponse.json(data);
 }

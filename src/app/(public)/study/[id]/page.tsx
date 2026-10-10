@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getStudyRepository } from '@/lib/repositories';
+import { getPublicStudy } from '@/lib/public-cache';
 import { getQueryClient } from '@/lib/query-client';
 import { prefetchAllStudies } from '@/lib/prefetch-studies';
 import { buildSeoMetadata } from '@/lib/seo/metadata';
@@ -13,17 +12,16 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-function isClientNavigation(requestHeaders: Headers) {
-  return requestHeaders.get('RSC') === '1';
+export const revalidate = 30;
+
+export function generateStaticParams() {
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const [repo, t] = await Promise.all([
-    getStudyRepository(),
-    getTranslations('site'),
-  ]);
-  const study = await repo.findById(id);
+  const t = await getTranslations('site');
+  const study = await getPublicStudy(id);
   const pathname = `/study/${encodeURIComponent(id)}`;
 
   if (!study || study.confirm !== 'true') {
@@ -45,18 +43,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function StudyDetailPage({ params }: Props) {
   const { id } = await params;
 
-  const repo = await getStudyRepository();
-  const study = await repo.findById(id);
+  const study = await getPublicStudy(id);
 
   if (!study) notFound();
   if (study.confirm !== 'true') redirect('/study');
-
-  // A client-side modal navigation is handled by the public modal route
-  // context. Keep this branch as a safe fallback for Next RSC navigations
-  // after checking that the requested study is publicly visible.
-  if (isClientNavigation(await headers())) {
-    return <StudyDetailClient id={id} />;
-  }
 
   const queryClient = getQueryClient();
   await prefetchAllStudies(queryClient);

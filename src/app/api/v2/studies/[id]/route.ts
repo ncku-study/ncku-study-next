@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
-import { getStudyRepository } from '@/lib/repositories';
+import { getPublicStudy } from '@/lib/public-cache';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 30;
+
+export function generateStaticParams() {
+  return [];
+}
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const repo = await getStudyRepository();
-  const item = await repo.findById(id);
+  const item = await getPublicStudy(id);
   if (!item || item.confirm !== 'true') {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }

@@ -59,7 +59,7 @@ export function MajorStatistics({ comments, filters }: MajorStatisticsProps) {
   const isTransferCategory = filters.category === t('categoryTransfer');
   const officialPassRateMajor = filters.department || filters.college || 'none';
   const officialPassRateYear = filters.year || 'none';
-  const { data: officialPassRate, isFetching: isPassRateLoading } = useQuery({
+  const { data: officialPassRate, isPending: isPassRateLoading } = useQuery({
     queryKey: ['official-pass-rate', officialPassRateMajor, officialPassRateYear],
     enabled: isTransferCategory,
     staleTime: 5 * 60 * 1000,
@@ -95,13 +95,24 @@ export function MajorStatistics({ comments, filters }: MajorStatisticsProps) {
       <div className="bg-white w-160 h-full rounded-lg flex-none flex items-center justify-evenly max-sm:w-full">
         <ProgressCircle value={average} name={t('averageScore')} noValue={t('noValue')} />
         <ProgressCircle value={min} name={t('minimumScore')} noValue={t('noValue')} />
-        <ProgressCircle
-          value={!isTransferCategory || isPassRateLoading || officialPassRate === null || officialPassRate === undefined
-            ? null
-            : officialPassRate * 100}
-          name={t('officialPassRate')}
-          noValue={t('noValue')}
-        />
+        {isTransferCategory && isPassRateLoading ? (
+          <div className="relative w-46 flex flex-col items-center" role="status" aria-label={`${t('officialPassRate')} loading`}>
+            <div className="w-28 h-[70px] flex items-center justify-center">
+              <div className="relative h-[70px] w-[70px] rounded-full border-4 border-gray-200 animate-pulse flex items-center justify-center">
+                <div className="rounded-lg bg-gray-200 text-[1.9rem] leading-none" aria-hidden="true"><span className="invisible">xx.x</span></div>
+              </div>
+            </div>
+            <h4 className="flex justify-center text-[1.4rem] my-3 mx-0">{t('officialPassRate')}</h4>
+          </div>
+        ) : (
+          <ProgressCircle
+            value={!isTransferCategory || officialPassRate === null || officialPassRate === undefined
+              ? null
+              : officialPassRate * 100}
+            name={t('officialPassRate')}
+            noValue={t('noValue')}
+          />
+        )}
       </div>
     </section>
   );
