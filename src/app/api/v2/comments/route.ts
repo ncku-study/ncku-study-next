@@ -3,7 +3,7 @@ import { getCommentRepository } from '@/lib/repositories';
 import { notifyNewComment } from '@/lib/discord';
 import { getPublicComments } from '@/lib/public-cache';
 
-export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   const body = await request.json();
