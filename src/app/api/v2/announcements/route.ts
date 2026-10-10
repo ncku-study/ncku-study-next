@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getAnnouncementRepository } from '@/lib/repositories';
+import { getPublicAnnouncements } from '@/lib/public-cache';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const repo = await getAnnouncementRepository();
-  const data = await repo.findAll();
+  const data = await getPublicAnnouncements();
   return NextResponse.json(data);
 }

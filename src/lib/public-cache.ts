@@ -1,5 +1,13 @@
 import { unstable_cache } from 'next/cache';
-import { getCommentRepository, getStudyRepository } from '@/lib/repositories';
+import {
+  getAnnouncementRepository,
+  getCategoryRepository,
+  getCollegeRepository,
+  getCommentRepository,
+  getDepartmentRepository,
+  getStatisticRepository,
+  getStudyRepository,
+} from '@/lib/repositories';
 
 // Request parameters become part of the cache key. Admin routes continue to
 // access repositories directly so moderation changes are never delayed here.
@@ -38,5 +46,37 @@ export const getPublicStudy = unstable_cache(
     return item;
   },
   ['public-study'],
+  { revalidate: 30 },
+);
+
+// These public lookups run only after a request reaches a dynamic route.
+// Keep their database results for the same 30 seconds as the other public APIs.
+export const getPublicAnnouncements = unstable_cache(
+  async () => (await getAnnouncementRepository()).findAll(),
+  ['public-announcements'],
+  { revalidate: 30 },
+);
+
+export const getPublicCategories = unstable_cache(
+  async () => (await getCategoryRepository()).findAll(),
+  ['public-categories'],
+  { revalidate: 30 },
+);
+
+export const getPublicColleges = unstable_cache(
+  async () => (await getCollegeRepository()).findAll(),
+  ['public-colleges'],
+  { revalidate: 30 },
+);
+
+export const getPublicDepartments = unstable_cache(
+  async () => (await getDepartmentRepository()).findAll(),
+  ['public-departments'],
+  { revalidate: 30 },
+);
+
+export const getPublicStatistics = unstable_cache(
+  async () => (await getStatisticRepository()).findAll(),
+  ['public-statistics'],
   { revalidate: 30 },
 );

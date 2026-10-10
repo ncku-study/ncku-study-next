@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getStatisticRepository } from '@/lib/repositories';
+import { getPublicStatistics } from '@/lib/public-cache';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const repo = await getStatisticRepository();
-  const data = await repo.findAll();
+  const data = await getPublicStatistics();
   return NextResponse.json(data);
 }
