@@ -2,6 +2,9 @@
 
 [NCKU Study](https://nckustudy.com/) lets students browse and share major transfer and study experiences at National Cheng Kung University.
 
+![Production application architecture: URLs, rendering, and caches](docs/home.png)
+
+
 ## Architecture
 
 ![Production application architecture: URLs, rendering, and caches](docs/ncku-study-production-application-urls-rendering-and-caches.svg)
@@ -11,7 +14,7 @@ The application uses **Next.js, React, TypeScript, and Tailwind CSS**. Next.js r
 - `/major` and `/study` use SSR with 30-second revalidation, prefetch approved records, and hydrate TanStack Query. CSR handles filters, details, and subsequent requests; public browser queries stay fresh for 60 seconds.
 - Public comment and study reads use a 30-second Next.js data cache. API responses advertise `s-maxage=30` and `stale-while-revalidate=30` through `Cache-Control` headers.
 - `/post` uses a client-side form to submit records for review. `/admin` uses authenticated, dynamic pages and uncached CRUD APIs.
-- Production runs on an AWS EC2 instance: Route 53 resolves the domain to its public IP, Nginx proxies to the PM2-managed Next.js process, and MySQL runs locally. See [deployment details](DEPLOYMENT.md).
+- Production runs on an AWS EC2 instance: Route 53 resolves the domain to its public IP, Nginx proxies to the PM2-managed Next.js process, and MySQL runs locally.
 
 ## Migration and bundle size
 
