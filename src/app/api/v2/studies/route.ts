@@ -4,7 +4,7 @@ import { notifyNewStudy } from '@/lib/discord';
 import { normalizeStudySubmission } from '@/lib/study-submission';
 import { getPublicStudies } from '@/lib/public-cache';
 
-export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   let submission: ReturnType<typeof normalizeStudySubmission>;

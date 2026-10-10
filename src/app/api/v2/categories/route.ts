@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getCategoryRepository } from '@/lib/repositories';
+import { getPublicCategories } from '@/lib/public-cache';
 
-export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const repo = await getCategoryRepository();
-  const data = await repo.findAll();
+  const data = await getPublicCategories();
   return NextResponse.json(data);
 }

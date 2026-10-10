@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getCollegeRepository } from '@/lib/repositories';
+import { getPublicColleges } from '@/lib/public-cache';
 
-export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const repo = await getCollegeRepository();
-  const data = await repo.findAll();
+  const data = await getPublicColleges();
   return NextResponse.json(data);
 }

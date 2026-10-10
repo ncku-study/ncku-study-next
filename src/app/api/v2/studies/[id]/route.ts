@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getPublicStudy } from '@/lib/public-cache';
 
-export const revalidate = 30;
-
-export function generateStaticParams() {
-  return [];
-}
+export const dynamic = 'force-dynamic';
 
 export async function GET(
   _request: Request,
