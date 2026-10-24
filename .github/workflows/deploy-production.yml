@@ -199,7 +199,7 @@ jobs:
           . "$environment_file"
           set +a
 
-          command -v nginx >/dev/null 2>&1 && systemctl is-active --quiet nginx && test -f "/etc/nginx/sites-enabled/$app_name" || needs_bootstrap=1
+          command -v nginx >/dev/null 2>&1 && systemctl is-active --quiet nginx && test -f "/etc/nginx/conf.d/$app_name.conf" || needs_bootstrap=1
           command -v mysql >/dev/null 2>&1 && systemctl is-active --quiet mysql && test -f "/etc/mysql/mysql.conf.d/99-$app_name-local.cnf" || needs_bootstrap=1
           command -v certbot >/dev/null 2>&1 && test -x "/usr/local/bin/$app_name-enable-ssl" || needs_bootstrap=1
           command -v pm2 >/dev/null 2>&1 && command -v aws >/dev/null 2>&1 || needs_bootstrap=1
