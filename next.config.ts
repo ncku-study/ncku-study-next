@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: process.env.SKIP_NEXT_TYPECHECK === 'true',
   },
+  experimental: {
+    agentUpgrade: 'security',
+  },
   devIndicators: false,
   turbopack: {
     root: path.resolve(__dirname),
