@@ -3,6 +3,7 @@ import React, { useEffect, useReducer } from 'react';
 import { useTranslations } from 'next-intl';
 import { CommentDTO } from '@/types/api';
 import { useOptionalMajorModalRoute } from '@/components/major/MajorModalRouteContext';
+import { Badge } from '@/components/major/Badge';
 
 const contentMiddleware = (content: string, maxNumber: number) =>
   content.length < maxNumber ? content : content.substr(0, maxNumber - 1) + '  (...)';
@@ -97,6 +98,13 @@ export function TransCard({ data, isAdmin = false, onOpen }: TransCardProps) {
           onClick={() => onOpen(data)}
           className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
           aria-label={t('openDetails')}
+        />
+      )}
+
+      {data.isPass === 'false' && (
+        <Badge
+          isPass={data.isPass}
+          className="pointer-events-none absolute top-8 right-4 rounded-4xl bg-fail-surface text-red text-[1.2rem]"
         />
       )}
     </div>
